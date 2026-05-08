@@ -1,0 +1,11 @@
+{
+    "name": "KatalogMenu",
+    "alias": "katalogmenu",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KatalogMenu\\Providers\\KatalogMenuServiceProvider"
+    ],
+    "files": []
+}
