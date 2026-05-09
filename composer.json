@@ -21,6 +21,7 @@
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.0.0",
         "mhmiton/laravel-modules-livewire": "^7.0",
+        "spatie/laravel-permission": "*",
         "tallstackui/tallstackui": "^3.0"
     },
     "require-dev": {
@@ -84,6 +85,14 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "merge-plugin": {
+            "include": [
+                "Modules/*/composer.json"
+            ],
+            "recurse": true,
+            "replace": false,
+            "merge-dev": false
         }
     },
     "config": {

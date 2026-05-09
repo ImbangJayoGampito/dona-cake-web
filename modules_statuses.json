@@ -1,4 +1,10 @@
 {
     "Ulasan": true,
-    "KatalogMenu": true
+    "KatalogMenu": true,
+    "Laporan": true,
+    "AsistenVirtual": true,
+    "Pesanan": true,
+    "LaporanUlasan": true,
+    "Keuangan": true,
+    "Booking": true
 }

@@ -1,0 +1,11 @@
+{
+    "name": "LaporanUlasan",
+    "alias": "laporanulasan",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LaporanUlasan\\Providers\\LaporanUlasanServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "AsistenVirtual",
+    "alias": "asistenvirtual",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AsistenVirtual\\Providers\\AsistenVirtualServiceProvider"
+    ],
+    "files": []
+}

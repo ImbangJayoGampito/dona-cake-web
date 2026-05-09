@@ -1,0 +1,11 @@
+{
+    "name": "Pesanan",
+    "alias": "pesanan",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Pesanan\\Providers\\PesananServiceProvider"
+    ],
+    "files": []
+}

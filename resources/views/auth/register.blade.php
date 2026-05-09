@@ -7,7 +7,11 @@
         @csrf
 
         <div>
-            <x-input label="Name *" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-input label="Username *" name="username" :value="old('username')" required autofocus autocomplete="name" />
+        </div>
+
+        <div class="mt-4">
+            <x-input label="Nama *" name="name" :value="old('name')" required autofocus autocomplete="username" />
         </div>
 
         <div class="mt-4">

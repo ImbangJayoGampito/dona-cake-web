@@ -5,6 +5,9 @@
                 👋🏻 This is the TallStackUI starter kit for Laravel 12. With this TallStackUI starter kit you will be
                 able to enjoy a ready-to-use application to initialize your next Laravel 12 project with TallStackUI.
             </p>
+            @if (auth()->user()->hasRole(\App\Enums\RoleEnum::Admin->value))
+                <p>This is exclusive to admin, hello admin!</p>
+            @endif
             <div class="mt-4 space-y-2">
                 <i>
                     "What this starter kit includes out of the box?"
