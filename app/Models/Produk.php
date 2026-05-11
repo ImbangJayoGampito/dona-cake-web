@@ -32,4 +32,9 @@ class Produk extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+	public function ulasans(): HasMany
+	{
+    	return $this->hasMany(Ulasan::class);
+	}
 }

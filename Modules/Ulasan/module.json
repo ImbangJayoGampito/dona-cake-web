@@ -1,0 +1,11 @@
+{
+    "name": "Ulasan",
+    "alias": "ulasan",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Ulasan\\Providers\\UlasanServiceProvider"
+    ],
+    "files": []
+}
