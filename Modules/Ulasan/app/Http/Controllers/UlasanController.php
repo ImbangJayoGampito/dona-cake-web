@@ -1,18 +1,18 @@
 <?php
 
-namespace Modules\KatalogMenu\Http\Controllers;
+namespace Modules\Ulasan\Http\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class KatalogMenuController extends Controller
+class UlasanController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('katalogmenu::index');
+        return view('ulasan::index');
     }
 
     /**
@@ -20,7 +20,7 @@ class KatalogMenuController extends Controller
      */
     public function create()
     {
-        return view('katalogmenu::create');
+        return view('ulasan::create');
     }
 
     /**
@@ -33,7 +33,7 @@ class KatalogMenuController extends Controller
      */
     public function show($id)
     {
-        return view('katalogmenu::show');
+        return view('ulasan::show');
     }
 
     /**
@@ -41,7 +41,7 @@ class KatalogMenuController extends Controller
      */
     public function edit($id)
     {
-        return view('katalogmenu::edit');
+        return view('ulasan::edit');
     }
 
     /**
