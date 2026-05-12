@@ -6,5 +6,6 @@
     "Pesanan": true,
     "LaporanUlasan": true,
     "Keuangan": true,
-    "Booking": true
+    "Booking": true,
+    "Auth": true
 }
