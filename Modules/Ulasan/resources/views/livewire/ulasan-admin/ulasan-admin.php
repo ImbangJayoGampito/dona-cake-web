@@ -32,4 +32,5 @@ class UlasanAdmin extends Component
             'ulasans' => $query->paginate(15),
         ]);
     }
+
 }

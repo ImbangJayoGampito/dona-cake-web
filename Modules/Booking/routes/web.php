@@ -2,22 +2,14 @@
 // Modules/Booking/routes/web.php
 use Modules\Booking\Livewire\BookingForm;
 use Modules\Booking\Livewire\BookingAdmin;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/booking', BookingForm::class)->name('booking.form');
-    Route::get('/admin/booking', BookingAdmin::class)
-         ->middleware('role:admin')
-         ->name('booking.admin');
-});
+    Route::get('/booking', function () {
+        return view('booking::livewire.booking-form.booking-form');
+    })->name('booking.form');
 
-// Modules/Ulasan/routes/web.php
-use Modules\Ulasan\Livewire\UlasanForm;
-use Modules\Ulasan\Livewire\UlasanAdmin;
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/ulasan', UlasanForm::class)->name('ulasan.form');
-    Route::get('/admin/ulasan', UlasanAdmin::class)
-         ->middleware('role:admin')
-         ->name('ulasan.admin');
+    Route::get('/admin/booking', function () {
+        return view('booking::livewire.booking-admin.booking-admin');
+    })->middleware('role:admin')->name('booking.admin');
 });
-?>

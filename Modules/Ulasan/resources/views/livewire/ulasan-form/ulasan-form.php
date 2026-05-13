@@ -33,8 +33,8 @@ class UlasanForm extends Component
 
         // Cegah duplikat ulasan untuk produk yang sama
         $sudahUlasan = Ulasan::where('pelanggan_id', $pelangganId)
-                             ->where('produk_id', $this->produk_id)
-                             ->exists();
+            ->where('produk_id', $this->produk_id)
+            ->exists();
 
         if ($sudahUlasan) {
             $this->toast()->error('Kamu sudah mengulas produk ini.')->send();
@@ -63,4 +63,5 @@ class UlasanForm extends Component
             'produks' => Produk::all(),
         ]);
     }
+
 }
