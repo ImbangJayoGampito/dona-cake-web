@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -14,6 +16,11 @@ use Illuminate\Support\Carbon;
  * @property float $rating_rata_rata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
+ * @property-read Ulasan[]|HasMany $ulasans
+ * @property-read Gambar[]|MorphMany $gambars
+ * @property-read Gambar|null $gambarUtama
+ * @property-read Gambar|null $gambarTerbaru
  */
 class Produk extends Model
 {
@@ -33,8 +40,33 @@ class Produk extends Model
         'updated_at' => 'datetime',
     ];
 
-	public function ulasans(): HasMany
-	{
-    	return $this->hasMany(Ulasan::class);
-	}
+    public function ulasans(): HasMany
+    {
+        return $this->hasMany(Ulasan::class);
+    }
+
+    /**
+     * Relasi polymorphic ke gambar (one-to-many)
+     * Satu produk bisa memiliki banyak gambar
+     */
+    public function gambars(): MorphMany
+    {
+        return $this->morphMany(Gambar::class, 'gambarable');
+    }
+
+    /**
+     * Relasi untuk mengambil gambar pertama/utama produk
+     */
+    public function gambarUtama()
+    {
+        return $this->morphOne(Gambar::class, 'gambarable')->latest();
+    }
+
+    /**
+     * Relasi untuk mengambil gambar terbaru
+     */
+    public function gambarTerbaru()
+    {
+        return $this->morphOne(Gambar::class, 'gambarable')->latestOfMany();
+    }
 }
