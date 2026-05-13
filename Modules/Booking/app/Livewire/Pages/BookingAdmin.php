@@ -1,6 +1,7 @@
 <?php
 
-namespace Modules\Booking\Livewire;
+namespace Modules\Booking\Livewire\Pages;
+
 
 use App\Models\Booking;
 use Livewire\Component;
@@ -41,13 +42,12 @@ class BookingAdmin extends Component
         Booking::findOrFail($id)->update(['status_verifikasi' => 'ditolak']);
         $this->toast()->warning('Booking ditolak.')->send();
     }
-
     public function render()
     {
-        return view('booking::livewire.booking-admin.booking-admin', [
+        return view('booking::livewire.pages.booking-admin',  [
             'bookings' => Booking::with('pelanggan.user')
-                            ->latest()
-                            ->paginate(10),
+                ->latest()
+                ->paginate(10),
         ]);
     }
 }

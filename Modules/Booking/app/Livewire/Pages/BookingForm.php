@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Booking\Livewire;
+namespace Modules\Booking\Livewire\Pages;
 
+use Livewire\Component;
 use App\Models\Booking;          // ← root model, bukan module
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use Livewire\WithFileUploads;
 use TallStackUi\Traits\Interactions;
 
@@ -50,6 +50,6 @@ class BookingForm extends Component
 
     public function render()
     {
-        return view('booking::livewire.booking-form.booking-form');
+        return view('booking::livewire.pages.booking-form');
     }
 }

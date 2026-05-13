@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Gambar;
 use Illuminate\Http\Request;
 
-class GambarController extends Controller
+class GambarController
 {
     /**
      * Display a listing of the resource.
