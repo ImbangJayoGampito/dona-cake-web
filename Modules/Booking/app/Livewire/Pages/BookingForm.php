@@ -4,6 +4,7 @@ namespace Modules\Booking\Livewire\Pages;
 
 use Livewire\Component;
 use App\Models\Booking;          // ← root model, bukan module
+use App\Models\Pelanggan;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithFileUploads;
 use TallStackUi\Traits\Interactions;
@@ -34,7 +35,16 @@ class BookingForm extends Component
             $url = $this->desain_custom->store('desain', 'public');
         }
 
-        $pelangganId = Auth::user()->pelanggan->id;
+        // $pelangganId = Auth::user()->pelanggan->id;
+		// Jika pelanggan belum ada, buat baru, hanya untuk testing (data dummy)
+		$user = Auth::user();
+        $pelanggan = $user->pelanggan;
+        if (!$pelanggan) {
+            $pelanggan = Pelanggan::create([
+                'user_id' => $user->id,
+            ]);
+        }
+        $pelangganId = $pelanggan->id;
 
         Booking::create([
             'pelanggan_id'      => $pelangganId,

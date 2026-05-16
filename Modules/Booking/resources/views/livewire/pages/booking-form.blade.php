@@ -10,7 +10,7 @@
         <x-date wire:model="tgl_ambil" label="Tanggal Ambil" />
 
         <x-slot:footer>
-            <x-button wire:click="submit" label="Ajukan Booking" />
+            <x-button wire:click="submit">Ajukan Booking</x-button>
         </x-slot:footer>
     </x-card>
 </div>
