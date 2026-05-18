@@ -8,9 +8,9 @@ use Modules\Ulasan\Livewire\UlasanAdmin;
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/ulasan', function () {
-        return view('livewire.ulasan-form.ulasan-form');
+        return view('ulasan::pages.ulasan-form');
     })->name('ulasan.form');
     Route::get('/admin/ulasan', function () {
-        return view('livewire.ulasan-admin.ulasan-admin');
+        return view('ulasan::pages.ulasan-admin');
     })->name('ulasan.admin');
 });
