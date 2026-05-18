@@ -17,10 +17,17 @@ class DatabaseSeeder extends Seeder
         User::factory(24)->create()->each(fn($user) => $user->assignRole(RoleEnum::User->value));
 
         // Seed test user
-        User::factory()->create([
-            'username' => 'test',
-            'name'  => 'Test User',
+        $testUser = User::firstOrCreate([
             'email' => 'test@example.com',
-        ])->assignRole(RoleEnum::User->value);
+        ], [
+            'username' => 'test',
+            'name' => 'Test User',
+            'password' => bcrypt('password'),
+        ]);
+
+        $testUser->assignRole(RoleEnum::User->value);
+
+        // Seed product catalog for Ulasan review testing
+        $this->call(ProductSeeder::class);
     }
 }
