@@ -25,7 +25,7 @@
                     <li><a href="https://pestphp.com/" target="_blank">Pest</a></li>
                     <li><a href="https://laravel.com/docs/pint" target="_blank">Pint</a></li>
                 </ul>
-            </div>g
+            </div>
             <livewire:katalogmenu::mfc.katalog.view />
         </div>
         <x-slot:footer>
@@ -34,5 +34,23 @@
                     about the starter kit!</x-link>
             </span>
         </x-slot:footer>
+    </x-card>
+
+    <x-card header="Ulasan Reviews">
+        <div class="grid gap-4 md:grid-cols-2">
+            <div class="space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <h3 class="text-lg font-semibold">Submit a review</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Share feedback for a product you bought and help the team improve the catalog.</p>
+                <x-button :href="route('ulasan.form')" primary>Write Review</x-button>
+            </div>
+
+            @if (auth()->user()->hasRole(\App\Enums\RoleEnum::Admin->value))
+                <div class="space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                    <h3 class="text-lg font-semibold">Manage reviews</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Review and moderate customer feedback across products.</p>
+                    <x-button :href="route('ulasan.admin')">Open Review Management</x-button>
+                </div>
+            @endif
+        </div>
     </x-card>
 </x-app-layout>
