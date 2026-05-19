@@ -15,6 +15,7 @@ class UlasanForm extends Component
     public ?string $komentar = null;
     public $products;
     public $existingReviews;
+	public bool $locked = false;
 
     protected $rules = [
         'produk_id' => 'required|exists:produks,id',
@@ -22,15 +23,20 @@ class UlasanForm extends Component
         'komentar' => 'nullable|string|max:1000',
     ];
 
-    public function mount(): void
-    {
-        $this->products = Produk::orderBy('nama_produk')->get();
-        if ($this->products->isNotEmpty() && !$this->produk_id) {
-            $this->produk_id = $this->products->first()->id;
-        }
+    public function mount(?int $product_id = null): void
+	{
+	    $this->products = Produk::orderBy('nama_produk')->get();
 
-        $this->loadReviews();
-    }
+    	if ($product_id) {
+        	// Datang dari URL /ulasan/buat/{product_id}
+        	$this->produk_id = $product_id;
+        	$this->locked = true; // kunci UI
+    	} elseif ($this->products->isNotEmpty() && !$this->produk_id) {
+        	$this->produk_id = $this->products->first()->id;
+    	}
+
+    	$this->loadReviews();
+	}
 
     public function updatedProdukId(): void
     {

@@ -9,25 +9,45 @@
 
                 <form wire:submit.prevent="submit" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Produk</label>
-                        <select wire:model="produk_id" class="block w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20">
-                            <option value="">-- Pilih Produk --</option>
-                            @foreach ($products as $product)
-                                <option value="{{ $product->id }}">{{ $product->nama_produk }}</option>
-                            @endforeach
-                        </select>
-                        @error('produk_id') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
-                    </div>
+    					<label class="block text-sm font-medium text-slate-700 mb-2">Pilih Produk</label>
+
+    					@if ($locked)
+        					{{-- Produk sudah dipilih dari URL, dikunci --}}
+        					<input
+            					type="text"
+            					value="{{ $products->firstWhere('id', $produk_id)?->nama_produk ?? '-' }}"
+            					disabled
+            					class="block w-full rounded border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-500 cursor-not-allowed"
+        					>
+    					@else
+        					{{-- Mode bebas pilih produk --}}
+        					<select wire:model.live="produk_id" class="block w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20">
+            					<option value="">-- Pilih Produk --</option>
+            					@foreach ($products as $product)
+                					<option value="{{ $product->id }}">{{ $product->nama_produk }}</option>
+            					@endforeach
+        					</select>
+    					@endif
+
+    					@error('produk_id') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+					</div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Rating</label>
-                        <select wire:model="rating" class="block w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <option value="{{ $i }}">{{ $i }} bintang</option>
-                            @endfor
-                        </select>
-                        @error('rating') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
-                    </div>
+    					<label class="block text-sm font-medium text-slate-700 mb-2">Rating</label>
+    					<div class="flex gap-1">
+        					@for ($i = 1; $i <= 5; $i++)
+            					<button
+                					type="button"
+                					wire:click="$set('rating', {{ $i }})"
+                					class="text-3xl transition-colors duration-150 
+                       					{{ $i <= $rating ? 'text-yellow-400' : 'text-slate-300' }}
+                       					hover:text-yellow-300"
+            					>★</button>
+        					@endfor
+    					</div>
+    					<p class="text-xs text-slate-500 mt-1">Rating dipilih: {{ $rating }} bintang</p>
+    					@error('rating') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+					</div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-2">Komentar</label>
