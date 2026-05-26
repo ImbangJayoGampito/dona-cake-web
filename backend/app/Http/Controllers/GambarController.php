@@ -3,63 +3,55 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gambar;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class GambarController
+class GambarController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Upload an image.
      */
-    public function index()
+    public function upload(Request $request): JsonResponse
     {
-        //
+        $request->validate([
+            'file' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'gambarable_type' => 'nullable|string',
+            'gambarable_id' => 'nullable|integer',
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->store('images/' . now()->format('Y/m'), 'public');
+
+        $gambar = Gambar::create([
+            'gambar_url' => Storage::url($path),
+            'path' => $path,
+            'gambarable_type' => $request->gambarable_type,
+            'gambarable_id' => $request->gambarable_id,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Gambar berhasil diunggah.',
+            'data' => $gambar,
+        ], 201);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Delete an image.
      */
-    public function create()
+    public function destroy(Gambar $gambar): JsonResponse
     {
-        //
-    }
+        // Delete file from storage
+        if ($gambar->path && Storage::disk('public')->exists($gambar->path)) {
+            Storage::disk('public')->delete($gambar->path);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $gambar->delete();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Gambar $gambar)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Gambar $gambar)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Gambar $gambar)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Gambar $gambar)
-    {
-        //
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Gambar berhasil dihapus.',
+        ]);
     }
 }
