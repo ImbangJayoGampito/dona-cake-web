@@ -1,1 +1,0 @@
-$wire.entangle('search').live<?php /**PATH D:\pwebif\dona-cake-web\storage\framework\views/810f892dcfb074e8dc5a7d1ebc13e5a0.blade.php ENDPATH**/ ?>

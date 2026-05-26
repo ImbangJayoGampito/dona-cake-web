@@ -1,1 +1,0 @@
-$wire.entangle('quantity').live<?php /**PATH D:\pwebif\dona-cake-web\storage\framework\views/731a2de067faa69f8e9ec9246c7459f9.blade.php ENDPATH**/ ?>

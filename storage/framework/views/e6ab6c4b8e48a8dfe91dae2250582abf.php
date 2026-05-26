@@ -1,1 +1,0 @@
-$wire.entangle('ukuran')<?php /**PATH D:\pwebif\dona-cake-web\storage\framework\views/9d8b38a4a6c8478c8dc1b70a7807a07c.blade.php ENDPATH**/ ?>

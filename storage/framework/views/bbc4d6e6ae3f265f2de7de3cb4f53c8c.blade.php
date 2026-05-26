@@ -1,1 +1,0 @@
-$wire.entangle('password')

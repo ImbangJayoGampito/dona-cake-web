@@ -1,1 +1,0 @@
-$wire.entangle('produk_id')<?php /**PATH D:\pwebif\dona-cake-web\storage\framework\views/2d9561ad2b02b44659b0c851e9900b4d.blade.php ENDPATH**/ ?>

@@ -1,1 +1,0 @@
-<x-side-bar.item text="Booking" icon="calendar" id="sidebar-booking-0"><x-side-bar.item text="Form Booking" icon="pencil-square" route="http://localhost:8000/booking" /></x-side-bar.item>
