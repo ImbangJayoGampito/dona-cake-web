@@ -1,0 +1,1 @@
+$wire.entangle('desain_custom')

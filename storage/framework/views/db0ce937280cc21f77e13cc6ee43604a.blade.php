@@ -1,0 +1,1 @@
+<x-side-bar.item text="Ulasan" icon="star" route="http://localhost:8000/ulasan" />

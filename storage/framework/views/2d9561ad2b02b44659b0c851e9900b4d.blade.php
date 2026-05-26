@@ -1,0 +1,1 @@
+$wire.entangle('produk_id')

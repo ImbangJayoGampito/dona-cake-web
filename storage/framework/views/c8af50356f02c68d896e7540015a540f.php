@@ -1,0 +1,1 @@
+$wire.entangle('user.name')<?php /**PATH D:\pwebif\dona-cake-web\storage\framework\views/e31a7c2c560ce9f65c421522d8b72937.blade.php ENDPATH**/ ?>

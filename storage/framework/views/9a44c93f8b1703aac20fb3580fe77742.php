@@ -1,0 +1,1 @@
+$wire.entangle('tgl_ambil')<?php /**PATH D:\pwebif\dona-cake-web\storage\framework\views/877975fa0c25cf9e91cad1c2b17c84ba.blade.php ENDPATH**/ ?>

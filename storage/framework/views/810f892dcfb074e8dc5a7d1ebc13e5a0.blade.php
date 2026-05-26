@@ -1,0 +1,1 @@
+$wire.entangle('search').live
