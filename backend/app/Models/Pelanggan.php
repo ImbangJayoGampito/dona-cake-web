@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -12,6 +14,12 @@ use Illuminate\Support\Carbon;
  * @property string|null $no_telepon
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
+ * @property-read User $user
+ * @property-read Pesanan[] $pesanans
+ * @property-read Booking[] $bookings
+ * @property-read Ulasan[] $ulasans
+ * @property-read HistoriAktivitas[] $historiAktivitas
  */
 class Pelanggan extends Model
 {
@@ -26,4 +34,29 @@ class Pelanggan extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function pesanans(): HasMany
+    {
+        return $this->hasMany(Pesanan::class);
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function ulasans(): HasMany
+    {
+        return $this->hasMany(Ulasan::class);
+    }
+
+    public function historiAktivitas(): HasMany
+    {
+        return $this->hasMany(HistoriAktivitas::class);
+    }
 }

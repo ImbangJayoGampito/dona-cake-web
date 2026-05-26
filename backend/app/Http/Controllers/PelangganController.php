@@ -3,63 +3,58 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PelangganController
+class PelangganController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Show pelanggan profile.
      */
-    public function index()
+    public function show(Request $request): JsonResponse
     {
-        //
+        $pelanggan = Pelanggan::where('user_id', $request->user()->id)->first();
+
+        if (!$pelanggan) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Profil pelanggan tidak ditemukan.',
+            ], 404);
+        }
+
+        $pelanggan->load('user');
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $pelanggan,
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Update pelanggan profile.
      */
-    public function create()
+    public function update(Request $request): JsonResponse
     {
-        //
-    }
+        $pelanggan = Pelanggan::where('user_id', $request->user()->id)->first();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        if (!$pelanggan) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Profil pelanggan tidak ditemukan.',
+            ], 404);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Pelanggan $pelanggan)
-    {
-        //
-    }
+        $request->validate([
+            'alamat' => 'nullable|string|max:500',
+            'no_telepon' => 'nullable|string|max:20',
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Pelanggan $pelanggan)
-    {
-        //
-    }
+        $pelanggan->update($request->only(['alamat', 'no_telepon']));
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Pelanggan $pelanggan)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Pelanggan $pelanggan)
-    {
-        //
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profil berhasil diperbarui.',
+            'data' => $pelanggan->fresh()->load('user'),
+        ]);
     }
 }
