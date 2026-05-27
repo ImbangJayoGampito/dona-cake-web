@@ -182,6 +182,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // ---- Histori Aktivitas (Track user activity) ----
     Route::prefix('aktivitas')->group(function () {
         Route::get('/', [HistoriAktivitasController::class, 'index']);
+        Route::post('/', [HistoriAktivitasController::class, 'store']);
     });
 
     // ---- Gambar (Image upload/management) ----
