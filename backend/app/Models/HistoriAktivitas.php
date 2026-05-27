@@ -18,11 +18,14 @@ class HistoriAktivitas extends Model
     protected $fillable = [
         'pelanggan_id',
         'jenis_aktivitas',
+        'produk_terkait',
+        'bobot_interaksi',
         'waktu_akses',
     ];
 
     protected $casts = [
         'pelanggan_id' => 'integer',
+        'bobot_interaksi' => 'float',
         'waktu_akses' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
