@@ -13,12 +13,24 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Rocket, Shield, Zap, Globe, ChevronRight, Menu } from "lucide-react"
 import { useState } from "react"
-function addByTwo(x: number) {
-  return x + 2
-}
+import { User } from "@/models/user.model"
+import { useAuthStore } from "@/lib/state/logged-user"
+import { UserAvatarDropdown } from "@/components/user-avatar-dropdown"
+import { ModeToggle } from "@/components/mode-toggle"
+import { PublicRoutes } from "@/lib/routes"
+import { useNavigate } from "react-router-dom"
 
 export function AppHeader() {
+  const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const user = useAuthStore((state) => state.user)
+  function registerRedirect() {
+    navigate(PublicRoutes.Register)
+  }
+  function logInRedirect() {
+    navigate(PublicRoutes.Login)
+  }
+
   return (
     <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -28,18 +40,32 @@ export function AppHeader() {
           </span>
 
           {/* Desktop menu */}
-          <div className="hidden items-center space-x-8 md:flex">
-            <Button variant="link" className="text-foreground">
-              Features
-            </Button>
-            <Button variant="link" className="text-foreground">
-              Pricing
-            </Button>
-            <Button variant="link" className="text-foreground">
-              About
-            </Button>
-            <Button variant="outline">Sign In</Button>
-            <Button>Get Started</Button>
+          <div className="hidden md:flex md:flex-1 md:items-center md:justify-end">
+            {user ? (
+              <>
+                {/* Centered navigation buttons */}
+                <div className="flex flex-1 justify-center gap-6">
+                  <Button variant="ghost">Beranda</Button>
+                  <Button variant="ghost">Katalog</Button>
+                  <Button variant="ghost">Custom Cake</Button>
+                  <Button variant="ghost">Tentang Kami</Button>
+                </div>
+                {/* Avatar on the far right */}
+                <div className="ml-4 flex items-center justify-between">
+                  <UserAvatarDropdown />
+                  <ModeToggle />
+                </div>
+              </>
+            ) : (
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={registerRedirect}>
+                  Daftar
+                </Button>
+                <Button variant="outline" onClick={logInRedirect}>
+                  Masuk
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu using Sheet */}
@@ -49,21 +75,50 @@ export function AppHeader() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
+            <SheetContent side="right" className="w-[250px] sm:w-[300px]">
               <div className="mt-8 flex flex-col gap-4">
-                <Button variant="ghost" className="justify-start">
-                  Features
-                </Button>
-                <Button variant="ghost" className="justify-start">
-                  Pricing
-                </Button>
-                <Button variant="ghost" className="justify-start">
-                  About
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Sign In
-                </Button>
-                <Button className="w-full">Get Started</Button>
+                {user ? (
+                  <>
+                    {/* Navigation buttons */}
+                    <Button variant="ghost" className="w-full justify-start">
+                      Beranda
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start">
+                      Katalog
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start">
+                      Custom Cake
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start">
+                      Tentang Kami
+                    </Button>
+
+                    <div className="border-t pt-4">
+                      <UserAvatarDropdown />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={registerRedirect}
+                    >
+                      Daftar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={logInRedirect}
+                    >
+                      Masuk
+                    </Button>
+                  </>
+                )}
+
+                <div className="border-t pt-4">
+                  <ModeToggle />
+                </div>
               </div>
             </SheetContent>
           </Sheet>

@@ -1,3 +1,13 @@
-// We'll use local storage to set and reset token
+export class TokenStorage {
+  static getToken() {
+    return localStorage.getItem("auth-token")
+  }
 
-export class TokenStorage
+  static setToken(token: string) {
+    localStorage.setItem("auth-token", token)
+  }
+
+  static removeToken() {
+    localStorage.removeItem("auth-token")
+  }
+}
