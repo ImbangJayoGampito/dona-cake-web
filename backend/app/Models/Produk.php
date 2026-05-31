@@ -29,6 +29,7 @@ class Produk extends Model
         'harga',
         'stok',
         'kategori',
+        'deskripsi',
         'rating_rata_rata',
     ];
 
@@ -68,5 +69,20 @@ class Produk extends Model
     public function gambarTerbaru()
     {
         return $this->morphOne(Gambar::class, 'gambarable')->latestOfMany();
+    }
+
+    public function keranjangs(): HasMany
+    {
+        return $this->hasMany(Keranjang::class);
+    }
+
+    public function itemPesanans(): HasMany
+    {
+        return $this->hasMany(ItemPesanan::class);
+    }
+
+    public function historiAktivitas(): HasMany
+    {
+        return $this->hasMany(HistoriAktivitas::class, 'produk_terkait', 'id');
     }
 }

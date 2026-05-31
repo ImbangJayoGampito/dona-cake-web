@@ -3,63 +3,78 @@
 namespace App\Http\Controllers;
 
 use App\Models\HistoriAktivitas;
+use App\Models\Pelanggan;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class HistoriAktivitasController
+class HistoriAktivitasController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get user's activity history.
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $pelanggan = Pelanggan::where('user_id', $request->user()->id)->first();
+
+        if (!$pelanggan) {
+            return response()->json([
+                'status' => 'success',
+                'data' => [],
+            ]);
+        }
+
+        $aktivitas = HistoriAktivitas::where('pelanggan_id', $pelanggan->id)
+            ->orderBy('waktu_akses', 'desc')
+            ->paginate($request->get('per_page', 20));
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $aktivitas->items(),
+            'pagination' => [
+                'current_page' => $aktivitas->currentPage(),
+                'last_page' => $aktivitas->lastPage(),
+                'per_page' => $aktivitas->perPage(),
+                'total' => $aktivitas->total(),
+            ],
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Track user activity (can be called from frontend).
      */
-    public function create()
+    public function store(Request $request): JsonResponse
     {
-        //
-    }
+        $request->validate([
+            'jenis_aktivitas' => 'required|string|in:view,click,add_to_cart,purchase,like,wishlist,review',
+            'produk_terkait' => 'required|integer|exists:produks,id',
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $pelanggan = Pelanggan::where('user_id', $request->user()->id)->first();
+        if (!$pelanggan) {
+            return response()->json(['status' => 'error', 'message' => 'Profil tidak ditemukan.'], 400);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(HistoriAktivitas $historiAktivitas)
-    {
-        //
-    }
+        $bobot = [
+            'view' => 0.3,
+            'click' => 0.5,
+            'add_to_cart' => 0.8,
+            'purchase' => 1.0,
+            'like' => 0.7,
+            'wishlist' => 0.6,
+            'review' => 0.9,
+        ];
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(HistoriAktivitas $historiAktivitas)
-    {
-        //
-    }
+        HistoriAktivitas::create([
+            'pelanggan_id' => $pelanggan->id,
+            'jenis_aktivitas' => $request->jenis_aktivitas,
+            'produk_terkait' => $request->produk_terkait,
+            'bobot_interaksi' => $bobot[$request->jenis_aktivitas],
+            'waktu_akses' => now(),
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, HistoriAktivitas $historiAktivitas)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(HistoriAktivitas $historiAktivitas)
-    {
-        //
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Aktivitas tercatat.',
+        ], 201);
     }
 }
