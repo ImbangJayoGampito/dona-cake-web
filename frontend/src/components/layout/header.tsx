@@ -30,6 +30,9 @@ export function AppHeader() {
   function logInRedirect() {
     navigate(PublicRoutes.Login)
   }
+  function redirectTo(url: string) {
+    navigate(url)
+  }
 
   return (
     <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
@@ -45,7 +48,14 @@ export function AppHeader() {
               <>
                 {/* Centered navigation buttons */}
                 <div className="flex flex-1 justify-center gap-6">
-                  <Button variant="ghost">Beranda</Button>
+                  <Button
+                    onClick={() => {
+                      redirectTo("/")
+                    }}
+                    variant="ghost"
+                  >
+                    Beranda
+                  </Button>
                   <Button variant="ghost">Katalog</Button>
                   <Button variant="ghost">Custom Cake</Button>
                   <Button variant="ghost">Tentang Kami</Button>
@@ -80,7 +90,13 @@ export function AppHeader() {
                 {user ? (
                   <>
                     {/* Navigation buttons */}
-                    <Button variant="ghost" className="w-full justify-start">
+                    <Button
+                      onClick={() => {
+                        redirectTo("/")
+                      }}
+                      variant="ghost"
+                      className="w-full justify-start"
+                    >
                       Beranda
                     </Button>
                     <Button variant="ghost" className="w-full justify-start">

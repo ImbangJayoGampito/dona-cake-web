@@ -1,9 +1,13 @@
 import React from "react"
-
-export default function Layout({ children }: { children: React.ReactNode }) {
+import { Outlet } from "react-router-dom"
+import { AppHeader } from "@/components/layout/header"
+import AppFooter from "@/components/layout/footer"
+export default function AppLayout() {
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
-      {children}
+    <div>
+      <AppHeader />
+      <Outlet />
+      <AppFooter />
     </div>
   )
 }

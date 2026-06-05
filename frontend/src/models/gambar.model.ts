@@ -1,5 +1,5 @@
 // models/gambar.model.ts
-
+import placeHolderUrl from "@/assets/placeholder.png"
 export class Gambar {
   id: number
   gambar_url: string
@@ -13,7 +13,8 @@ export class Gambar {
 
   constructor(data: Partial<Gambar> = {}) {
     this.id = data.id ?? 0
-    this.gambar_url = data.gambar_url ?? ""
+    // Product is bad get the placeholder from /asset
+    this.gambar_url = data.gambar_url ?? placeHolderUrl
     this.gambar_alt = data.gambar_alt ?? null
     this.gambar_title = data.gambar_title ?? null
     this.path = data.path ?? ""

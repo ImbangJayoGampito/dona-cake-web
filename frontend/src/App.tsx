@@ -12,7 +12,13 @@ import { useAuthStore } from "./lib/state/logged-user"
 import { TokenStorage } from "./lib/local-storage/token"
 import { UserService } from "./services/user-service"
 import { PublicRoutes, ProtectedRoutes } from "./lib/routes"
+import ProductDetailPage from "./pages/produk/produk-card"
+import { RouteService } from "./services/route-service"
+
 import { toast } from "sonner"
+import Profile from "./pages/user/profile"
+import { AppHeader } from "./components/layout/header"
+import AppLayout from "./pages/layout"
 export function App() {
   const [isLoading, setIsLoading] = useState(true)
   const setUser = useAuthStore((state) => state.setUser)
@@ -23,16 +29,16 @@ export function App() {
       const tokenBefore = TokenStorage.getToken()
       console.log("Token BEFORE API call:", tokenBefore)
       if (tokenBefore) {
-        const response = await UserService.fromToken(tokenBefore)
+        const response = await UserService.fromToken()
         console.log("API response success?", response.isSuccess())
         if (!response.isSuccess()) {
-          console.warn("Removing token due to failed validation")
+          //console.warn("Removing token due to failed validation")
           TokenStorage.removeToken()
           logout()
         }
       }
       const tokenAfter = TokenStorage.getToken()
-      console.log("Token AFTER initAuth:", tokenAfter)
+      // console.log("Token AFTER initAuth:", tokenAfter)
       setIsLoading(false)
     }
     initAuth()
@@ -47,15 +53,27 @@ export function App() {
   }
   return (
     <Routes>
+      {/* CATEGORY: Public routes */}
       {/* Auth routes with layout */}
       <Route element={<AuthLayout />}>
         <Route path={PublicRoutes.Login} element={<Login />} />
         <Route path={PublicRoutes.Register} element={<Register />} />
       </Route>
 
-      {/* Public or other routes */}
-      <Route path={PublicRoutes.Home} element={<MainHome />} />
-
+      {/* Generanl routes idk man fuck React */}
+      <Route element={<AppLayout />}>
+        <Route path={PublicRoutes.Home} element={<MainHome />} />
+        <Route
+          path={RouteService.convertToReactRouterParam(
+            PublicRoutes.ProductDetail
+          )}
+          element={<ProductDetailPage />}
+        />
+      </Route>
+      {/* CATEGORY: Protected routes */}
+      <Route element={<AppHeader />}>
+        <Route path={ProtectedRoutes.Me} element={<Profile />} />
+      </Route>
       {/* Example using Button */}
       <Route
         path="/test-button"

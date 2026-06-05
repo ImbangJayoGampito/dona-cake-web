@@ -55,8 +55,7 @@ export default function Homepage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation with Sheet for mobile */}
-      <AppHeader />
+
       {/* Hero Section */}
       <section className="py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
@@ -177,115 +176,7 @@ export default function Homepage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-secondary py-12 text-secondary-foreground">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-            <div>
-              <h3 className="mb-4 font-semibold">Product</h3>
-              <div className="space-y-2 text-sm">
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Features
-                </Button>
-                <br />
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Pricing
-                </Button>
-                <br />
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Documentation
-                </Button>
-              </div>
-            </div>
-            <div>
-              <h3 className="mb-4 font-semibold">Company</h3>
-              <div className="space-y-2 text-sm">
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  About
-                </Button>
-                <br />
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Blog
-                </Button>
-                <br />
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Careers
-                </Button>
-              </div>
-            </div>
-            <div>
-              <h3 className="mb-4 font-semibold">Resources</h3>
-              <div className="space-y-2 text-sm">
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Community
-                </Button>
-                <br />
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Support
-                </Button>
-                <br />
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Status
-                </Button>
-              </div>
-            </div>
-            <div>
-              <h3 className="mb-4 font-semibold">Legal</h3>
-              <div className="space-y-2 text-sm">
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Privacy
-                </Button>
-                <br />
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Terms
-                </Button>
-                <br />
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-secondary-foreground hover:text-primary"
-                >
-                  Security
-                </Button>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2025 Your Company. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+
     </div>
   )
 }

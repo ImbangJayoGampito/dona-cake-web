@@ -19,7 +19,7 @@ export function BreadCrumb({ items = [], currentPage }: BreadCrumbProps) {
         {/* Dynamic items */}
         {items.map((item, index) => (
           <React.Fragment key={item.path}>
-            <ChevronRight className="h-4 w-4" />
+            {index > 0 ? <ChevronRight className="h-4 w-4" /> : <></>}
             <Link to={item.path} className="hover:text-foreground">
               {item.displayName}
             </Link>

@@ -12,15 +12,20 @@ class DatabaseSeeder extends Seeder
     {
         // Run role & permission seeder first
         $this->call(RoleSeeder::class);
+        $this->call(ProdukSeeder::class);
 
         // Seed fake users and assign role
-        User::factory(24)->create()->each(fn($user) => $user->assignRole(RoleEnum::User->value));
+        User::factory(24)
+            ->create()
+            ->each(fn($user) => $user->assignRole(RoleEnum::User->value));
 
         // Seed test user
-        User::factory()->create([
-            'username' => 'test',
-            'name'  => 'Test User',
-            'email' => 'test@example.com',
-        ])->assignRole(RoleEnum::User->value);
+        User::factory()
+            ->create([
+                "username" => "test",
+                "name" => "Test User",
+                "email" => "test@example.com",
+            ])
+            ->assignRole(RoleEnum::User->value);
     }
 }

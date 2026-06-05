@@ -9,4 +9,9 @@ export class RouteService {
     })
     return result
   }
+
+  // Convert {param} to :param for React Router
+  public static convertToReactRouterParam(route: string): string {
+    return route.replace(/\{([^}]+)\}/g, ":$1")
+  }
 }

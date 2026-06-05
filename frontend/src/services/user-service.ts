@@ -15,14 +15,11 @@ export class UserService {
     password: string
   ): Promise<ApiResponse<LoginData>> {
     try {
-      const request = await api.post(PublicRoutes.Login, {
+      const response = await api.post(PublicRoutes.Login, {
         username,
         password,
       })
-      const response = request.data
-      const apiResponse = ApiResponse.fromApiResponse<LoginData>(
-        response
-      ) as ApiResponse<LoginData>
+      const apiResponse = ApiResponse.fromApiSingle<LoginData>(response.data)
 
       if (apiResponse.isSuccess()) {
         const { user, token } = apiResponse.data as LoginData
@@ -57,17 +54,14 @@ export class UserService {
         )
       }
 
-      const request = await api.post(PublicRoutes.Register, {
+      const response = await api.post(PublicRoutes.Register, {
         name,
         email,
         password,
         username,
         password_confirmation,
       })
-      const response = request.data
-      const apiResponse = ApiResponse.fromApiResponse<LoginData>(
-        response
-      ) as ApiResponse<LoginData>
+      const apiResponse = ApiResponse.fromApiSingle<LoginData>(response.data)
 
       if (apiResponse.isSuccess()) {
         const { user, token } = apiResponse.data as LoginData
@@ -156,7 +150,7 @@ export class UserService {
   ): Promise<ApiResponse<void | void[]>> {
     try {
       const response = await api.post("/auth/forgot-password", { email })
-      return ApiResponse.fromApiResponse<void>(response.data)
+      return ApiResponse.fromApiSingle<void>(response)
     } catch (error: any) {
       console.error("Error forgot password", error)
       const message =
@@ -175,7 +169,7 @@ export class UserService {
         email,
         newPassword,
       })
-      return ApiResponse.fromApiResponse<void>(response.data)
+      return ApiResponse.fromApiSingle<void>(response.data)
     } catch (error: any) {
       console.error("Error resetting password", error)
       const message = error.response?.data?.message || "Gagal reset password"
@@ -218,7 +212,7 @@ export class UserService {
           "No token"
         )
       const response = await api.get(ProtectedRoutes.FromToken)
-      const apiResponse = ApiResponse.fromApiResponse<LoginData>(response.data)
+      const apiResponse = ApiResponse.fromApiSingle<LoginData>(response.data)
       if (apiResponse.isSuccess()) {
         const { user } = apiResponse.data as LoginData
         useAuthStore.getState().setUser(user)
