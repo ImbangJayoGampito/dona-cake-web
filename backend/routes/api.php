@@ -147,6 +147,7 @@ Route::middleware("auth:sanctum")->group(function () {
 
     // ---- Ulasan (Reviews) ----
     Route::prefix("ulasan")->group(function () {
+        
         Route::post("/", [UlasanController::class, "store"]);
         Route::put("/{ulasan}", [UlasanController::class, "update"]);
         Route::delete("/{ulasan}", [UlasanController::class, "destroy"]);

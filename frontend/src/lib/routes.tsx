@@ -9,8 +9,8 @@ export const PublicRoutes = {
   Register: "/auth/register",
   Products: "/produk",
   ProductCategories: "/produk/categories",
-  ProductDetail: "/produk/{produk}", // dynamic
-  Reviews: "/ulasan",
+  ProductDetail: "/produk/{id}", // dynamic
+  Ulasan: "/ulasan",
   Popular: "/popular",
   Home: "/",
 } as const
@@ -33,44 +33,44 @@ export const ProtectedRoutes = {
 
   // Cart
   Cart: "/keranjang",
-  CartItem: "/keranjang/{keranjang}",
+  CartItem: "/keranjang/{id}",
   ClearCart: "/keranjang",
 
   // Orders
   Orders: "/pesanan",
-  OrderDetail: "/pesanan/{pesanan}",
-  CancelOrder: "/pesanan/{pesanan}/cancel",
+  OrderDetail: "/pesanan/{id}",
+  CancelOrder: "/pesanan/{id}/cancel",
 
   // Bookings
   Bookings: "/booking",
-  BookingDetail: "/booking/{booking}",
-  CancelBooking: "/booking/{booking}/cancel",
+  BookingDetail: "/booking/{id}",
+  CancelBooking: "/booking/{id}/cancel",
 
   // Transactions
   Transactions: "/transaksi",
-  TransactionDetail: "/transaksi/{transaksi}",
-  PayOrder: "/pesanan/{pesanan}/pay",
-  PayBooking: "/booking/{booking}/pay",
+  TransactionDetail: "/transaksi/{id}",
+  PayOrder: "/pesanan/{id}/pay",
+  PayBooking: "/booking/{id}/pay",
 
   // Reviews (write/update)
-  CreateReview: "/ulasan",
-  UpdateReview: "/ulasan/{ulasan}",
-  DeleteReview: "/ulasan/{ulasan}",
+  CreateUlasan: "/ulasan",
+  UpdateUlasan: "/ulasan/{id}",
+  DeleteUlasan: "/ulasan/{id}",
 
   // Notifications
   Notifications: "/notifikasi",
-  MarkNotificationRead: "/notifikasi/{notifikasi}/read",
+  MarkNotificationRead: "/notifikasi/{id}/read",
   MarkAllRead: "/notifikasi/read-all",
   UnreadCount: "/notifikasi/unread-count",
 
   // Chatbot
   ChatConversations: "/chatbot/conversations",
   StartConversation: "/chatbot/conversations",
-  SendMessage: "/chatbot/conversations/{chatbotLog}/message",
-  ConversationDetail: "/chatbot/conversations/{chatbotLog}",
-  ResetConversation: "/chatbot/conversations/{chatbotLog}/reset",
-  ReportConversation: "/chatbot/conversations/{chatbotLog}/report",
-  EndConversation: "/chatbot/conversations/{chatbotLog}/end",
+  SendMessage: "/chatbot/conversations/{id}/message",
+  ConversationDetail: "/chatbot/conversations/{id}",
+  ResetConversation: "/chatbot/conversations/{id}/reset",
+  ReportConversation: "/chatbot/conversations/{id}/report",
+  EndConversation: "/chatbot/conversations/{id}/end",
 
   // Recommendations
   Recommendations: "/rekomendasi",
@@ -104,7 +104,7 @@ export const AdminRoutes = {
   UpdateUserRole: "/admin/users/{user}/role",
   DeleteUser: "/admin/users/{user}",
   AdminDashboard: "/admin/dashboard",
-  ToggleReviewVisibility: "/ulasan/{ulasan}/toggle-visibility",
+  ToggleReviewVisibility: "/ulasan/{id}/toggle-visibility",
   AdminChatConversations: "/chatbot/admin/conversations",
   AdminChatConversationDetail: "/chatbot/admin/conversations/{chatbotLog}",
 } as const
@@ -119,5 +119,5 @@ export const ProductManagementRoutes = {
 } as const
 
 // Staff/Admin specific endpoints not in objects above
-export const UpdateOrderStatus = "/pesanan/{pesanan}/status" as const
-export const VerifyBooking = "/booking/{booking}/verify" as const
+export const UpdateOrderStatus = "/pesanan/{id}/status" as const
+export const VerifyBooking = "/booking/{id}/verify" as const
