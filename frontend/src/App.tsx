@@ -19,6 +19,7 @@ import { toast } from "sonner"
 import Profile from "./pages/user/profile"
 import { AppHeader } from "./components/layout/header"
 import AppLayout from "./pages/layout"
+import BookingLayout from "./pages/booking/layout"
 export function App() {
   const [isLoading, setIsLoading] = useState(true)
   const setUser = useAuthStore((state) => state.setUser)
@@ -63,6 +64,7 @@ export function App() {
       {/* Generanl routes idk man fuck React */}
       <Route element={<AppLayout />}>
         <Route path={PublicRoutes.Home} element={<MainHome />} />
+        <Route path={PublicRoutes.CreateBooking} element={<BookingLayout />} />
         <Route
           path={RouteService.convertToReactRouterParam(
             PublicRoutes.ProductDetail

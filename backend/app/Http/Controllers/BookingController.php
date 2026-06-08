@@ -83,6 +83,9 @@ class BookingController extends Controller
                 "desain_custom_url" => $request->desain_custom_url,
                 "catatan" => $request->catatan,
                 "status_verifikasi" => BookingStatus::MENUNGGU_VERIFIKASI,
+                "rasa_kue" => $request->rasa_kue,
+                "jenis_frosting" => $request->jenis_frosting,
+                "harga_final" => $request->harga_final,
             ]);
 
             DB::commit();

@@ -32,18 +32,7 @@ export class ProductService {
     }
   }
 
-  static async getProductById(id: number): Promise<ApiResponse<Produk>> {
-    try {
-      const url = RouteService.replaceParams(PublicRoutes.ProductDetail, {
-        id: id.toString(),
-      })
-      const response = await api.get(url)
-      return ApiResponse.fromApiSingle(response.data)
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error)
-      return new ApiResponse<Produk>(undefined, "error", undefined, message)
-    }
-  }
+
   static async getProductById(id: number): Promise<ApiResponse<Produk>> {
     try {
       const url = RouteService.replaceParams(PublicRoutes.ProductDetail, {

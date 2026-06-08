@@ -1,11 +1,11 @@
-export interface Booking {
+export interface BookingForm {
   id: number
   pelanggan_id: number
-  transaksi_id?: number | null
   kategori_id?: number | null
   ukuran: string
   jenis_frosting: string
-  rasa_kue: string
+  rasa_kue: string[]
+  packaging: string
   tema_dekorasi?: string | null
   desain_custom_url?: string | null
   deskripsi_custom?: string | null
@@ -14,4 +14,11 @@ export interface Booking {
   catatan?: string | null
   created_at?: string
   updated_at?: string
+}
+
+export interface BookingPriceAdditional {
+  id: string
+  name: string
+  description?: string
+  priceFunction: (price: number) => number
 }

@@ -23,20 +23,43 @@ import {
   Building2,
   Wallet,
   CheckCircle2,
+  Book,
 } from "lucide-react"
-
+import { useEffect } from "react"
+import OrderSummary from "@/components/booking/order-summary"
+import Kategori from "@/models/kategori.model"
+import { KategoriService } from "@/services/kategori-service"
 interface Step1Interface {
-  order: number
-  nextOrder: (order: number) => void
+  order: BookingForm
+  setOrder: React.Dispatch<React.SetStateAction<BookingForm>>
+  steps: number
+  nextStep: (order: number) => void
 }
 
 import BookingConfig from "@/config/booking"
+import type { BookingForm } from "@/types/booking.types"
 
 export default function Step1Configure(props: Step1Interface) {
-  const [size, setSize] = useState("20cm")
-  const [flavors, setFlavors] = useState(["Vanila"])
-  const [frosting, setFrosting] = useState("Buttercream")
-  const [theme, setTheme] = useState("floral")
+  const [size, setSize] = useState(BookingConfig.SIZES[0].id)
+  const [flavors, setFlavors] = useState([BookingConfig.FLAVORS[0].id])
+  const [frosting, setFrosting] = useState(BookingConfig.FROSTINGS[0].id)
+  const [selectedKategori, setSelectedKategori] = useState<Kategori | null>(
+    null
+  )
+  const { order, setOrder, steps, nextStep } = props
+  const [kategori, setKategori] = useState<Kategori[]>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchKategori = async () => {
+      setLoading(true)
+      const result = await KategoriService.getAllKategori()
+      setKategori(result.data ?? [])
+      setLoading(false)
+      setSelectedKategori(result.data?.[0] ?? null)
+    }
+    fetchKategori()
+  }, [])
 
   const toggleFlavor = (f: string) => {
     setFlavors((prev) =>
@@ -46,18 +69,37 @@ export default function Step1Configure(props: Step1Interface) {
           ? [...prev, f]
           : prev
     )
+    setOrderTemp()
   }
-
+  const changeSize = (s: string) => {
+    setSize(s)
+    setOrderTemp()
+  }
+  const changeFrosting = (f: string) => {
+    setFrosting(f)
+    setOrderTemp()
+  }
+  const setOrderTemp = () => {
+    const initialState: BookingForm = {
+      pelanggan_id: order.pelanggan_id,
+      id: order.id,
+      tgl_ambil: order.tgl_ambil,
+      ukuran: size,
+      rasa_kue: flavors,
+      jenis_frosting: frosting,
+      kategori_id: selectedKategori?.id ?? null,
+      tema_dekorasi: order.tema_dekorasi,
+      desain_custom_url: order.desain_custom_url,
+      deskripsi_custom: order.deskripsi_custom,
+      harga_final: order.harga_final,
+      catatan: order.catatan,
+      packaging: order.packaging,
+    }
+    setOrder(initialState)
+  }
   const onNext = () => {
-    props.nextOrder(props.order + 1)
-  }
-
-  const orderData = {
-    step: 1,
-    size,
-    flavors,
-    frosting,
-    theme,
+    setOrderTemp()
+    nextStep(steps + 1)
   }
 
   return (
@@ -82,18 +124,15 @@ export default function Step1Configure(props: Step1Interface) {
             <div className="flex flex-wrap gap-2">
               {BookingConfig.SIZES.map((s) => (
                 <button
-                  key={s}
-                  onClick={() => setSize(s)}
+                  key={s.id}
+                  onClick={() => changeSize(s.id)}
                   className={`rounded-full border px-4 py-2 text-sm transition-all ${
-                    size === s
+                    size === s.id
                       ? "border-primary bg-primary/10 font-medium text-primary"
                       : "border-border text-foreground hover:border-muted-foreground"
                   }`}
                 >
-                  {s === "20cm" && (
-                    <span className="mr-1 inline-block h-3 w-3 rounded-full border border-current align-middle" />
-                  )}
-                  {s}
+                  {s.name}
                 </button>
               ))}
             </div>
@@ -112,15 +151,15 @@ export default function Step1Configure(props: Step1Interface) {
             <div className="flex flex-wrap gap-2">
               {BookingConfig.FLAVORS.map((f) => (
                 <button
-                  key={f}
-                  onClick={() => toggleFlavor(f)}
+                  key={f.id}
+                  onClick={() => toggleFlavor(f.id)}
                   className={`rounded-full border px-4 py-1.5 text-sm transition-all ${
-                    flavors.includes(f)
+                    flavors.includes(f.id)
                       ? "border-primary bg-primary font-medium text-primary-foreground"
                       : "border-border text-foreground hover:border-muted-foreground"
                   }`}
                 >
-                  {f}
+                  {f.name}
                 </button>
               ))}
             </div>
@@ -134,15 +173,15 @@ export default function Step1Configure(props: Step1Interface) {
             <div className="flex flex-wrap gap-2">
               {BookingConfig.FROSTINGS.map((f) => (
                 <button
-                  key={f}
-                  onClick={() => setFrosting(f)}
+                  key={f.id}
+                  onClick={() => changeFrosting(f.id)}
                   className={`rounded-full border px-4 py-1.5 text-sm transition-all ${
-                    frosting === f
+                    frosting === f.id
                       ? "border-primary bg-primary/10 font-medium text-primary"
                       : "border-border text-foreground hover:border-muted-foreground"
                   }`}
                 >
-                  {f}
+                  {f.name}
                 </button>
               ))}
             </div>
@@ -154,18 +193,18 @@ export default function Step1Configure(props: Step1Interface) {
               Tema Dekorasi
             </Label>
             <div className="grid grid-cols-4 gap-3">
-              {BookingConfig.THEMES.map((t) => (
+              {kategori.map((t) => (
                 <button
                   key={t.id}
-                  onClick={() => setTheme(t.id)}
+                  onClick={() => setSelectedKategori(t)}
                   className={`relative overflow-hidden rounded-xl border-2 transition-all ${
-                    theme === t.id ? "border-primary" : "border-transparent"
+                    selectedKategori?.id === t.id
+                      ? "border-primary"
+                      : "border-transparent"
                   }`}
                 >
-                  <div
-                    className={`flex h-20 w-full items-end pb-2 pl-2 ${t.color}`}
-                  >
-                    {theme === t.id && (
+                  <div className={`flex h-20 w-full items-end pb-2 pl-2`}>
+                    {selectedKategori?.id === t.id && (
                       <div className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
                         <CheckCircle2
                           size={12}
@@ -174,7 +213,7 @@ export default function Step1Configure(props: Step1Interface) {
                       </div>
                     )}
                     <span className="text-[10px] font-medium text-white drop-shadow">
-                      {t.label}
+                      {t.nama_kategori}
                     </span>
                   </div>
                 </button>
@@ -204,7 +243,7 @@ export default function Step1Configure(props: Step1Interface) {
           </CardContent>
         </Card>
 
-        <OrderSummary order={orderData} />
+        <OrderSummary order={order} step={steps} />
       </div>
 
       {/* Nav */}
@@ -223,4 +262,3 @@ export default function Step1Configure(props: Step1Interface) {
     </div>
   )
 }
-

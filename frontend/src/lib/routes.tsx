@@ -13,6 +13,8 @@ export const PublicRoutes = {
   Ulasan: "/ulasan",
   Popular: "/popular",
   Home: "/",
+  Kategori: "/kategori",
+  CreateBooking: "/booking/create",
 } as const
 
 // =============================================================================

@@ -1,17 +1,66 @@
-export default function Step4Confirm({ order, onBack, onNext }) {
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  ChevronLeft,
+  Edit,
+  Info,
+  CreditCard,
+  Building2,
+  Wallet,
+  ArrowRight,
+} from "lucide-react"
+import OrderSummary from "@/components/booking/order-summary"
+import type { BookingForm } from "@/types/booking.types"
+import { getTimeFromDatetime, getDateFromDatetime } from "@/lib/time_management"
+
+interface Step4Interface {
+  order: BookingForm
+  setOrder: React.Dispatch<React.SetStateAction<BookingForm>>
+  steps: number
+  onBack: () => void
+  onNext: () => void
+}
+
+export default function Step4Confirm({
+  order,
+  setOrder,
+  steps,
+  onBack,
+  onNext,
+}: Step4Interface) {
   const [payMode, setPayMode] = useState("dp")
   const [payMethod, setPayMethod] = useState("kartu")
   const [agreed, setAgreed] = useState(false)
+  const [cardNumber, setCardNumber] = useState("")
+  const [expiryDate, setExpiryDate] = useState("")
+  const [cvc, setCvc] = useState("")
+
+  // Calculate DP amount (50% of total)
+  const totalAmount = order.harga_final || 350000
+  const dpAmount = totalAmount / 2
+  const paymentAmount = payMode === "dp" ? dpAmount : totalAmount
+
+  const handleNext = () => {
+    setOrder({
+      ...order,
+    })
+    onNext()
+  }
 
   return (
     <div className="grid items-start gap-6 md:grid-cols-[1fr_280px]">
-      <Card className="border-stone-200 shadow-sm">
+      <Card className="border-border shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <div>
-            <h1 className="mb-1 text-2xl font-semibold text-stone-900">
+            <h1 className="mb-1 text-2xl font-semibold text-foreground">
               Konfirmasi & Bayar
             </h1>
-            <p className="text-sm text-stone-500">
+            <p className="text-sm text-muted-foreground">
               Silahkan periksa kembali detail pesanan Anda sebelum melakukan
               pembayaran
             </p>
@@ -20,57 +69,59 @@ export default function Step4Confirm({ order, onBack, onNext }) {
           {/* Booking Summary */}
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-semibold text-stone-800">
+              <h3 className="font-semibold text-foreground">
                 Ringkasan Booking
               </h3>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-auto px-0 py-0 text-xs text-amber-700"
+                className="h-auto px-0 py-0 text-xs text-primary hover:text-primary/80"
               >
                 <Edit size={12} className="mr-1" /> Edit Detail
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-3 rounded-xl bg-stone-50 p-4 text-sm">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3 rounded-xl bg-muted/50 p-4 text-sm">
               <div>
-                <p className="text-[10px] font-semibold tracking-widest text-stone-400">
+                <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">
                   NAMA PEMESAN
                 </p>
-                <p className="mt-0.5 font-medium text-stone-800">
+                <p className="mt-0.5 font-medium text-foreground">
                   Amanda Wijaya
                 </p>
               </div>
               <div>
-                <p className="text-[10px] font-semibold tracking-widest text-stone-400">
+                <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">
                   TANGGAL PENGAMBILAN
                 </p>
-                <p className="mt-0.5 font-medium text-stone-800">
-                  24 Desember 2024, 14:00
+                <p className="mt-0.5 font-medium text-foreground">
+                  {order.tgl_ambil
+                    ? getDateFromDatetime(order.tgl_ambil)?.toLocaleDateString()
+                    : "Belum dipilih"}
                 </p>
               </div>
               <div>
-                <p className="text-[10px] font-semibold tracking-widest text-stone-400">
+                <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">
                   KONFIGURASI KUE
                 </p>
-                <p className="mt-0.5 font-medium text-stone-800">
-                  Double Tiered, Earl Grey Blossom
+                <p className="mt-0.5 font-medium text-foreground">
+                  {order.ukuran}, {order.rasa_kue}
                 </p>
               </div>
               <div>
-                <p className="text-[10px] font-semibold tracking-widest text-stone-400">
-                  JAM PENGAMBILAN
+                <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">
+                  WAKTU PENGAMBILAN
                 </p>
-                <p className="mt-0.5 font-medium text-stone-800">
-                  08.00 - 10.00
+                <p className="mt-0.5 font-medium text-foreground">
+                  {getTimeFromDatetime(order.tgl_ambil) || "Belum dipilih"}
                 </p>
               </div>
             </div>
           </div>
 
           {/* DP Policy */}
-          <Alert className="border-amber-200 bg-amber-50">
-            <Info size={14} className="mt-0.5 text-amber-700" />
-            <AlertDescription className="text-xs text-amber-800">
+          <Alert className="border-primary/20 bg-primary/5">
+            <Info size={14} className="mt-0.5 text-primary" />
+            <AlertDescription className="text-xs text-foreground">
               <span className="font-semibold">Kebijakan Down Payment (DP)</span>
               <br />
               Pembayaran uang muka sebesar 50% untuk mengamankan slot pesanan
@@ -80,21 +131,27 @@ export default function Step4Confirm({ order, onBack, onNext }) {
 
           {/* Payment Mode */}
           <div>
-            <Label className="mb-3 block text-sm font-semibold text-stone-800">
+            <Label className="mb-3 block text-sm font-semibold text-foreground">
               Metode Pembayaran
             </Label>
             <div className="mb-4 grid grid-cols-2 gap-2">
               {[
-                { id: "dp", label: "DP (50%)" },
-                { id: "lunas", label: "Lunas" },
+                {
+                  id: "dp",
+                  label: `DP (50%) - Rp ${dpAmount.toLocaleString()}`,
+                },
+                {
+                  id: "lunas",
+                  label: `Lunas - Rp ${totalAmount.toLocaleString()}`,
+                },
               ].map((m) => (
                 <button
                   key={m.id}
                   onClick={() => setPayMode(m.id)}
                   className={`rounded-lg border py-2.5 text-sm font-medium transition-all ${
                     payMode === m.id
-                      ? "border-stone-900 bg-stone-900 text-white"
-                      : "border-stone-200 bg-white text-stone-700 hover:border-stone-400"
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background text-foreground hover:border-muted-foreground hover:bg-muted/50"
                   }`}
                 >
                   {m.label}
@@ -121,8 +178,8 @@ export default function Step4Confirm({ order, onBack, onNext }) {
                   onClick={() => setPayMethod(m.id)}
                   className={`flex items-center justify-center gap-1.5 rounded-lg border py-2.5 text-sm font-medium transition-all ${
                     payMethod === m.id
-                      ? "border-stone-900 bg-stone-900 text-white"
-                      : "border-stone-200 bg-white text-stone-700 hover:border-stone-400"
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background text-foreground hover:border-muted-foreground hover:bg-muted/50"
                   }`}
                 >
                   {m.icon} {m.label}
@@ -133,32 +190,46 @@ export default function Step4Confirm({ order, onBack, onNext }) {
             {payMethod === "kartu" && (
               <div className="space-y-3">
                 <div>
-                  <Label className="mb-1 block text-xs text-stone-500">
+                  <Label className="mb-1 block text-xs text-muted-foreground">
                     Nomor Kartu
                   </Label>
                   <div className="relative">
                     <Input
                       placeholder="XXXX XXXX XXXX XXXX"
-                      className="border-stone-200 pr-10"
+                      className="border-border pr-10 text-foreground"
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(e.target.value)}
                     />
                     <CreditCard
                       size={16}
-                      className="absolute top-1/2 right-3 -translate-y-1/2 text-stone-400"
+                      className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="mb-1 block text-xs text-stone-500">
+                    <Label className="mb-1 block text-xs text-muted-foreground">
                       Masa Berlaku
                     </Label>
-                    <Input placeholder="MM/YY" className="border-stone-200" />
+                    <Input
+                      placeholder="MM/YY"
+                      className="border-border text-foreground"
+                      value={expiryDate}
+                      onChange={(e) => setExpiryDate(e.target.value)}
+                    />
                   </div>
                   <div>
-                    <Label className="mb-1 block text-xs text-stone-500">
+                    <Label className="mb-1 block text-xs text-muted-foreground">
                       CVC
                     </Label>
-                    <Input placeholder="123" className="border-stone-200" />
+                    <Input
+                      placeholder="123"
+                      className="border-border text-foreground"
+                      value={cvc}
+                      onChange={(e) => setCvc(e.target.value)}
+                      type="password"
+                      maxLength={4}
+                    />
                   </div>
                 </div>
               </div>
@@ -169,15 +240,15 @@ export default function Step4Confirm({ order, onBack, onNext }) {
             <Checkbox
               id="terms"
               checked={agreed}
-              onCheckedChange={setAgreed}
-              className="mt-0.5 border-stone-300"
+              onCheckedChange={(checked) => setAgreed(checked as boolean)}
+              className="mt-0.5 border-border"
             />
             <Label
               htmlFor="terms"
-              className="cursor-pointer text-xs leading-relaxed text-stone-600"
+              className="cursor-pointer text-xs leading-relaxed text-muted-foreground"
             >
               Saya menyetujui{" "}
-              <span className="text-amber-700 underline">
+              <span className="text-primary underline hover:text-primary/80">
                 Syarat & Ketentuan
               </span>{" "}
               serta kebijakan pembatalan Dona Cake.
@@ -186,15 +257,16 @@ export default function Step4Confirm({ order, onBack, onNext }) {
         </CardContent>
       </Card>
 
-      <OrderSummary order={{ ...order, step: 4 }} showDate />
+      <OrderSummary order={{ ...order }} step={steps} />
 
       <div className="md:col-span-2">
         <Button
-          onClick={onNext}
+          onClick={handleNext}
           disabled={!agreed}
-          className="w-full bg-amber-800 py-3 text-base font-semibold text-white hover:bg-amber-900 disabled:bg-stone-300"
+          className="w-full bg-primary py-3 text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Konfirmasi & Bayar DP Rp 205.000{" "}
+          Konfirmasi & Bayar {payMode === "dp" ? "DP" : "Lunas"} Rp{" "}
+          {paymentAmount.toLocaleString()}
           <ArrowRight size={18} className="ml-2" />
         </Button>
         <div className="mt-4 flex justify-start">
@@ -202,7 +274,7 @@ export default function Step4Confirm({ order, onBack, onNext }) {
             variant="ghost"
             size="sm"
             onClick={onBack}
-            className="text-stone-600"
+            className="text-foreground hover:bg-muted"
           >
             <ChevronLeft size={16} className="mr-1" /> Kembali
           </Button>

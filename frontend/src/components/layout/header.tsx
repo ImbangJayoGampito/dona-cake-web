@@ -57,7 +57,14 @@ export function AppHeader() {
                     Beranda
                   </Button>
                   <Button variant="ghost">Katalog</Button>
-                  <Button variant="ghost">Custom Cake</Button>
+                  <Button
+                    onClick={() => {
+                      redirectTo(PublicRoutes.CreateBooking)
+                    }}
+                    variant="ghost"
+                  >
+                    Custom Cake
+                  </Button>
                   <Button variant="ghost">Tentang Kami</Button>
                 </div>
                 {/* Avatar on the far right */}
@@ -102,7 +109,13 @@ export function AppHeader() {
                     <Button variant="ghost" className="w-full justify-start">
                       Katalog
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        redirectTo(PublicRoutes.CreateBooking)
+                      }}
+                    >
                       Custom Cake
                     </Button>
                     <Button variant="ghost" className="w-full justify-start">
