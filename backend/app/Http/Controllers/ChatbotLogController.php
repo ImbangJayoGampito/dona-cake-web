@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChatbotLog;
-use App\Models\Pelanggan;
+use App\Services\VirtualAssistantService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ChatbotLogController extends Controller
 {
+    private VirtualAssistantService $virtualAssistantService;
+
+    public function __construct(VirtualAssistantService $virtualAssistantService)
+    {
+        $this->virtualAssistantService = $virtualAssistantService;
+    }
+
     /**
      * Get user's conversation list.
      */
@@ -37,7 +44,7 @@ class ChatbotLogController extends Controller
     {
         $conversation = ChatbotLog::create([
             'user_id' => $request->user()->id,
-            'histori_percakapan' => json_encode([]),
+            'histori_percakapan' => [],
             'status_flag' => 'aktif',
         ]);
 
@@ -68,19 +75,19 @@ class ChatbotLogController extends Controller
         ]);
 
         // Get conversation history
-        $history = json_decode($chatbotLog->histori_percakapan, true) ?? [];
-        
-        // Add user message
-        $history[] = [
+        $history = $chatbotLog->histori_percakapan ?? [];
+
+        // Add user message to history after generating the reply
+        $userMessage = [
             'role' => 'user',
             'content' => $request->prompt,
             'timestamp' => now()->toIso8601String(),
         ];
 
-        // Simulate response (this would be connected to the actual LLM/RAG system)
-        $response = $this->generateResponse($request->prompt, $history);
+        // Generate response via virtual assistant service with RAG and local Ollama
+        $response = $this->virtualAssistantService->answer($request->prompt, $history);
 
-        // Add assistant response
+        $history[] = $userMessage;
         $history[] = [
             'role' => 'assistant',
             'content' => $response,
@@ -89,7 +96,7 @@ class ChatbotLogController extends Controller
 
         // Update conversation
         $chatbotLog->update([
-            'histori_percakapan' => json_encode($history),
+            'histori_percakapan' => $history,
         ]);
 
         return response()->json([
@@ -117,7 +124,7 @@ class ChatbotLogController extends Controller
             'status' => 'success',
             'data' => [
                 'id' => $chatbotLog->id,
-                'history' => json_decode($chatbotLog->histori_percakapan, true) ?? [],
+                'history' => $chatbotLog->histori_percakapan ?? [],
                 'status' => $chatbotLog->status_flag,
                 'created_at' => $chatbotLog->created_at,
                 'updated_at' => $chatbotLog->updated_at,
@@ -135,7 +142,7 @@ class ChatbotLogController extends Controller
         }
 
         $chatbotLog->update([
-            'histori_percakapan' => json_encode([]),
+            'histori_percakapan' => [],
         ]);
 
         return response()->json([
@@ -231,7 +238,7 @@ class ChatbotLogController extends Controller
             'data' => [
                 'id' => $chatbotLog->id,
                 'user' => $chatbotLog->user,
-                'history' => json_decode($chatbotLog->histori_percakapan, true) ?? [],
+                'history' => $chatbotLog->histori_percakapan ?? [],
                 'status' => $chatbotLog->status_flag,
                 'created_at' => $chatbotLog->created_at,
                 'updated_at' => $chatbotLog->updated_at,
@@ -239,30 +246,4 @@ class ChatbotLogController extends Controller
         ]);
     }
 
-    /**
-     * Generate a simulated response (placeholder for actual LLM integration).
-     */
-    private function generateResponse(string $prompt, array $history): string
-    {
-        // This is a placeholder. In production, this would call the actual LLM/RAG system.
-        $lowerPrompt = strtolower($prompt);
-
-        if (str_contains($lowerPrompt, 'menu') || str_contains($lowerPrompt, 'produk') || str_contains($lowerPrompt, 'kue')) {
-            return 'Kami memiliki berbagai macam kue lezat! Beberapa produk unggulan kami: Blackforest Cake (Rp 150.000), Choco Crunchy Bento Cake (Rp 45.000), dan Red Velvet Cake (Rp 180.000). Anda bisa melihat katalog lengkap di halaman produk. Ada yang spesifik ingin Anda tanyakan?';
-        }
-
-        if (str_contains($lowerPrompt, 'jam') || str_contains($lowerPrompt, 'buka') || str_contains($lowerPrompt, 'operasional')) {
-            return 'Toko Dona Cake buka setiap hari Senin - Sabtu pukul 08.00 - 18.00 WIB. Hari Minggu kami buka pukul 09.00 - 15.00 WIB. Ada yang bisa kami bantu lagi?';
-        }
-
-        if (str_contains($lowerPrompt, 'harga') || str_contains($lowerPrompt, 'mahal') || str_contains($lowerPrompt, 'murah')) {
-            return 'Kisaran harga produk kami bervariasi mulai dari Rp 25.000 hingga Rp 500.000 tergantung ukuran dan jenis kue. Untuk informasi harga lebih detail, silakan cek halaman produk atau beri tahu saya kue apa yang Anda minati!';
-        }
-
-        if (str_contains($lowerPrompt, 'pesan') || str_contains($lowerPrompt, 'order') || str_contains($lowerPrompt, 'beli')) {
-            return 'Untuk melakukan pemesanan, Anda bisa langsung menambahkan produk ke keranjang dan melakukan checkout. Untuk kue custom, silakan gunakan fitur Booking. Proses pembayaran bisa dilakukan melalui transfer bank. Ada yang ingin ditanyakan lebih lanjut?';
-        }
-
-        return 'Terima kasih atas pertanyaannya! Saya akan dengan senang hati membantu Anda. Apakah Anda ingin tahu tentang produk kami, cara pemesanan, atau informasi lainnya seputar Dona Cake?';
-    }
 }

@@ -1,0 +1,62 @@
+
+Nama: Kue Coklat Vanilla
+Harga: Rp. 47.000
+
+---
+
+Nama: Kue Bolu Keju
+Harga: Rp. 47.000
+
+---
+
+Nama: Kue Bolu Pandan
+Harga: Rp. 47.000
+
+---
+
+Nama: Kue Bolu Vanilla
+Harga: Rp. 47.000
+
+---
+
+Nama: Kue Bolu Tapai
+Harga: Rp. 47.000
+
+---
+
+Nama: Kue Coklat Pandan
+Harga: Rp. 47.000
+
+---
+
+Nama: Kue Bolu Pisang
+Harga: Rp. 47.000
+
+---
+
+Nama: Kue Bolu Coklat
+Harga: Rp. 47.000
+
+---
+
+Nama: Kue Bolu Caramel
+Harga: Rp. 47.000
+
+---
+
+Nama: Kue Bolu Blueberry
+Harga: Rp. 50.000
+Keterangan: Best Seller
+
+---
+
+Nama: Kue Bolu Brownies
+Harga: Rp. 55.000
+Keterangan: Best Seller
+
+---
+
+Nama: Kue Banana Bread
+Harga: Rp. 55.000
+
+---

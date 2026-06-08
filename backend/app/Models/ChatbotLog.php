@@ -23,7 +23,9 @@ class ChatbotLog extends Model
 
     protected $casts = [
         'user_id' => 'integer',
+        'histori_percakapan' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 }
+
