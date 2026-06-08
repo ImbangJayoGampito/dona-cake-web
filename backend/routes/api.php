@@ -17,7 +17,7 @@ use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\HistoriAktivitasController;
 use App\Services\RecommendationService;
 use Illuminate\Http\Request;
-
+use App\Http\Controllers\KategoriController;
 /*
 |--------------------------------------------------------------------------
 | API Routes - Dona Cake Backend
@@ -47,6 +47,9 @@ Route::prefix("produk")->group(function () {
     Route::get("/", [ProdukController::class, "index"]);
     Route::get("/categories", [ProdukController::class, "categories"]);
     Route::get("/{produk}", [ProdukController::class, "show"]);
+});
+Route::prefix("kategori")->group(function () {
+    Route::get("/", [KategoriController::class, "apiIndex"]);
 });
 
 // Public reviews
@@ -147,7 +150,6 @@ Route::middleware("auth:sanctum")->group(function () {
 
     // ---- Ulasan (Reviews) ----
     Route::prefix("ulasan")->group(function () {
-        
         Route::post("/", [UlasanController::class, "store"]);
         Route::put("/{ulasan}", [UlasanController::class, "update"]);
         Route::delete("/{ulasan}", [UlasanController::class, "destroy"]);

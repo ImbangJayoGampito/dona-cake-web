@@ -14,46 +14,52 @@ class ProdukController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Produk::with(['gambarUtama', 'ulasans']);
+        $query = Produk::with(["gambarUtama", "ulasans", "kategori"]);
 
         // Search by name
-        if ($request->has('search')) {
-            $query->where('nama_produk', 'like', '%' . $request->search . '%');
+        if ($request->has("search")) {
+            $query->where("nama_produk", "like", "%" . $request->search . "%");
         }
 
         // Filter by category
-        if ($request->has('kategori')) {
-            $query->where('kategori', $request->kategori);
+        if ($request->has("kategori")) {
+            $query->where("kategori", $request->kategori);
         }
 
         // Filter by price range
-        if ($request->has('harga_min')) {
-            $query->where('harga', '>=', $request->harga_min);
+        if ($request->has("harga_min")) {
+            $query->where("harga", ">=", $request->harga_min);
         }
-        if ($request->has('harga_max')) {
-            $query->where('harga', '<=', $request->harga_max);
+        if ($request->has("harga_max")) {
+            $query->where("harga", "<=", $request->harga_max);
         }
 
         // Sort
-        $sortField = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
-        $allowedSorts = ['nama_produk', 'harga', 'created_at', 'rating_rata_rata', 'stok'];
-        
+        $sortField = $request->get("sort_by", "created_at");
+        $sortOrder = $request->get("sort_order", "desc");
+        $allowedSorts = [
+            "nama_produk",
+            "harga",
+            "created_at",
+            "rating_rata_rata",
+            "stok",
+        ];
+
         if (in_array($sortField, $allowedSorts)) {
-            $query->orderBy($sortField, $sortOrder === 'asc' ? 'asc' : 'desc');
+            $query->orderBy($sortField, $sortOrder === "asc" ? "asc" : "desc");
         }
 
-        $perPage = $request->get('per_page', 20);
+        $perPage = $request->get("per_page", 20);
         $produks = $query->paginate($perPage);
 
         return response()->json([
-            'status' => 'success',
-            'data' => $produks->items(),
-            'pagination' => [
-                'current_page' => $produks->currentPage(),
-                'last_page' => $produks->lastPage(),
-                'per_page' => $produks->perPage(),
-                'total' => $produks->total(),
+            "status" => "success",
+            "data" => $produks->items(),
+            "pagination" => [
+                "current_page" => $produks->currentPage(),
+                "last_page" => $produks->lastPage(),
+                "per_page" => $produks->perPage(),
+                "total" => $produks->total(),
             ],
         ]);
     }
@@ -65,11 +71,14 @@ class ProdukController extends Controller
     {
         $produk = Produk::create($request->validated());
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Produk berhasil ditambahkan.',
-            'data' => $produk->load('gambarUtama'),
-        ], 201);
+        return response()->json(
+            [
+                "status" => "success",
+                "message" => "Produk berhasil ditambahkan.",
+                "data" => $produk->load("gambarUtama"),
+            ],
+            201,
+        );
     }
 
     /**
@@ -77,11 +86,16 @@ class ProdukController extends Controller
      */
     public function show(Produk $produk): JsonResponse
     {
-        $produk->load(['gambars', 'ulasans.pelanggan.user', 'gambarUtama']);
+        $produk->load([
+            "gambars",
+            "ulasans.pelanggan.user",
+            "gambarUtama",
+            "kategori",
+        ]);
 
         return response()->json([
-            'status' => 'success',
-            'data' => $produk,
+            "status" => "success",
+            "data" => $produk,
         ]);
     }
 
@@ -93,9 +107,9 @@ class ProdukController extends Controller
         $produk->update($request->validated());
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Produk berhasil diperbarui.',
-            'data' => $produk->fresh()->load('gambarUtama'),
+            "status" => "success",
+            "message" => "Produk berhasil diperbarui.",
+            "data" => $produk->fresh()->load("gambarUtama"),
         ]);
     }
 
@@ -107,8 +121,8 @@ class ProdukController extends Controller
         $produk->delete();
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Produk berhasil dihapus.',
+            "status" => "success",
+            "message" => "Produk berhasil dihapus.",
         ]);
     }
 
@@ -117,14 +131,14 @@ class ProdukController extends Controller
      */
     public function categories(): JsonResponse
     {
-        $categories = Produk::select('kategori')
-            ->whereNotNull('kategori')
+        $categories = Produk::select("kategori")
+            ->whereNotNull("kategori")
             ->distinct()
-            ->pluck('kategori');
+            ->pluck("kategori");
 
         return response()->json([
-            'status' => 'success',
-            'data' => $categories,
+            "status" => "success",
+            "data" => $categories,
         ]);
     }
 }

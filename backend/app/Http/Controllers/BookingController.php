@@ -9,6 +9,7 @@ use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Enums\BookingStatus;
 
 class BookingController extends Controller
 {
@@ -25,31 +26,31 @@ class BookingController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = Booking::with(['pelanggan.user', 'transaksi']);
+        $query = Booking::with(["pelanggan.user", "transaksi"]);
 
-        if ($user->hasRole('user')) {
-            $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        if ($user->hasRole("user")) {
+            $pelanggan = Pelanggan::where("user_id", $user->id)->first();
             if (!$pelanggan) {
-                return response()->json(['status' => 'success', 'data' => []]);
+                return response()->json(["status" => "success", "data" => []]);
             }
-            $query->where('pelanggan_id', $pelanggan->id);
+            $query->where("pelanggan_id", $pelanggan->id);
         }
 
-        if ($request->has('status')) {
-            $query->where('status_verifikasi', $request->status);
+        if ($request->has("status")) {
+            $query->where("status_verifikasi", $request->status);
         }
 
-        $query->orderBy('created_at', 'desc');
-        $bookings = $query->paginate($request->get('per_page', 20));
+        $query->orderBy("created_at", "desc");
+        $bookings = $query->paginate($request->get("per_page", 20));
 
         return response()->json([
-            'status' => 'success',
-            'data' => $bookings->items(),
-            'pagination' => [
-                'current_page' => $bookings->currentPage(),
-                'last_page' => $bookings->lastPage(),
-                'per_page' => $bookings->perPage(),
-                'total' => $bookings->total(),
+            "status" => "success",
+            "data" => $bookings->items(),
+            "pagination" => [
+                "current_page" => $bookings->currentPage(),
+                "last_page" => $bookings->lastPage(),
+                "per_page" => $bookings->perPage(),
+                "total" => $bookings->total(),
             ],
         ]);
     }
@@ -60,50 +61,59 @@ class BookingController extends Controller
     public function store(BookingRequest $request): JsonResponse
     {
         $user = $request->user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::where("user_id", $user->id)->first();
 
         if (!$pelanggan) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Profil pelanggan tidak ditemukan.',
-            ], 400);
+            return response()->json(
+                [
+                    "status" => "error",
+                    "message" => "Profil pelanggan tidak ditemukan.",
+                ],
+                400,
+            );
         }
 
         try {
             DB::beginTransaction();
 
             $booking = Booking::create([
-                'pelanggan_id' => $pelanggan->id,
-                'ukuran' => $request->ukuran,
-                'tgl_ambil' => $request->tgl_ambil,
-                'desain_custom_url' => $request->desain_custom_url,
-                'catatan' => $request->catatan,
-                'status_verifikasi' => Booking::STATUS_MENUNGGU_VERIFIKASI,
+                "pelanggan_id" => $pelanggan->id,
+                "ukuran" => $request->ukuran,
+                "tgl_ambil" => $request->tgl_ambil,
+                "desain_custom_url" => $request->desain_custom_url,
+                "catatan" => $request->catatan,
+                "status_verifikasi" => BookingStatus::MENUNGGU_VERIFIKASI,
             ]);
 
             DB::commit();
 
             // Notify staff about new booking
             $this->notificationService->sendToStaff(
-                'Booking Baru Masuk',
+                "Booking Baru Masuk",
                 "Booking custom baru dari {$user->name} untuk ukuran {$request->ukuran}, ambil {$request->tgl_ambil}",
-                'info',
+                "info",
                 Booking::class,
-                $booking->id
+                $booking->id,
             );
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Booking berhasil dibuat. Menunggu verifikasi admin.',
-                'data' => $booking->load('pelanggan.user'),
-            ], 201);
-
+            return response()->json(
+                [
+                    "status" => "success",
+                    "message" =>
+                        "Booking berhasil dibuat. Menunggu verifikasi admin.",
+                    "data" => $booking->load("pelanggan.user"),
+                ],
+                201,
+            );
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Gagal membuat booking: ' . $e->getMessage(),
-            ], 500);
+            return response()->json(
+                [
+                    "status" => "error",
+                    "message" => "Gagal membuat booking: " . $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 
@@ -114,21 +124,25 @@ class BookingController extends Controller
     {
         $user = $request->user();
 
-        if ($user->hasRole('user')) {
-            $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        if ($user->hasRole("user")) {
+            $pelanggan = Pelanggan::where("user_id", $user->id)->first();
             if (!$pelanggan || $booking->pelanggan_id !== $pelanggan->id) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Anda tidak memiliki akses ke booking ini.',
-                ], 403);
+                return response()->json(
+                    [
+                        "status" => "error",
+                        "message" =>
+                            "Anda tidak memiliki akses ke booking ini.",
+                    ],
+                    403,
+                );
             }
         }
 
-        $booking->load(['pelanggan.user', 'transaksi', 'notifikasis']);
+        $booking->load(["pelanggan.user", "transaksi", "notifikasis"]);
 
         return response()->json([
-            'status' => 'success',
-            'data' => $booking,
+            "status" => "success",
+            "data" => $booking,
         ]);
     }
 
@@ -138,50 +152,63 @@ class BookingController extends Controller
     public function verify(Request $request, Booking $booking): JsonResponse
     {
         $request->validate([
-            'status' => 'required|string|in:disetujui,ditolak',
-            'catatan' => 'nullable|string|max:500',
+            "status" => "required|string|in:disetujui,ditolak",
+            "catatan" => "nullable|string|max:500",
         ]);
 
         $newStatus = $request->status;
-        if ($booking->status_verifikasi !== Booking::STATUS_MENUNGGU_VERIFIKASI) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Booking sudah pernah diverifikasi sebelumnya.',
-            ], 400);
+        if (
+            $booking->status_verifikasi !== BookingStatus::MENUNGGU_VERIFIKASI
+        ) {
+            return response()->json(
+                [
+                    "status" => "error",
+                    "message" =>
+                        "Booking sudah pernah diverifikasi sebelumnya.",
+                ],
+                400,
+            );
         }
 
         $booking->update([
-            'status_verifikasi' => $newStatus === 'disetujui' ? Booking::STATUS_DISETUJUI : Booking::STATUS_DITOLAK,
-            'catatan' => $request->catatan,
+            "status_verifikasi" =>
+                $newStatus === "disetujui"
+                    ? BookingStatus::DISETUJUI
+                    : BookingStatus::DITOLAK,
+            "catatan" => $request->catatan,
         ]);
 
         // Notify customer
         if ($booking->pelanggan && $booking->pelanggan->user) {
-            if ($newStatus === 'disetujui') {
+            if ($newStatus === "disetujui") {
                 $this->notificationService->create(
                     $booking->pelanggan->user_id,
-                    'Booking Disetujui',
+                    "Booking Disetujui",
                     "Booking custom anda untuk ukuran {$booking->ukuran} telah disetujui! Silakan lakukan pembayaran.",
-                    'success',
+                    "success",
                     Booking::class,
-                    $booking->id
+                    $booking->id,
                 );
             } else {
                 $this->notificationService->create(
                     $booking->pelanggan->user_id,
-                    'Booking Ditolak',
-                    "Booking custom anda ditolak. Alasan: " . ($request->catatan ?? 'Tidak sesuai ketentuan'),
-                    'error',
+                    "Booking Ditolak",
+                    "Booking custom anda ditolak. Alasan: " .
+                        ($request->catatan ?? "Tidak sesuai ketentuan"),
+                    "error",
                     Booking::class,
-                    $booking->id
+                    $booking->id,
                 );
             }
         }
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Booking berhasil ' . ($newStatus === 'disetujui' ? 'disetujui' : 'ditolak') . '.',
-            'data' => $booking->fresh()->load('pelanggan.user'),
+            "status" => "success",
+            "message" =>
+                "Booking berhasil " .
+                ($newStatus === "disetujui" ? "disetujui" : "ditolak") .
+                ".",
+            "data" => $booking->fresh()->load("pelanggan.user"),
         ]);
     }
 
@@ -191,27 +218,39 @@ class BookingController extends Controller
     public function cancel(Request $request, Booking $booking): JsonResponse
     {
         $user = $request->user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::where("user_id", $user->id)->first();
 
         if (!$pelanggan || $booking->pelanggan_id !== $pelanggan->id) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Anda tidak memiliki akses ke booking ini.',
-            ], 403);
+            return response()->json(
+                [
+                    "status" => "error",
+                    "message" => "Anda tidak memiliki akses ke booking ini.",
+                ],
+                403,
+            );
         }
 
-        if (!in_array($booking->status_verifikasi, [Booking::STATUS_MENUNGGU_VERIFIKASI, Booking::STATUS_DISETUJUI])) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Booking tidak dapat dibatalkan pada status ini.',
-            ], 400);
+        if (
+            !in_array($booking->status_verifikasi, [
+                BookingStatus::MENUNGGU_VERIFIKASI,
+                BookingStatus::DISETUJUI,
+            ])
+        ) {
+            return response()->json(
+                [
+                    "status" => "error",
+                    "message" =>
+                        "Booking tidak dapat dibatalkan pada status ini.",
+                ],
+                400,
+            );
         }
 
-        $booking->update(['status_verifikasi' => Booking::STATUS_DIBATALKAN]);
+        $booking->update(["status_verifikasi" => BookingStatus::DIBATALKAN]);
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Booking berhasil dibatalkan.',
+            "status" => "success",
+            "message" => "Booking berhasil dibatalkan.",
         ]);
     }
 }
