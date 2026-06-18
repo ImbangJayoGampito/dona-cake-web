@@ -150,6 +150,7 @@ class AdminController extends Controller
         $totalPesanan = \App\Models\Pesanan::count();
         $pesananBaru = \App\Models\Pesanan::where('status_pesanan', 'menunggu_pembayaran')->count();
         $bookingMenunggu = \App\Models\Booking::where('status_verifikasi', 'menunggu_verifikasi')->count();
+        $transaksiMenungguKonfirmasi = \App\Models\Transaksi::where('status_transaksi', 'menunggu_konfirmasi')->count();
 
         return response()->json([
             'status' => 'success',
@@ -160,6 +161,7 @@ class AdminController extends Controller
                 'total_pesanan' => $totalPesanan,
                 'pesanan_baru' => $pesananBaru,
                 'booking_menunggu' => $bookingMenunggu,
+                'transaksi_menunggu_konfirmasi' => $transaksiMenungguKonfirmasi,
             ],
         ]);
     }

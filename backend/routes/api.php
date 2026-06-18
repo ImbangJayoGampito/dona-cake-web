@@ -278,6 +278,18 @@ Route::middleware("auth:sanctum")->group(function () {
                 LaporanController::class,
                 "productionQueue",
             ]);
+
+            // Payment Confirmation (Manual verification)
+            Route::prefix("transaksi")->group(function () {
+                Route::get("/pending", [
+                    TransaksiController::class,
+                    "pendingConfirmations",
+                ]);
+                Route::post("/{transaksi}/confirm", [
+                    TransaksiController::class,
+                    "confirmPayment",
+                ]);
+            });
         });
 
     // =====================================================================

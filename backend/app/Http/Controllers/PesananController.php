@@ -204,6 +204,7 @@ class PesananController extends Controller
         $pelanggan = $pesanan->pelanggan;
         if ($pelanggan && $pelanggan->user) {
             $statusLabels = [
+                Pesanan::STATUS_MENUNGGU_KONFIRMASI_PEMBAYARAN => 'Pembayaran menunggu konfirmasi',
                 Pesanan::STATUS_DIBAYAR => 'Pembayaran diterima',
                 Pesanan::STATUS_DIPROSES => 'Pesanan sedang diproses',
                 Pesanan::STATUS_SELESAI => 'Pesanan selesai',
