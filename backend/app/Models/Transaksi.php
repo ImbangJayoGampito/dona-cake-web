@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
 class Transaksi extends Model
 {
     const STATUS_MENUNGGU = 'menunggu';
+    const STATUS_MENUNGGU_KONFIRMASI = 'menunggu_konfirmasi';
     const STATUS_DIBAYAR = 'dibayar';
     const STATUS_GAGAL = 'gagal';
     const STATUS_DIKEMBALIKAN = 'dikembalikan';

@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
 class Pesanan extends Model
 {
     const STATUS_MENUNGGU_PEMBAYARAN = 'menunggu_pembayaran';
+    const STATUS_MENUNGGU_KONFIRMASI_PEMBAYARAN = 'menunggu_konfirmasi_pembayaran';
     const STATUS_DIBAYAR = 'dibayar';
     const STATUS_DIPROSES = 'diproses';
     const STATUS_SELESAI = 'selesai';
@@ -33,7 +34,8 @@ class Pesanan extends Model
     const STATUS_PEMBAYARAN_DIBATALKAN = 'pembayaran_dibatalkan';
 
     const STATUS_TRANSITIONS = [
-        self::STATUS_MENUNGGU_PEMBAYARAN => [self::STATUS_DIBAYAR, self::STATUS_PEMBAYARAN_DIBATALKAN],
+        self::STATUS_MENUNGGU_PEMBAYARAN => [self::STATUS_MENUNGGU_KONFIRMASI_PEMBAYARAN, self::STATUS_PEMBAYARAN_DIBATALKAN],
+        self::STATUS_MENUNGGU_KONFIRMASI_PEMBAYARAN => [self::STATUS_DIBAYAR, self::STATUS_PEMBAYARAN_DIBATALKAN],
         self::STATUS_DIBAYAR => [self::STATUS_DIPROSES, self::STATUS_DIBATALKAN],
         self::STATUS_DIPROSES => [self::STATUS_SELESAI, self::STATUS_DIBATALKAN],
         self::STATUS_SELESAI => [],
