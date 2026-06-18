@@ -7,7 +7,7 @@ import { TokenStorage } from "@/lib/local-storage/token"
 import { useAuthStore } from "@/lib/state/logged-user"
 
 export class UserService {
-  constructor() {}
+  constructor() { }
 
   // ---------- LOGIN ----------
   public static async login(
@@ -19,10 +19,17 @@ export class UserService {
         username,
         password,
       })
-      const apiResponse = ApiResponse.fromApiSingle<LoginData>(response.data)
+      const apiResponse = ApiResponse.fromApiSingle<LoginData>(
+        response.data,
+        (data) => ({
+          user: new User(data.user),
+          token: data.token,
+          token_type: data.token_type,
+        })
+      )
 
-      if (apiResponse.isSuccess()) {
-        const { user, token } = apiResponse.data as LoginData
+      if (apiResponse.isSuccess() && apiResponse.data) {
+        const { user, token } = apiResponse.data
         // Update auth store and token storage
         useAuthStore.getState().setUser(user)
         TokenStorage.setToken(token)
@@ -61,10 +68,17 @@ export class UserService {
         username,
         password_confirmation,
       })
-      const apiResponse = ApiResponse.fromApiSingle<LoginData>(response.data)
+      const apiResponse = ApiResponse.fromApiSingle<LoginData>(
+        response.data,
+        (data) => ({
+          user: new User(data.user),
+          token: data.token,
+          token_type: data.token_type,
+        })
+      )
 
-      if (apiResponse.isSuccess()) {
-        const { user, token } = apiResponse.data as LoginData
+      if (apiResponse.isSuccess() && apiResponse.data) {
+        const { user, token } = apiResponse.data
         // Auto‑login after registration (optional)
         TokenStorage.setToken(token)
         useAuthStore.getState().setUser(user)
@@ -187,10 +201,15 @@ export class UserService {
       const payload: any = { name, email, username }
 
       const response = await api.put(ProtectedRoutes.UpdateProfile, payload)
-      const apiResponse = ApiResponse.fromApiResponse<User>(response.data)
-      if (apiResponse.isSuccess()) {
-        // Update store with new user data
-        useAuthStore.getState().setUser(apiResponse.data as User)
+      const apiResponse = ApiResponse.fromApiSingle<User>(
+        response.data,
+        (data) => {
+          const currentRole = useAuthStore.getState().user?.role
+          return new User({ ...data, role: currentRole })
+        }
+      )
+      if (apiResponse.isSuccess() && apiResponse.data) {
+        useAuthStore.getState().setUser(apiResponse.data)
       }
       return apiResponse
     } catch (error: any) {
@@ -201,28 +220,30 @@ export class UserService {
   }
 
   // ---------- FROM TOKEN (get user by token) ----------
-  public static async fromToken(): Promise<ApiResponse<LoginData>> {
+  public static async fromToken(): Promise<ApiResponse<User>> {
     try {
       const token = TokenStorage.getToken()
       if (!token)
-        return new ApiResponse<LoginData>(
+        return new ApiResponse<User>(
           undefined,
           "error",
           undefined,
           "No token"
         )
       const response = await api.get(ProtectedRoutes.FromToken)
-      const apiResponse = ApiResponse.fromApiSingle<LoginData>(response.data)
-      if (apiResponse.isSuccess()) {
-        const { user } = apiResponse.data as LoginData
-        useAuthStore.getState().setUser(user)
+      const apiResponse = ApiResponse.fromApiSingle<User>(
+        response.data,
+        (data) => new User(data.user)
+      )
+      if (apiResponse.isSuccess() && apiResponse.data) {
+        useAuthStore.getState().setUser(apiResponse.data)
       }
       return apiResponse
     } catch (error: any) {
       console.error("Error from token:", error)
       const message = error.response?.data?.message || "Token tidak valid"
-      return new ApiResponse<LoginData>(
-        null as any,
+      return new ApiResponse<User>(
+        undefined,
         "error",
         undefined,
         message
