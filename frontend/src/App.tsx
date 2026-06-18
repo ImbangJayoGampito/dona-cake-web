@@ -20,6 +20,13 @@ import Profile from "./pages/user/profile"
 import { AppHeader } from "./components/layout/header"
 import AppLayout from "./pages/layout"
 import BookingLayout from "./pages/booking/layout"
+
+// Admin imports
+import ProtectedRoute from "./components/layout/ProtectedRoute"
+import AdminLayout from "./components/layout/admin/AdminLayout"
+import DashboardOverview from "./pages/admin/DashboardOverview"
+import AksesDitolakPage from "./pages/errors/AksesDitolakPage"
+
 export function App() {
   const [isLoading, setIsLoading] = useState(true)
   const setUser = useAuthStore((state) => state.setUser)
@@ -76,6 +83,21 @@ export function App() {
       <Route element={<AppHeader />}>
         <Route path={ProtectedRoutes.Me} element={<Profile />} />
       </Route>
+
+      {/* ERROR ROUTES */}
+      <Route path="/403" element={<AksesDitolakPage />} />
+
+      {/* ADMIN ROUTES */}
+      <Route
+        element={
+          <ProtectedRoute requireRole="admin">
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/admin/dashboard" element={<DashboardOverview />} />
+      </Route>
+
       {/* Example using Button */}
       <Route
         path="/test-button"
@@ -86,3 +108,4 @@ export function App() {
 }
 
 export default App
+
