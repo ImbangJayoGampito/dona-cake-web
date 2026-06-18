@@ -4,7 +4,7 @@ import ApiResponse from "@/lib/api/api-response"
 import api from "@/lib/api/config"
 import { RouteService } from "./route-service"
 
-export class ProductService {
+export class ProdukService {
   // Helper
   static formatPrice(price: number): string {
     return new Intl.NumberFormat("id-ID", {
@@ -31,7 +31,6 @@ export class ProductService {
       return new ApiResponse<void>(undefined, "error", undefined, message)
     }
   }
-
 
   static async getProductById(id: number): Promise<ApiResponse<Produk>> {
     try {

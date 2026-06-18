@@ -2,11 +2,13 @@ import { Produk } from "@/models/produk.model"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Heart, ShoppingCart, Eye } from "lucide-react"
-import { ProductService } from "@/services/produk-service" // adjust import path
+import { ProdukService } from "@/services/produk-service" // adjust import path
 import { Link } from "react-router-dom"
 import { StarRating } from "./star_rating"
 import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
+import type { StoreKeranjangRequest } from "@/types/keranjang.types"
+import { KeranjangService } from "@/services/keranjang-service"
 interface ProductCardProps {
   product: Produk
 }
@@ -14,11 +16,15 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate()
   const handleAddToCart = (product: Produk) => {
-    ProductService.addToCart(product, 1).then((response) => {
+    const request: StoreKeranjangRequest = {
+      produk_id: product.id,
+      kuantitas: 1,
+    }
+    KeranjangService.createKeranjang(request).then((response) => {
       if (response.isSuccess()) {
         toast.success("Produk berhasil ditambahkan ke keranjang")
       } else {
-        toast.error("Gagal menambahkan produk ke keranjang")
+        toast.error(`Gagal menambahkan produk ke keranjang karena ${response.message}`)
       }
     })
   }
@@ -60,7 +66,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {/* Price & Cart Button */}
           <div className="flex items-center justify-between">
             <span className="text-lg font-bold">
-              {ProductService.formatPrice(product.harga)}
+              {ProdukService.formatPrice(product.harga)}
             </span>
             <Button onClick={() => goToDetail(product)}>
               <Eye />

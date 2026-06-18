@@ -192,12 +192,7 @@ export default function Step2Reference(props: Step1Interface) {
       </Card>
 
       <OrderSummary
-        order={{
-          ...order,
-          step: steps,
-          packaging: packaging,
-          custom_text: customText,
-        }}
+        order={order}
         step={steps}
       />
 

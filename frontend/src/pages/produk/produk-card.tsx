@@ -18,7 +18,7 @@ import { Link, useParams } from "react-router-dom"
 import { AppHeader } from "@/components/layout/header"
 import AppFooter from "@/components/layout/footer"
 import { BreadCrumb } from "@/components/breadcrumb"
-import { ProductService } from "@/services/produk-service"
+import { ProdukService } from "@/services/produk-service"
 import { StarRating } from "@/components/produk/star_rating"
 import { toast } from "sonner"
 import { Produk } from "@/models/produk.model"
@@ -42,14 +42,14 @@ export default function ProductDetailPage() {
   const id = useParams()
   useEffect(() => {
     if (id.id) {
-      ProductService.getProductById(parseInt(id.id)).then((product) => {
+      ProdukService.getProductById(parseInt(id.id)).then((product) => {
         setProduct(product.data)
       })
       UlasanService.getAllUlasanOnProdukId(parseInt(id.id)).then((ulasans) => {
         setUlasans(ulasans.data || [])
       })
       // we use recommendations instead because it hasn't been implemented yet
-      ProductService.getRecommendations().then((products) => {
+      ProdukService.getRecommendations().then((products) => {
         setSimilarProducts(products.data || [])
       })
     } else {
@@ -179,12 +179,12 @@ export default function ProductDetailPage() {
 
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold">
-                {ProductService.formatPrice(
+                {ProdukService.formatPrice(
                   product.harga - (product.harga * discountPercentage) / 100
                 )}
               </span>
               <span className="text-sm text-muted-foreground line-through">
-                {ProductService.formatPrice(product.harga)}
+                {ProdukService.formatPrice(product.harga)}
               </span>
               <span className="rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
                 Hemat {discountPercentage}%

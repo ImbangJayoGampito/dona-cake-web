@@ -25,7 +25,18 @@ export default function BookingLayout() {
       <main>
         <main className="flex-1">
           <div className="mx-auto max-w-5xl px-4 pb-10">
-            {step < 5 && <Stepper current={step} />}
+            {step < 5 && (
+              <Stepper
+                current={step}
+                steps={[
+                  "Konfigurasi",
+                  "Referensi",
+                  "Tanggal",
+                  "Konfirmasi",
+                  "Berhasil",
+                ]}
+              />
+            )}
 
             {step === 1 && (
               <Step1Configure

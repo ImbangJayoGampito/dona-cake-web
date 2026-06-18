@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 
 import { Produk } from "@/models/produk.model"
 import { ShoppingCart } from "lucide-react"
-import { ProductService } from "@/services/produk-service"
+import { ProdukService } from "@/services/produk-service"
 import { useState, useEffect } from "react"
 import { StarRating } from "../produk/star_rating"
 import { toast } from "sonner"
@@ -13,7 +13,7 @@ export default function FeaturedProducts() {
   const [popularProducts, setPopularProducts] = useState<Produk[]>([])
 
   useEffect(() => {
-    ProductService.getPopularProducts().then((res) => {
+    ProdukService.getPopularProducts().then((res) => {
       setPopularProducts(res.data ?? [])
       // We'll slice the array by 4
       setPopularProducts(res.data?.slice(0, 4) ?? [])

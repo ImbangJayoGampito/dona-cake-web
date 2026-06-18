@@ -53,7 +53,7 @@ class ApiAuthController extends Controller
                 401,
             );
         }
-        
+
         return response()->json([
             "status" => "success",
             "data" => [
