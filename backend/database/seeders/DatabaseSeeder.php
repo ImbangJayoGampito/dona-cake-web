@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Pelanggan;
 use App\Enums\RoleEnum;
 use Illuminate\Database\Seeder;
 
@@ -28,5 +29,9 @@ class DatabaseSeeder extends Seeder
                 "email" => "test@example.com",
             ])
             ->assignRole(RoleEnum::User->value);
+        // Create pelanggan based on all of the user
+        User::all()->each(
+            fn($user) => Pelanggan::factory()->create(["user_id" => $user->id]),
+        );
     }
 }

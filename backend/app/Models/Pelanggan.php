@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 /**
  * @property int $id
@@ -23,16 +25,13 @@ use Illuminate\Support\Carbon;
  */
 class Pelanggan extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'alamat',
-        'no_telepon',
-    ];
+    use HasFactory;
+    protected $fillable = ["user_id", "alamat", "no_telepon"];
 
     protected $casts = [
-        'user_id' => 'integer',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        "user_id" => "integer",
+        "created_at" => "datetime",
+        "updated_at" => "datetime",
     ];
 
     public function user(): BelongsTo

@@ -13,19 +13,21 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'username'          => fake()->unique()->userName(),
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            "username" => fake()->unique()->userName(),
+            "name" => fake()->name(),
+            "email" => fake()->unique()->safeEmail(),
+            "email_verified_at" => now(),
+            "password" => (static::$password ??= Hash::make("password")),
+            "remember_token" => Str::random(10),
         ];
     }
 
     public function unverified(): static
     {
-        return $this->state(fn(array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return $this->state(
+            fn(array $attributes) => [
+                "email_verified_at" => null,
+            ],
+        );
     }
 }

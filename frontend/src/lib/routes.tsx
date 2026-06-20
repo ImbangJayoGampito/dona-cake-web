@@ -14,6 +14,7 @@ export const PublicRoutes = {
   Popular: "/popular",
   Home: "/",
   Kategori: "/kategori",
+  Katalog: "/katalog",
   CreateBooking: "/booking/create",
 } as const
 
@@ -40,6 +41,7 @@ export const ProtectedRoutes = {
 
   // Orders
   Orders: "/pesanan",
+  OrderSuccessful: "/pesanan/success",
   OrderDetail: "/pesanan/{id}",
   CancelOrder: "/pesanan/{id}/cancel",
 

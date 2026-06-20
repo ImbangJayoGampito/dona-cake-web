@@ -9,13 +9,13 @@ import { useState, useEffect } from "react"
 import { StarRating } from "../produk/star_rating"
 import { toast } from "sonner"
 import { ProductCard } from "../produk/produk-card"
+
 export default function FeaturedProducts() {
   const [popularProducts, setPopularProducts] = useState<Produk[]>([])
 
   useEffect(() => {
     ProdukService.getPopularProducts().then((res) => {
-      setPopularProducts(res.data ?? [])
-      // We'll slice the array by 4
+      // ✅ Fixed: Only set once with sliced data
       setPopularProducts(res.data?.slice(0, 4) ?? [])
     })
   }, [])
@@ -54,7 +54,10 @@ export default function FeaturedProducts() {
         {/* Products Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-4">
           {popularProducts.map((product) => (
-            <ProductCard product={product}></ProductCard>
+            <ProductCard
+              key={product.id} // ✅ Add unique key
+              product={product}
+            />
           ))}
         </div>
       </div>

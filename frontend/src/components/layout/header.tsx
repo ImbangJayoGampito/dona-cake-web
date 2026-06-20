@@ -17,7 +17,7 @@ import { User } from "@/models/user.model"
 import { useAuthStore } from "@/lib/state/logged-user"
 import { UserAvatarDropdown } from "@/components/user-avatar-dropdown"
 import { ModeToggle } from "@/components/mode-toggle"
-import { PublicRoutes } from "@/lib/routes"
+import { PublicRoutes, ProtectedRoutes } from "@/lib/routes"
 import { useNavigate } from "react-router-dom"
 
 export function AppHeader() {
@@ -56,7 +56,14 @@ export function AppHeader() {
                   >
                     Beranda
                   </Button>
-                  <Button variant="ghost">Katalog</Button>
+                  <Button
+                    onClick={() => {
+                      redirectTo(PublicRoutes.Katalog)
+                    }}
+                    variant="ghost"
+                  >
+                    Katalog
+                  </Button>
                   <Button
                     onClick={() => {
                       redirectTo(PublicRoutes.CreateBooking)
@@ -65,7 +72,20 @@ export function AppHeader() {
                   >
                     Custom Cake
                   </Button>
-                  <Button variant="ghost">Tentang Kami</Button>
+                  <Button
+                    onClick={() => {
+                      redirectTo(ProtectedRoutes.Cart)
+                    }}
+                    variant="ghost"
+                  >
+                    Keranjang
+                  </Button>
+                  <Button
+                    onClick={() => redirectTo(ProtectedRoutes.Orders)}
+                    variant="ghost"
+                  >
+                    Pesanan
+                  </Button>
                 </div>
                 {/* Avatar on the far right */}
                 <div className="ml-4 flex items-center justify-between">
@@ -102,27 +122,45 @@ export function AppHeader() {
                         redirectTo("/")
                       }}
                       variant="ghost"
-                      className="w-full justify-start"
+                      className="w-full justify-center"
                     >
                       Beranda
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-center"
+                      onClick={() => {
+                        redirectTo(PublicRoutes.Katalog)
+                      }}
+                    >
                       Katalog
                     </Button>
                     <Button
                       variant="ghost"
-                      className="w-full justify-start"
+                      className="w-full justify-center"
                       onClick={() => {
                         redirectTo(PublicRoutes.CreateBooking)
                       }}
                     >
                       Custom Cake
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start">
-                      Tentang Kami
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-center"
+                      onClick={() => {
+                        redirectTo(ProtectedRoutes.Cart)
+                      }}
+                    >
+                      Keranjang
+                    </Button>
+                    <Button
+                      onClick={() => redirectTo(ProtectedRoutes.Orders)}
+                      variant="ghost"
+                    >
+                      Pesanan
                     </Button>
 
-                    <div className="border-t pt-4">
+                    <div className="justify-center border-t pt-4">
                       <UserAvatarDropdown />
                     </div>
                   </>
@@ -130,14 +168,14 @@ export function AppHeader() {
                   <>
                     <Button
                       variant="outline"
-                      className="w-full"
+                      className="w-full justify-center"
                       onClick={registerRedirect}
                     >
                       Daftar
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full"
+                      className="w-full justify-center"
                       onClick={logInRedirect}
                     >
                       Masuk
@@ -145,7 +183,7 @@ export function AppHeader() {
                   </>
                 )}
 
-                <div className="border-t pt-4">
+                <div className="border-t pt-4 *:justify-center">
                   <ModeToggle />
                 </div>
               </div>
