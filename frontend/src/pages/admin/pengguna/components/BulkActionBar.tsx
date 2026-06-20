@@ -25,7 +25,7 @@ export default function BulkActionBar({
     <div
       className={cn(
         "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
-        "flex items-center gap-3 rounded-2xl bg-[#1A1A1A] px-5 py-3 shadow-2xl",
+        "flex items-center gap-3 rounded-2xl bg-popover/90 px-5 py-3 shadow-2xl",
         "transition-all duration-250",
         selectedCount > 0
           ? "opacity-100 translate-y-0"
@@ -50,7 +50,7 @@ export default function BulkActionBar({
         variant="ghost"
         size="sm"
         onClick={onDelete}
-        className="gap-1.5 text-[#F87171] hover:bg-white/10 hover:text-[#FCA5A5]"
+        className="gap-1.5 text-destructive/60 hover:bg-white/10 hover:text-red-300"
       >
         <Trash2 className="h-4 w-4" strokeWidth={1.75} />
         Hapus

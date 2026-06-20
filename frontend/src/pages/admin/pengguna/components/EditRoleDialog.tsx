@@ -66,8 +66,8 @@ export default function EditRoleDialog({
         {user && (
           <div className="space-y-4 py-2">
             {/* Info user */}
-            <div className="flex items-center gap-3 rounded-xl bg-[#F7F5F3] px-4 py-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F5EAE0] text-sm font-semibold text-[#C9956C]">
+            <div className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-primary">
                 {user.getInitials()}
               </div>
               <div className="leading-tight">
@@ -99,9 +99,9 @@ export default function EditRoleDialog({
 
             {/* Warning kalau role diubah ke Admin */}
             {isChangingToAdmin && (
-              <div className="flex items-start gap-2 rounded-lg bg-[#FEF3E2] px-3 py-2.5">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#B45309]" strokeWidth={1.75} />
-                <p className="text-xs text-[#7C3A09]">
+              <div className="flex items-start gap-2 rounded-lg bg-orange-100 px-3 py-2.5">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-orange-700" strokeWidth={1.75} />
+                <p className="text-xs text-orange-800">
                   Akses Admin memberikan kontrol penuh atas sistem, termasuk
                   manajemen pengguna dan data keuangan. Pastikan tindakan ini
                   disengaja.
@@ -118,7 +118,7 @@ export default function EditRoleDialog({
           <Button
             onClick={handleConfirm}
             disabled={isSubmitting || selectedRole === user?.role}
-            className={cn(isChangingToAdmin && "bg-[#B45309] hover:bg-[#7C3A09]")}
+            className={cn(isChangingToAdmin && "bg-orange-700 hover:bg-[#7C3A09]")}
           >
             {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
           </Button>

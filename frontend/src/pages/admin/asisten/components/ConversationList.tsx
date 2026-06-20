@@ -19,15 +19,15 @@ interface ConversationListProps {
 const STATUS_BADGE: Record<StatusFlag, { label: string; className: string }> = {
   aktif: {
     label: "Aktif",
-    className: "bg-[#F5EAE0] text-[#C9956C] hover:bg-[#F5EAE0]",
+    className: "bg-secondary text-primary hover:bg-secondary",
   },
   dilaporkan: {
     label: "Dilaporkan",
-    className: "bg-[#FDF0F0] text-[#D94F4F] hover:bg-[#FDF0F0]",
+    className: "bg-destructive/10 text-destructive hover:bg-destructive/10",
   },
   selesai: {
     label: "Selesai",
-    className: "bg-[#EDF7F1] text-[#2E7D52] hover:bg-[#EDF7F1]",
+    className: "bg-green-100 text-green-700 hover:bg-green-100",
   },
 }
 
@@ -69,12 +69,12 @@ export default function ConversationList({
             <button
               onClick={() => onSelect(item)}
               className={cn(
-                "flex w-full items-start gap-3 px-4 py-4 text-left transition-colors hover:bg-[#F7F5F3]",
-                isActive && "border-l-[3px] border-[#C9956C] bg-[#FDFAF8]"
+                "flex w-full items-start gap-3 px-4 py-4 text-left transition-colors hover:bg-muted",
+                isActive && "border-l-[3px] border-primary bg-[#FDFAF8]"
               )}
             >
               {/* Avatar */}
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F5EAE0] text-sm font-semibold text-[#C9956C]">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-primary">
                 {getInitials(item.user?.name ?? "?")}
               </div>
 

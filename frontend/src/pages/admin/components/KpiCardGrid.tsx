@@ -22,14 +22,14 @@ export default function KpiCardGrid({ summary }: KpiCardGridProps) {
       <Card>
         <CardContent className="p-5">
           <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F5EAE0]">
-              <Wallet className="h-[18px] w-[18px] text-[#C9956C]" strokeWidth={1.75} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary">
+              <Wallet className="h-[18px] w-[18px] text-primary" strokeWidth={1.75} />
             </div>
             {summary.trendPendapatanPct !== null && (
               <span
                 className={cn(
                   "text-xs font-medium",
-                  summary.trendPendapatanPct >= 0 ? "text-[#2E7D52]" : "text-[#D94F4F]"
+                  summary.trendPendapatanPct >= 0 ? "text-green-700" : "text-destructive"
                 )}
               >
                 {summary.trendPendapatanPct >= 0 ? "↑" : "↓"}{" "}
@@ -50,8 +50,8 @@ export default function KpiCardGrid({ summary }: KpiCardGridProps) {
       <Card>
         <CardContent className="p-5">
           <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F5EAE0]">
-              <ShoppingBasket className="h-[18px] w-[18px] text-[#C9956C]" strokeWidth={1.75} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary">
+              <ShoppingBasket className="h-[18px] w-[18px] text-primary" strokeWidth={1.75} />
             </div>
             <span className="text-xs text-muted-foreground">Hari ini</span>
           </div>
@@ -69,8 +69,8 @@ export default function KpiCardGrid({ summary }: KpiCardGridProps) {
       <Card>
         <CardContent className="p-5">
           <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F5EAE0]">
-              <Users className="h-[18px] w-[18px] text-[#C9956C]" strokeWidth={1.75} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary">
+              <Users className="h-[18px] w-[18px] text-primary" strokeWidth={1.75} />
             </div>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">Pengguna Aktif</p>
@@ -86,16 +86,16 @@ export default function KpiCardGrid({ summary }: KpiCardGridProps) {
       {/* Booking Custom Pending — highlight urgent kalau ada yang menunggu */}
       <Card
         className={cn(
-          summary.bookingMenunggu > 0 && "border-[#B45309]/40 bg-[#FEF3E2]"
+          summary.bookingMenunggu > 0 && "border-orange-200 bg-orange-100"
         )}
       >
         <CardContent className="p-5">
           <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#FEF3E2]">
-              <AlertTriangle className="h-[18px] w-[18px] text-[#B45309]" strokeWidth={1.75} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-100">
+              <AlertTriangle className="h-[18px] w-[18px] text-orange-700" strokeWidth={1.75} />
             </div>
             {summary.bookingMenunggu > 0 && (
-              <span className="text-xs font-semibold uppercase tracking-wide text-[#B45309]">
+              <span className="text-xs font-semibold uppercase tracking-wide text-orange-700">
                 Urgent
               </span>
             )}
@@ -106,7 +106,7 @@ export default function KpiCardGrid({ summary }: KpiCardGridProps) {
           <p
             className={cn(
               "mt-1 text-2xl font-semibold",
-              summary.bookingMenunggu > 0 ? "text-[#B45309]" : "text-foreground"
+              summary.bookingMenunggu > 0 ? "text-orange-700" : "text-foreground"
             )}
           >
             {summary.bookingMenunggu}

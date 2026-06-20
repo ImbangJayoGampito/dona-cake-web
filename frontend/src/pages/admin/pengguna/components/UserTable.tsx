@@ -27,9 +27,9 @@ interface UserTableProps {
 }
 
 const ROLE_BADGE: Record<string, string> = {
-  [RoleEnum.Admin]: "bg-[#FDF0F0] text-[#D94F4F] hover:bg-[#FDF0F0]",
-  [RoleEnum.Karyawan]: "bg-[#F5EAE0] text-[#C9956C] hover:bg-[#F5EAE0]",
-  [RoleEnum.User]: "bg-[#F7F5F3] text-[#6B6560] hover:bg-[#F7F5F3]",
+  [RoleEnum.Admin]: "bg-destructive/10 text-destructive hover:bg-destructive/10",
+  [RoleEnum.Karyawan]: "bg-secondary text-primary hover:bg-secondary",
+  [RoleEnum.User]: "bg-muted text-muted-foreground hover:bg-muted",
 }
 
 const ROLE_LABEL: Record<string, string> = {
@@ -67,7 +67,7 @@ export default function UserTable({
     <div className="rounded-xl border border-border bg-white overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="bg-[#F7F5F3]">
+          <TableRow className="bg-muted">
             <TableHead className="w-10 px-4">
               <Checkbox
                 checked={allSelected}
@@ -113,7 +113,7 @@ export default function UserTable({
                   {/* Avatar + Nama + Email */}
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F5EAE0] text-sm font-semibold text-[#C9956C]">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-primary">
                         {user.getInitials()}
                       </div>
                       <div className="leading-tight">
@@ -145,7 +145,7 @@ export default function UserTable({
                       <span
                         className={cn(
                           "h-2 w-2 rounded-full",
-                          user.isVerified() ? "bg-[#2E7D52]" : "bg-[#B0ACA8]"
+                          user.isVerified() ? "bg-[#2E7D52]" : "bg-muted-foreground/30"
                         )}
                       />
                       <span className="text-sm text-muted-foreground">
@@ -201,7 +201,7 @@ export default function UserTable({
             <button
               disabled={currentPage <= 1}
               onClick={() => onPageChange(currentPage - 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-sm disabled:opacity-40 hover:bg-[#F7F5F3] transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-sm disabled:opacity-40 hover:bg-muted transition-colors"
             >
               ‹
             </button>
@@ -215,8 +215,8 @@ export default function UserTable({
                 className={cn(
                   "flex h-8 w-8 items-center justify-center rounded-md text-sm border transition-colors",
                   page === currentPage
-                    ? "bg-[#C9956C] text-white border-[#C9956C]"
-                    : "border-border hover:bg-[#F7F5F3]"
+                    ? "bg-primary text-white border-primary"
+                    : "border-border hover:bg-muted"
                 )}
               >
                 {page}
@@ -225,7 +225,7 @@ export default function UserTable({
             <button
               disabled={currentPage >= pagination.last_page}
               onClick={() => onPageChange(currentPage + 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-sm disabled:opacity-40 hover:bg-[#F7F5F3] transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-sm disabled:opacity-40 hover:bg-muted transition-colors"
             >
               ›
             </button>

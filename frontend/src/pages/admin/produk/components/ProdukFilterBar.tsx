@@ -46,8 +46,8 @@ export default function ProdukFilterBar({
           className={cn(
             "rounded-full border px-4 text-sm font-medium transition-colors",
             filters.kategori_id === null
-              ? "border-[#C9956C] bg-[#C9956C] text-white hover:bg-[#A8744E]"
-              : "border-border bg-white text-muted-foreground hover:bg-[#F7F5F3]"
+              ? "border-primary bg-primary text-white hover:bg-primary/80"
+              : "border-border bg-white text-muted-foreground hover:bg-muted"
           )}
         >
           Semua ({totalProduk})
@@ -64,8 +64,8 @@ export default function ProdukFilterBar({
             className={cn(
               "rounded-full border px-4 text-sm font-medium transition-colors",
               filters.kategori_id === kat.id
-                ? "border-[#C9956C] bg-[#C9956C] text-white hover:bg-[#A8744E]"
-                : "border-border bg-white text-muted-foreground hover:bg-[#F7F5F3]"
+                ? "border-primary bg-primary text-white hover:bg-primary/80"
+                : "border-border bg-white text-muted-foreground hover:bg-muted"
             )}
           >
             {kat.nama_kategori}

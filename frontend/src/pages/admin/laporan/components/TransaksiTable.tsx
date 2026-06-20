@@ -36,19 +36,19 @@ const STATUS_CONFIG: Record<
 > = {
   [TransaksiStatus.DIBAYAR]: {
     label: "Success",
-    className: "bg-[#EDF7F1] text-[#2E7D52] hover:bg-[#EDF7F1]",
+    className: "bg-green-100 text-green-700 hover:bg-green-100",
   },
   [TransaksiStatus.MENUNGGU]: {
     label: "Menunggu",
-    className: "bg-[#FEF3E2] text-[#B45309] hover:bg-[#FEF3E2]",
+    className: "bg-orange-100 text-orange-700 hover:bg-orange-100",
   },
   [TransaksiStatus.GAGAL]: {
     label: "Gagal",
-    className: "bg-[#FDF0F0] text-[#D94F4F] hover:bg-[#FDF0F0]",
+    className: "bg-destructive/10 text-destructive hover:bg-destructive/10",
   },
   [TransaksiStatus.DIKEMBALIKAN]: {
     label: "Refunded",
-    className: "bg-[#F7F5F3] text-[#6B6560] hover:bg-[#F7F5F3]",
+    className: "bg-muted text-muted-foreground hover:bg-muted",
   },
 }
 
@@ -109,7 +109,7 @@ export default function TransaksiTable({
       {/* Tabel */}
       <Table>
         <TableHeader>
-          <TableRow className="bg-[#F7F5F3]">
+          <TableRow className="bg-muted">
             <TableHead className="text-xs uppercase">Tanggal</TableHead>
             <TableHead className="text-xs uppercase">No. Pesanan</TableHead>
             <TableHead className="text-xs uppercase">Pelanggan</TableHead>
@@ -141,13 +141,13 @@ export default function TransaksiTable({
                     {t.getTanggalFormatted()}
                   </TableCell>
                   <TableCell>
-                    <span className="font-medium text-[#C9956C]">
+                    <span className="font-medium text-primary">
                       {t.getNoPesanan()}
                     </span>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5EAE0] text-xs font-semibold text-[#C9956C]">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-primary">
                         {t.getNamaPelanggan().charAt(0).toUpperCase()}
                       </div>
                       <span className="text-sm font-medium text-foreground">
@@ -191,7 +191,7 @@ export default function TransaksiTable({
             <button
               disabled={currentPage <= 1}
               onClick={() => onPageChange(currentPage - 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-sm disabled:opacity-40 hover:bg-[#F7F5F3] transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-sm disabled:opacity-40 hover:bg-muted transition-colors"
             >
               ‹
             </button>
@@ -205,8 +205,8 @@ export default function TransaksiTable({
                 className={cn(
                   "flex h-8 w-8 items-center justify-center rounded-md border text-sm transition-colors",
                   page === currentPage
-                    ? "bg-[#C9956C] text-white border-[#C9956C]"
-                    : "border-border hover:bg-[#F7F5F3]"
+                    ? "bg-primary text-white border-primary"
+                    : "border-border hover:bg-muted"
                 )}
               >
                 {page}
@@ -215,7 +215,7 @@ export default function TransaksiTable({
             <button
               disabled={currentPage >= pagination.last_page}
               onClick={() => onPageChange(currentPage + 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-sm disabled:opacity-40 hover:bg-[#F7F5F3] transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-sm disabled:opacity-40 hover:bg-muted transition-colors"
             >
               ›
             </button>

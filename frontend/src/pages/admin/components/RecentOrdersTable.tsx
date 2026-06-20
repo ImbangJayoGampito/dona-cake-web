@@ -36,11 +36,11 @@ interface RecentOrdersTableProps {
 }
 
 const STATUS_BADGE: Record<string, string> = {
-  Selesai: "bg-[#EDF7F1] text-[#2E7D52]",
-  Diproses: "bg-[#F5EAE0] text-[#C9956C]",
-  Dikirim: "bg-[#EFF6FF] text-[#1D4ED8]",
-  Menunggu: "bg-[#FEF3E2] text-[#B45309]",
-  Dibatalkan: "bg-[#FDF0F0] text-[#D94F4F]",
+  Selesai: "bg-green-100 text-green-700",
+  Diproses: "bg-secondary text-primary",
+  Dikirim: "bg-blue-100 text-blue-700",
+  Menunggu: "bg-orange-100 text-orange-700",
+  Dibatalkan: "bg-destructive/10 text-destructive",
 }
 
 function formatRupiah(value: number): string {
@@ -58,7 +58,7 @@ export default function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
         <CardTitle className="text-lg font-medium">Pesanan Terbaru</CardTitle>
         <Link
           to="/admin/pesanan"
-          className="text-sm font-medium text-[#C9956C] hover:underline"
+          className="text-sm font-medium text-primary hover:underline"
         >
           Lihat Semua
         </Link>
@@ -82,7 +82,7 @@ export default function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
             <TableBody>
               {orders.map((order) => (
                 <TableRow key={order.id}>
-                  <TableCell className="font-medium text-[#C9956C]">
+                  <TableCell className="font-medium text-primary">
                     {order.noPesanan}
                   </TableCell>
                   <TableCell>

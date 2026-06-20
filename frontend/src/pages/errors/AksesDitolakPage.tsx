@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button"
 export default function AksesDitolakPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#F5EAE0]">
-        <ShieldAlert className="h-9 w-9 text-[#C9956C]" strokeWidth={1.75} />
+      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-secondary">
+        <ShieldAlert className="h-9 w-9 text-primary" strokeWidth={1.75} />
       </div>
 
       <h1 className="text-2xl font-semibold text-foreground">Akses Ditolak</h1>

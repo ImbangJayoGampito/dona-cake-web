@@ -23,7 +23,7 @@ export default function AdminHeader() {
   const roleLabel = user ? ROLE_LABEL[user.role] ?? user.role : ""
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-border bg-[#1A1A1A] px-8">
+    <header className="flex h-16 items-center justify-between border-b border-border bg-popover/90 px-8">
       <div className="flex w-full max-w-md items-center gap-2 rounded-lg bg-white/10 px-3 py-2">
         <Search className="h-4 w-4 text-white/50" strokeWidth={1.75} />
         <input
@@ -50,7 +50,7 @@ export default function AdminHeader() {
         </button>
 
         <div className="flex items-center gap-3 border-l border-white/10 pl-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#C9956C] text-sm font-semibold text-white">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
             {getInitials(displayName)}
           </div>
           <div className="leading-tight">

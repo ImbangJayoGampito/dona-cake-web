@@ -21,8 +21,8 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
       value: formatRupiah(summary.total_pendapatan),
       sub: "Periode terpilih",
       icon: Wallet,
-      iconBg: "bg-[#F5EAE0]",
-      iconColor: "text-[#C9956C]",
+      iconBg: "bg-secondary",
+      iconColor: "text-primary",
       valueColor: "text-foreground",
     },
     {
@@ -30,8 +30,8 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
       value: summary.jumlah_transaksi.toString(),
       sub: "Jumlah transaksi",
       icon: ShoppingBag,
-      iconBg: "bg-[#F5EAE0]",
-      iconColor: "text-[#C9956C]",
+      iconBg: "bg-secondary",
+      iconColor: "text-primary",
       valueColor: "text-foreground",
     },
     {
@@ -39,8 +39,8 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
       value: formatRupiah(summary.rata_rata_transaksi),
       sub: "Per transaksi",
       icon: TrendingUp,
-      iconBg: "bg-[#F5EAE0]",
-      iconColor: "text-[#C9956C]",
+      iconBg: "bg-secondary",
+      iconColor: "text-primary",
       valueColor: "text-foreground",
     },
   ]

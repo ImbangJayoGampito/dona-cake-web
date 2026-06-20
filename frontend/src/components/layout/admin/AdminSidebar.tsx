@@ -18,9 +18,9 @@ const NAV_ITEMS = [
 
 export default function AdminSidebar() {
   return (
-    <aside className="flex h-screen w-64 flex-col bg-[#1A1A1A] px-4 py-6">
+    <aside className="flex h-screen w-64 flex-col bg-popover/90 px-4 py-6">
       <div className="mb-8 flex flex-col items-center gap-2 px-2">
-        <div className="h-14 w-14 rounded-full bg-[#C9956C]" />
+        <div className="h-14 w-14 rounded-full bg-primary" />
         <div className="text-center">
           <p className="text-base font-semibold text-white">Dona Cake</p>
           <p className="text-xs text-white/50">Management Dashboard</p>
@@ -36,7 +36,7 @@ export default function AdminSidebar() {
               cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-[#C9956C]/20 text-[#C9956C]"
+                  ? "bg-primary/20 text-primary"
                   : "text-white/65 hover:bg-white/5 hover:text-white/90"
               )
             }
