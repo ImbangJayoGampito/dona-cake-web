@@ -64,7 +64,7 @@ export default function UserTable({
   const someSelected = allIds.some((id) => selectedIds.includes(id)) && !allSelected
 
   return (
-    <div className="rounded-xl border border-border bg-white overflow-hidden">
+    <div className="rounded-xl border border-border bg-white dark:bg-card overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted">
@@ -100,7 +100,7 @@ export default function UserTable({
               return (
                 <TableRow
                   key={user.id}
-                  className={cn(isSelected && "bg-[#FDFAF8]")}
+                  className={cn(isSelected && "bg-[#FDFAF8] dark:bg-primary/10")}
                 >
                   <TableCell className="px-4">
                     <Checkbox
