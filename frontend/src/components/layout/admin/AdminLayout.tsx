@@ -11,9 +11,9 @@ import AdminHeader from "./AdminHeader"
  */
 export default function AdminLayout() {
   return (
-    <div className="flex min-h-screen bg-[#FAFAF9]">
+    <div className="flex h-screen overflow-hidden bg-[#FAFAF9]">
       <AdminSidebar />
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col overflow-hidden">
         <AdminHeader />
         <main className="flex-1 overflow-y-auto p-8">
           <Outlet />
