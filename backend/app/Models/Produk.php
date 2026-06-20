@@ -60,9 +60,9 @@ class Produk extends Model
     {
         parent::boot();
 
-        static::creating(function ($kategori) {
-            if (empty($kategori->slug)) {
-                $kategori->slug = Str::slug($kategori->nama_kategori);
+        static::creating(function ($produk) {
+            if (empty($produk->slug)) {
+                $produk->slug = Str::slug($produk->nama_produk);
             }
         });
     }

@@ -32,6 +32,20 @@ class TransaksiController extends Controller
             $query->where('user_id', $user->id);
         }
 
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                  ->orWhere('metode_pembayaran', 'like', "%{$search}%")
+                  ->orWhereHas('pesanans.pelanggan.user', function($qu) use ($search) {
+                      $qu->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('bookings.pelanggan.user', function($qu) use ($search) {
+                      $qu->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
         if ($request->has('status')) {
             $query->where('status_transaksi', $request->status);
         }
