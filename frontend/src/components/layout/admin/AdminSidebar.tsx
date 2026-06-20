@@ -18,7 +18,7 @@ const NAV_ITEMS = [
 
 export default function AdminSidebar() {
   return (
-    <aside className="flex h-full w-64 flex-col bg-popover/90 px-4 py-6">
+    <aside className="dark flex h-full w-64 flex-col bg-popover/90 px-4 py-6">
       <div className="mb-8 flex flex-col items-center gap-2 px-2">
         <div className="h-14 w-14 rounded-full bg-primary" />
         <div className="text-center">
