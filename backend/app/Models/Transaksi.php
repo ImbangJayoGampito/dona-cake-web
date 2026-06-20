@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -22,6 +23,7 @@ use Illuminate\Support\Carbon;
 class Transaksi extends Model
 {
     const STATUS_MENUNGGU = 'menunggu';
+    const STATUS_MENUNGGU_KONFIRMASI = 'menunggu_konfirmasi';
     const STATUS_DIBAYAR = 'dibayar';
     const STATUS_GAGAL = 'gagal';
     const STATUS_DIKEMBALIKAN = 'dikembalikan';
@@ -50,5 +52,10 @@ class Transaksi extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function gambars(): MorphMany
+    {
+        return $this->morphMany(Gambar::class, 'gambarable');
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Transaksi;
 use App\Models\Pesanan;
 use App\Models\Booking;
 use App\Models\Pelanggan;
+use App\Models\Gambar;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class TransaksiController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = Transaksi::with(['pesanans.pelanggan.user', 'bookings.pelanggan.user']);
+        $query = Transaksi::with(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars']);
 
         if ($user->hasRole('user')) {
             $query->where('user_id', $user->id);
@@ -78,6 +79,7 @@ class TransaksiController extends Controller
 
     /**
      * Process payment for an order.
+     * Creates a transaction with status 'menunggu_konfirmasi' until staff verifies it.
      */
     public function payOrder(Request $request, Pesanan $pesanan): JsonResponse
     {
@@ -100,42 +102,48 @@ class TransaksiController extends Controller
 
         $request->validate([
             'metode_pembayaran' => 'required|string|max:50',
+            'file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Create transaction
+            // Create transaction (pending confirmation)
             $transaksi = Transaksi::create([
                 'user_id' => $user->id,
                 'jumlah_bayar' => $pesanan->total_harga,
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'status_transaksi' => Transaksi::STATUS_DIBAYAR,
+                'status_transaksi' => Transaksi::STATUS_MENUNGGU_KONFIRMASI,
                 'tgl_transaksi' => now(),
             ]);
 
-            // Update order status
+            // Update order status to waiting confirmation
             $pesanan->update([
                 'transaksi_id' => $transaksi->id,
-                'status_pesanan' => Pesanan::STATUS_DIBAYAR,
+                'status_pesanan' => Pesanan::STATUS_MENUNGGU_KONFIRMASI_PEMBAYARAN,
             ]);
+
+            // Upload payment proof if provided
+            if ($request->hasFile('file')) {
+                Gambar::createForModel($transaksi, $request->file('file'));
+            }
 
             DB::commit();
 
             // Notify staff
             $this->notificationService->sendToStaff(
-                'Pembayaran Diterima',
-                "Pembayaran untuk pesanan #{$pesanan->id} dari {$user->name} diterima. Total: Rp " . number_format($pesanan->total_harga, 0, ',', '.'),
-                'success',
+                'Pembayaran Menunggu Konfirmasi',
+                "Pembayaran untuk pesanan #{$pesanan->id} dari {$user->name} menunggu konfirmasi. Total: Rp " . number_format($pesanan->total_harga, 0, ',', '.'),
+                'info',
                 Pesanan::class,
                 $pesanan->id
             );
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Pembayaran berhasil.',
+                'message' => 'Pembayaran berhasil dikirim. Menunggu konfirmasi dari staff.',
                 'data' => [
-                    'transaksi' => $transaksi,
+                    'transaksi' => $transaksi->fresh()->load(['gambars']),
                     'pesanan' => $pesanan->fresh()->load(['pelanggan.user', 'itemPesanans.produk']),
                 ],
             ]);
@@ -150,6 +158,7 @@ class TransaksiController extends Controller
 
     /**
      * Process payment for a booking.
+     * Creates a transaction with status 'menunggu_konfirmasi' until staff verifies it.
      */
     public function payBooking(Request $request, Booking $booking): JsonResponse
     {
@@ -173,6 +182,7 @@ class TransaksiController extends Controller
         $request->validate([
             'metode_pembayaran' => 'required|string|max:50',
             'jumlah_bayar' => 'required|numeric|min:0',
+            'file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         try {
@@ -182,7 +192,7 @@ class TransaksiController extends Controller
                 'user_id' => $user->id,
                 'jumlah_bayar' => $request->jumlah_bayar,
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'status_transaksi' => Transaksi::STATUS_DIBAYAR,
+                'status_transaksi' => Transaksi::STATUS_MENUNGGU_KONFIRMASI,
                 'tgl_transaksi' => now(),
             ]);
 
@@ -191,13 +201,18 @@ class TransaksiController extends Controller
                 'harga_final' => $request->jumlah_bayar,
             ]);
 
+            // Upload payment proof if provided
+            if ($request->hasFile('file')) {
+                Gambar::createForModel($transaksi, $request->file('file'));
+            }
+
             DB::commit();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Pembayaran booking berhasil.',
+                'message' => 'Pembayaran booking berhasil dikirim. Menunggu konfirmasi dari staff.',
                 'data' => [
-                    'transaksi' => $transaksi,
+                    'transaksi' => $transaksi->fresh()->load(['gambars']),
                     'booking' => $booking->fresh()->load('pelanggan.user'),
                 ],
             ]);
@@ -206,6 +221,154 @@ class TransaksiController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Pembayaran gagal: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * List all transactions waiting for staff confirmation.
+     */
+    public function pendingConfirmations(Request $request): JsonResponse
+    {
+        $query = Transaksi::with(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars'])
+            ->where('status_transaksi', Transaksi::STATUS_MENUNGGU_KONFIRMASI)
+            ->orderBy('created_at', 'desc');
+
+        $transaksis = $query->paginate($request->get('per_page', 20));
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $transaksis->items(),
+            'pagination' => [
+                'current_page' => $transaksis->currentPage(),
+                'last_page' => $transaksis->lastPage(),
+                'per_page' => $transaksis->perPage(),
+                'total' => $transaksis->total(),
+            ],
+        ]);
+    }
+
+    /**
+     * Confirm or reject a pending payment (staff only).
+     *
+     * Request body:
+     * - action: "confirm" | "reject"
+     * - catatan (optional, for rejection reason)
+     */
+    public function confirmPayment(Request $request, Transaksi $transaksi): JsonResponse
+    {
+        if ($transaksi->status_transaksi !== Transaksi::STATUS_MENUNGGU_KONFIRMASI) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Transaksi ini tidak menunggu konfirmasi.',
+            ], 400);
+        }
+
+        $request->validate([
+            'action' => 'required|string|in:confirm,reject',
+            'catatan' => 'nullable|string|max:500',
+        ]);
+
+        $action = $request->action;
+        $user = $request->user();
+
+        try {
+            DB::beginTransaction();
+
+            if ($action === 'confirm') {
+                // Approve payment
+                $transaksi->update([
+                    'status_transaksi' => Transaksi::STATUS_DIBAYAR,
+                ]);
+
+                // Update related order status
+                $pesanan = $transaksi->pesanans()->first();
+                if ($pesanan) {
+                    $pesanan->update([
+                        'status_pesanan' => Pesanan::STATUS_DIBAYAR,
+                    ]);
+
+                    $this->notificationService->create(
+                        $pesanan->pelanggan->user_id,
+                        'Pembayaran Dikonfirmasi',
+                        "Pembayaran untuk pesanan #{$pesanan->id} telah dikonfirmasi oleh staff. Pesanan akan segera diproses.",
+                        'success',
+                        Pesanan::class,
+                        $pesanan->id
+                    );
+                }
+
+                // Update related booking status
+                $booking = $transaksi->bookings()->first();
+                if ($booking) {
+                    $this->notificationService->create(
+                        $booking->pelanggan->user_id,
+                        'Pembayaran Booking Dikonfirmasi',
+                        "Pembayaran untuk booking #{$booking->id} telah dikonfirmasi oleh staff.",
+                        'success',
+                        Booking::class,
+                        $booking->id
+                    );
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Pembayaran berhasil dikonfirmasi.',
+                    'data' => $transaksi->fresh()->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars']),
+                ]);
+            } else {
+                // Reject payment
+                $transaksi->update([
+                    'status_transaksi' => Transaksi::STATUS_GAGAL,
+                ]);
+
+                $catatan = $request->catatan ?? 'Tidak ada alasan yang diberikan.';
+
+                // Update related order status
+                $pesanan = $transaksi->pesanans()->first();
+                if ($pesanan) {
+                    $pesanan->update([
+                        'status_pesanan' => Pesanan::STATUS_PEMBAYARAN_DIBATALKAN,
+                    ]);
+
+                    $this->notificationService->create(
+                        $pesanan->pelanggan->user_id,
+                        'Pembayaran Ditolak',
+                        "Pembayaran untuk pesanan #{$pesanan->id} ditolak. Alasan: {$catatan}",
+                        'error',
+                        Pesanan::class,
+                        $pesanan->id
+                    );
+                }
+
+                // Update related booking status
+                $booking = $transaksi->bookings()->first();
+                if ($booking) {
+                    $this->notificationService->create(
+                        $booking->pelanggan->user_id,
+                        'Pembayaran Booking Ditolak',
+                        "Pembayaran untuk booking #{$booking->id} ditolak. Alasan: {$catatan}",
+                        'error',
+                        Booking::class,
+                        $booking->id
+                    );
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Pembayaran ditolak.',
+                    'data' => $transaksi->fresh()->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars']),
+                ]);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memproses konfirmasi: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -224,7 +387,7 @@ class TransaksiController extends Controller
             ], 403);
         }
 
-        $transaksi->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user']);
+        $transaksi->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars']);
 
         return response()->json([
             'status' => 'success',

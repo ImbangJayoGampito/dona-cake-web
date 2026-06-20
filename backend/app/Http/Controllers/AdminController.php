@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Pelanggan;
+use App\Models\Booking;
 use App\Enums\RoleEnum;
+use App\Enums\BookingStatus;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -149,7 +151,8 @@ class AdminController extends Controller
         $totalProduk = \App\Models\Produk::count();
         $totalPesanan = \App\Models\Pesanan::count();
         $pesananBaru = \App\Models\Pesanan::where('status_pesanan', 'menunggu_pembayaran')->count();
-        $bookingMenunggu = \App\Models\Booking::where('status_verifikasi', 'menunggu_verifikasi')->count();
+        $bookingMenunggu = Booking::where('status_verifikasi', BookingStatus::MENUNGGU_VERIFIKASI->value)->count();
+        $transaksiMenungguKonfirmasi = \App\Models\Transaksi::where('status_transaksi', 'menunggu_konfirmasi')->count();
 
         return response()->json([
             'status' => 'success',
@@ -160,6 +163,7 @@ class AdminController extends Controller
                 'total_pesanan' => $totalPesanan,
                 'pesanan_baru' => $pesananBaru,
                 'booking_menunggu' => $bookingMenunggu,
+                'transaksi_menunggu_konfirmasi' => $transaksiMenungguKonfirmasi,
             ],
         ]);
     }
