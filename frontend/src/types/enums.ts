@@ -12,6 +12,7 @@ export type RoleEnum = typeof RoleEnum[keyof typeof RoleEnum]
 // ============== Pesanan Status ==============
 export const PesananStatus = {
   MENUNGGU_PEMBAYARAN: 'menunggu_pembayaran',
+  MENUNGGU_KONFIRMASI_PEMBAYARAN: 'menunggu_konfirmasi_pembayaran',
   DIBAYAR: 'dibayar',
   DIPROSES: 'diproses',
   SELESAI: 'selesai',

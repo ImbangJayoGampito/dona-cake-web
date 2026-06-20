@@ -51,6 +51,7 @@ export class Pesanan {
   getStatusBadgeColor(): string {
     const statusColors: Record<PesananStatusType, string> = {
       [PesananStatus.MENUNGGU_PEMBAYARAN]: 'yellow',
+      [PesananStatus.MENUNGGU_KONFIRMASI_PEMBAYARAN]: 'yellow',
       [PesananStatus.DIBAYAR]: 'blue',
       [PesananStatus.DIPROSES]: 'purple',
       [PesananStatus.SELESAI]: 'green',
@@ -63,6 +64,7 @@ export class Pesanan {
   getStatusLabel(): string {
     const labels: Record<PesananStatusType, string> = {
       [PesananStatus.MENUNGGU_PEMBAYARAN]: 'Menunggu Pembayaran',
+      [PesananStatus.MENUNGGU_KONFIRMASI_PEMBAYARAN]: 'Menunggu Konfirmasi Pembayaran',
       [PesananStatus.DIBAYAR]: 'Dibayar',
       [PesananStatus.DIPROSES]: 'Diproses',
       [PesananStatus.SELESAI]: 'Selesai',
@@ -74,7 +76,8 @@ export class Pesanan {
 
   canTransitionTo(newStatus: PesananStatusType): boolean {
     const transitions: Record<PesananStatusType, PesananStatusType[]> = {
-      [PesananStatus.MENUNGGU_PEMBAYARAN]: [PesananStatus.DIBAYAR, PesananStatus.PEMBAYARAN_DIBATALKAN],
+      [PesananStatus.MENUNGGU_PEMBAYARAN]: [PesananStatus.MENUNGGU_KONFIRMASI_PEMBAYARAN, PesananStatus.DIBAYAR, PesananStatus.PEMBAYARAN_DIBATALKAN],
+      [PesananStatus.MENUNGGU_KONFIRMASI_PEMBAYARAN]: [PesananStatus.DIBAYAR, PesananStatus.PEMBAYARAN_DIBATALKAN],
       [PesananStatus.DIBAYAR]: [PesananStatus.DIPROSES, PesananStatus.DIBATALKAN],
       [PesananStatus.DIPROSES]: [PesananStatus.SELESAI, PesananStatus.DIBATALKAN],
       [PesananStatus.SELESAI]: [],
