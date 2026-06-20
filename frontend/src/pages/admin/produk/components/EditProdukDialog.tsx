@@ -215,7 +215,7 @@ export default function EditProdukDialog({
             </p>
 
             {isCreateMode ? (
-              <div className="flex h-40 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-[#F7F5F3] p-4 text-center">
+              <div className="flex h-40 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted p-4 text-center">
                 <p className="text-xs font-medium text-foreground mb-1">
                   Upload Foto Dinonaktifkan
                 </p>
@@ -224,7 +224,7 @@ export default function EditProdukDialog({
                 </p>
               </div>
             ) : isLoadingDetail ? (
-              <div className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border bg-[#F7F5F3]">
+              <div className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border bg-muted">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : (
@@ -232,7 +232,7 @@ export default function EditProdukDialog({
                 {gambars.map((g) => (
                   <div
                     key={g.id}
-                    className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-[#F7F5F3]"
+                    className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted"
                   >
                     <img
                       src={g.getFullUrl()}
@@ -241,7 +241,7 @@ export default function EditProdukDialog({
                     />
                     <button
                       onClick={() => handleDeleteGambar(g)}
-                      className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#D94F4F] text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100"
                     >
                       <X className="h-3 w-3" strokeWidth={2.5} />
                     </button>
@@ -254,12 +254,12 @@ export default function EditProdukDialog({
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingIdx !== null}
                     className={cn(
-                      "flex aspect-square flex-col items-center justify-center rounded-xl border border-dashed border-border bg-[#F7F5F3] transition-colors hover:border-[#C9956C] hover:bg-[#F5EAE0]",
+                      "flex aspect-square flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted transition-colors hover:border-primary hover:bg-secondary",
                       uploadingIdx !== null && "opacity-50 cursor-not-allowed"
                     )}
                   >
                     {uploadingIdx !== null ? (
-                      <Loader2 className="h-5 w-5 animate-spin text-[#C9956C]" />
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     ) : (
                       <Upload className="h-5 w-5 text-muted-foreground" />
                     )}
@@ -363,7 +363,7 @@ export default function EditProdukDialog({
             </div>
 
             {/* Status Penjualan */}
-            <div className="flex items-center justify-between rounded-xl border border-border bg-[#F7F5F3] px-4 py-3">
+            <div className="flex items-center justify-between rounded-xl border border-border bg-muted px-4 py-3">
               <div>
                 <p className="text-sm font-medium text-foreground">
                   Status Penjualan
@@ -393,7 +393,7 @@ export default function EditProdukDialog({
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="bg-[#C9956C] hover:bg-[#A8744E]"
+            className="bg-primary hover:bg-primary/80"
           >
             {isSubmitting ? (
               <>

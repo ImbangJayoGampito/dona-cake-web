@@ -19,19 +19,19 @@ const ROLE_CONFIG: Record<
   user: {
     label: "User",
     isRight: true,
-    bubbleClass: "bg-[#C9956C] text-white rounded-[16px_4px_16px_16px]",
-    iconBg: "bg-[#F5EAE0]",
+    bubbleClass: "bg-primary text-white rounded-[16px_4px_16px_16px]",
+    iconBg: "bg-secondary",
   },
   assistant: {
     label: "AI Assistant",
     isRight: false,
     bubbleClass: "bg-white border border-border rounded-[4px_16px_16px_16px]",
-    iconBg: "bg-[#F5EAE0]",
+    iconBg: "bg-secondary",
   },
   system: {
     label: "System",
     isRight: false,
-    bubbleClass: "bg-[#F7F5F3] border border-border rounded-[4px_16px_16px_16px] italic",
+    bubbleClass: "bg-muted border border-border rounded-[4px_16px_16px_16px] italic",
     iconBg: "bg-[#EFECE9]",
   },
 }
@@ -55,9 +55,9 @@ function MessageBubble({ message }: { message: ChatMessage }) {
         )}
       >
         {message.role === "user" ? (
-          <User className="h-4 w-4 text-[#C9956C]" strokeWidth={1.75} />
+          <User className="h-4 w-4 text-primary" strokeWidth={1.75} />
         ) : (
-          <Bot className="h-4 w-4 text-[#C9956C]" strokeWidth={1.75} />
+          <Bot className="h-4 w-4 text-primary" strokeWidth={1.75} />
         )}
       </div>
 
@@ -96,7 +96,7 @@ export default function ChatTranscript({
   if (isLoading) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#C9956C] border-t-transparent" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     )
   }

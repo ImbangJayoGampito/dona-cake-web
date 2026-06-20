@@ -120,8 +120,8 @@ export default function LaporanKeuanganPage() {
 
   if (summaryState === "error") {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-[#D94F4F]/30 bg-[#FDF0F0] px-6 py-16 text-center">
-        <AlertCircle className="h-10 w-10 text-[#D94F4F]" strokeWidth={1.75} />
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-destructive/30 bg-destructive/10 px-6 py-16 text-center">
+        <AlertCircle className="h-10 w-10 text-destructive" strokeWidth={1.75} />
         <h2 className="mt-4 text-lg font-semibold text-foreground">
           Gagal Memuat Laporan
         </h2>

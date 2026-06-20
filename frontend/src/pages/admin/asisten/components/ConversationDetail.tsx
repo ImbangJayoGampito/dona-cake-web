@@ -20,15 +20,15 @@ interface ConversationDetailProps {
 const STATUS_BADGE: Record<StatusFlag, { label: string; className: string }> = {
   aktif: {
     label: "Aktif",
-    className: "bg-[#F5EAE0] text-[#C9956C]",
+    className: "bg-secondary text-primary",
   },
   dilaporkan: {
     label: "Dilaporkan",
-    className: "bg-[#FDF0F0] text-[#D94F4F]",
+    className: "bg-destructive/10 text-destructive",
   },
   selesai: {
     label: "Selesai",
-    className: "bg-[#EDF7F1] text-[#2E7D52]",
+    className: "bg-green-100 text-green-700",
   },
 }
 
@@ -86,8 +86,8 @@ export default function ConversationDetail({
   if (!detail && !isLoading) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#F5EAE0]">
-          <Send className="h-7 w-7 text-[#C9956C]" strokeWidth={1.75} />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
+          <Send className="h-7 w-7 text-primary" strokeWidth={1.75} />
         </div>
         <p className="mt-4 text-sm font-medium text-foreground">
           Pilih percakapan
@@ -110,7 +110,7 @@ export default function ConversationDetail({
         <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
           <div className="flex items-center gap-3">
             {/* Avatar */}
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5EAE0] text-sm font-semibold text-[#C9956C]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-primary">
               {getInitials(detail.user.name)}
             </div>
             <div className="leading-tight">
@@ -148,7 +148,7 @@ export default function ConversationDetail({
             {detail.status !== "selesai" && onMarkSelesai && (
               <Button
                 size="sm"
-                className="gap-1.5 bg-[#C9956C] text-xs hover:bg-[#A8744E]"
+                className="gap-1.5 bg-primary text-xs hover:bg-primary/80"
                 onClick={() => onMarkSelesai(detail.id)}
               >
                 <CheckCircle className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -173,7 +173,7 @@ export default function ConversationDetail({
       {detail && detail.status !== "selesai" && (
         <div className="border-t border-border bg-white px-4 py-3">
           <div className="flex items-end gap-2">
-            <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-[#F7F5F3] px-3 py-2.5">
+            <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-muted px-3 py-2.5">
               <textarea
                 value={csInput}
                 onChange={(e) => setCsInput(e.target.value)}
@@ -204,7 +204,7 @@ export default function ConversationDetail({
                   "Fitur balas sebagai CS belum tersedia. Endpoint backend belum diimplementasikan."
                 )
               }
-              className="h-10 gap-1.5 bg-[#C9956C] px-4 text-sm hover:bg-[#A8744E]"
+              className="h-10 gap-1.5 bg-primary px-4 text-sm hover:bg-primary/80"
             >
               Kirim Balasan
               <Send className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -218,8 +218,8 @@ export default function ConversationDetail({
 
       {/* State: percakapan selesai */}
       {detail?.status === "selesai" && (
-        <div className="border-t border-border bg-[#EDF7F1] px-5 py-3 text-center">
-          <p className="text-xs font-medium text-[#2E7D52]">
+        <div className="border-t border-border bg-green-100 px-5 py-3 text-center">
+          <p className="text-xs font-medium text-green-700">
             ✓ Percakapan ini sudah ditandai selesai
           </p>
         </div>

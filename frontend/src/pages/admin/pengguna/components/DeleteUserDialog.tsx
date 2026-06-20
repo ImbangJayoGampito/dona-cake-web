@@ -50,16 +50,16 @@ export default function DeleteUserDialog({
     <Dialog open={open} onOpenChange={(v) => !v && !isDeleting && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-[#D94F4F]">{title}</DialogTitle>
+          <DialogTitle className="text-destructive">{title}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          <div className="flex items-start gap-3 rounded-xl bg-[#FDF0F0] px-4 py-3">
+          <div className="flex items-start gap-3 rounded-xl bg-destructive/10 px-4 py-3">
             <AlertTriangle
-              className="mt-0.5 h-5 w-5 shrink-0 text-[#D94F4F]"
+              className="mt-0.5 h-5 w-5 shrink-0 text-destructive"
               strokeWidth={1.75}
             />
-            <div className="space-y-1 text-sm text-[#A32D2D]">
+            <div className="space-y-1 text-sm text-destructive/80">
               <p className="font-medium">{description}</p>
               <p>Tindakan ini tidak dapat diurungkan.</p>
             </div>

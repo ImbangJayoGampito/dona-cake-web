@@ -107,9 +107,9 @@ export default function MonitorAsistenPage() {
             <p className="text-xl font-semibold text-foreground">{totalChats}</p>
           </div>
           {totalDilaporkan > 0 && (
-            <div className="rounded-xl border border-[#D94F4F]/40 bg-[#FDF0F0] px-4 py-2 text-center">
-              <p className="text-xs text-[#D94F4F]">Dilaporkan</p>
-              <p className="text-xl font-semibold text-[#D94F4F]">
+            <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-2 text-center">
+              <p className="text-xs text-destructive">Dilaporkan</p>
+              <p className="text-xl font-semibold text-destructive">
                 {totalDilaporkan}
               </p>
             </div>
@@ -156,7 +156,7 @@ export default function MonitorAsistenPage() {
               </div>
             ) : listState === "error" ? (
               <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                <AlertCircle className="h-8 w-8 text-[#D94F4F]" strokeWidth={1.75} />
+                <AlertCircle className="h-8 w-8 text-destructive" strokeWidth={1.75} />
                 <p className="mt-2 text-xs text-muted-foreground">{listError}</p>
                 <Button
                   size="sm"

@@ -20,7 +20,7 @@ interface TrendChartProps {
 const chartConfig: ChartConfig = {
   total_pendapatan: {
     label: "Pendapatan",
-    color: "#C9956C",
+    color: "hsl(var(--primary))",
   },
 }
 
@@ -61,7 +61,7 @@ export default function TrendChart({
         </div>
 
         {/* Toggle Harian / Mingguan / Bulanan */}
-        <div className="flex items-center gap-1 rounded-lg border border-border bg-[#F7F5F3] p-1">
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-muted p-1">
           {PERIODE_OPTIONS.map((opt) => (
             <Button
               key={opt.value}
@@ -71,7 +71,7 @@ export default function TrendChart({
               className={cn(
                 "h-7 rounded-md px-3 text-xs font-medium transition-colors",
                 periode === opt.value
-                  ? "bg-[#C9956C] text-white hover:bg-[#A8744E]"
+                  ? "bg-primary text-white hover:bg-primary/80"
                   : "text-muted-foreground hover:bg-white hover:text-foreground"
               )}
             >
@@ -84,7 +84,7 @@ export default function TrendChart({
       <CardContent>
         {isLoading ? (
           <div className="flex h-[260px] items-center justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#C9956C] border-t-transparent" />
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex h-[260px] items-center justify-center">
@@ -100,11 +100,11 @@ export default function TrendChart({
             <AreaChart data={chartData} margin={{ left: 0, right: 0, top: 4 }}>
               <defs>
                 <linearGradient id="fillPendapatan" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#C9956C" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#C9956C" stopOpacity={0} />
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid vertical={false} stroke="#EFECE9" />
+              <CartesianGrid vertical={false} stroke="var(--border)" />
               <XAxis
                 dataKey="label"
                 tickLine={false}
@@ -142,10 +142,10 @@ export default function TrendChart({
                 dataKey="total_pendapatan"
                 type="monotone"
                 fill="url(#fillPendapatan)"
-                stroke="#C9956C"
+                stroke="hsl(var(--primary))"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: "#C9956C" }}
+                activeDot={{ r: 4, fill: "hsl(var(--primary))" }}
               />
             </AreaChart>
           </ChartContainer>

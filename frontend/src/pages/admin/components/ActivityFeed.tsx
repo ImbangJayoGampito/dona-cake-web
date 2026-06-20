@@ -19,10 +19,10 @@ interface ActivityFeedProps {
 }
 
 const DOT_COLOR: Record<ActivityItem["variant"], string> = {
-  default: "bg-[#C9956C]",
-  warning: "bg-[#B45309]",
-  danger: "bg-[#D94F4F]",
-  info: "bg-[#1D4ED8]",
+  default: "bg-primary",
+  warning: "bg-orange-700",
+  danger: "bg-destructive",
+  info: "bg-blue-700",
 }
 
 export default function ActivityFeed({ items }: ActivityFeedProps) {

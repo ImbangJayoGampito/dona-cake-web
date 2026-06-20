@@ -18,13 +18,13 @@ export default function ProdukCard({
 
   const badgeLabel = isHabis ? "HABIS" : "AKTIF"
   const badgeClass = isHabis
-    ? "bg-[#D94F4F] text-white"
-    : "bg-[#C9956C] text-white"
+    ? "bg-destructive text-white"
+    : "bg-primary text-white"
 
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md">
       {/* Foto produk */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#F7F5F3]">
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img
           src={produk.getGambarUtamaUrl()}
           alt={produk.nama_produk}
@@ -52,7 +52,7 @@ export default function ProdukCard({
             {produk.nama_produk}
           </h3>
           <div className="flex shrink-0 items-center gap-0.5 text-xs text-muted-foreground">
-            <Star className="h-3 w-3 fill-[#F59E0B] text-[#F59E0B]" />
+            <Star className="h-3 w-3 fill-[#F59E0B] text-yellow-500" />
             {Number(produk.rating_rata_rata).toFixed(1)}
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function ProdukCard({
         <p
           className={cn(
             "mt-2 text-base font-bold",
-            isHabis ? "text-muted-foreground" : "text-[#C9956C]"
+            isHabis ? "text-muted-foreground" : "text-primary"
           )}
         >
           {produk.getFormattedPrice()}
@@ -81,9 +81,9 @@ export default function ProdukCard({
           className={cn(
             "mt-0.5 text-xs",
             isHabis
-              ? "text-[#D94F4F]"
+              ? "text-destructive"
               : isHampirHabis
-              ? "text-[#B45309] font-medium"
+              ? "text-orange-700 font-medium"
               : "text-muted-foreground"
           )}
         >
@@ -99,14 +99,14 @@ export default function ProdukCard({
           <button
             onClick={() => onEdit(produk)}
             title="Edit produk"
-            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-[#F5EAE0] hover:text-[#C9956C]"
+            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-primary"
           >
             <Pencil className="h-4 w-4" strokeWidth={1.75} />
           </button>
           <button
             onClick={() => onToggleVisibility(produk)}
             title={isHabis ? "Tandai tersedia" : "Sembunyikan produk"}
-            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-[#F5EAE0] hover:text-[#C9956C]"
+            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-primary"
           >
             {isHabis ? (
               <Eye className="h-4 w-4" strokeWidth={1.75} />
