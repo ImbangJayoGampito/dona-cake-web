@@ -17,7 +17,7 @@ class ProdukRequest extends FormRequest
             'nama_produk' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0',
             'stok' => 'required|integer|min:0',
-            'kategori' => 'nullable|string|max:100',
+            'kategori_id' => 'nullable|integer|exists:kategoris,id',
             'deskripsi' => 'nullable|string',
             'rating_rata_rata' => 'nullable|numeric|min:0|max:5',
         ];
@@ -27,7 +27,7 @@ class ProdukRequest extends FormRequest
                 'nama_produk' => 'sometimes|string|max:255',
                 'harga' => 'sometimes|numeric|min:0',
                 'stok' => 'sometimes|integer|min:0',
-                'kategori' => 'nullable|string|max:100',
+                'kategori_id' => 'nullable|integer|exists:kategoris,id',
                 'deskripsi' => 'nullable|string',
                 'rating_rata_rata' => 'nullable|numeric|min:0|max:5',
             ];

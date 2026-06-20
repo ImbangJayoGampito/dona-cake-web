@@ -45,6 +45,34 @@ export class Transaksi {
     }).format(this.jumlah_bayar)
   }
 
+  getTanggalFormatted(): string {
+    return this.tgl_transaksi.toLocaleDateString("id-ID", {
+      dateStyle: "medium"
+    })
+  }
+
+  getNoPesanan(): string {
+    if (this.pesanans && this.pesanans.length > 0) {
+      return `#PS-${this.pesanans[0].id}`
+    }
+    if (this.bookings && this.bookings.length > 0) {
+      return `#BK-${this.bookings[0].id}`
+    }
+    return "-"
+  }
+
+  getNamaPelanggan(): string {
+    const nameFromPesanan = this.pesanans?.[0]?.pelanggan?.user?.name
+    if (nameFromPesanan) return nameFromPesanan
+    const nameFromBooking = this.bookings?.[0]?.pelanggan?.user?.name
+    if (nameFromBooking) return nameFromBooking
+    return "-"
+  }
+
+  getJumlahFormatted(): string {
+    return this.getFormattedAmount()
+  }
+
   getStatusBadgeColor(): string {
     const statusColors: Record<TransaksiStatusType, string> = {
       [TransaksiStatus.MENUNGGU]: 'yellow',

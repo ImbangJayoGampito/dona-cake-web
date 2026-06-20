@@ -26,6 +26,10 @@ import ProtectedRoute from "./components/layout/ProtectedRoute"
 import AdminLayout from "./components/layout/admin/AdminLayout"
 import DashboardOverview from "./pages/admin/DashboardOverview"
 import AksesDitolakPage from "./pages/errors/AksesDitolakPage"
+import ManajemenPenggunaPage from "./pages/admin/pengguna/ManajemenPenggunaPage"
+import ManajemenProdukPage from "./pages/admin/produk/ManajemenProdukPage"
+import LaporanKeuanganPage from "./pages/admin/laporan/LaporanKeuanganPage"
+import MonitorAsistenPage from "./pages/admin/asisten/MonitorAsistenPage"
 
 export function App() {
   const [isLoading, setIsLoading] = useState(true)
@@ -96,6 +100,10 @@ export function App() {
         }
       >
         <Route path="/admin/dashboard" element={<DashboardOverview />} />
+        <Route path="/admin/pengguna" element={<ManajemenPenggunaPage />} />
+        <Route path="/admin/produk" element={<ManajemenProdukPage />} />
+        <Route path="/admin/laporan" element={<LaporanKeuanganPage />} />
+        <Route path="/admin/asisten" element={<MonitorAsistenPage />} />
       </Route>
 
       {/* Example using Button */}
