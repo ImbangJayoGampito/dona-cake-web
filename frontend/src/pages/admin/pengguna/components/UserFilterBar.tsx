@@ -36,7 +36,7 @@ export default function UserFilterBar({
           onChange={(e) =>
             onFiltersChange({ ...filters, search: e.target.value })
           }
-          className="pl-9"
+          className="pl-9 text-foreground bg-background"
         />
       </div>
 
