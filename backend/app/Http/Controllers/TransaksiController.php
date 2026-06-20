@@ -6,6 +6,7 @@ use App\Models\Transaksi;
 use App\Models\Pesanan;
 use App\Models\Booking;
 use App\Models\Pelanggan;
+use App\Models\Gambar;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class TransaksiController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = Transaksi::with(['pesanans.pelanggan.user', 'bookings.pelanggan.user']);
+        $query = Transaksi::with(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars']);
 
         if ($user->hasRole('user')) {
             $query->where('user_id', $user->id);
@@ -101,6 +102,7 @@ class TransaksiController extends Controller
 
         $request->validate([
             'metode_pembayaran' => 'required|string|max:50',
+            'file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         try {
@@ -121,6 +123,11 @@ class TransaksiController extends Controller
                 'status_pesanan' => Pesanan::STATUS_MENUNGGU_KONFIRMASI_PEMBAYARAN,
             ]);
 
+            // Upload payment proof if provided
+            if ($request->hasFile('file')) {
+                Gambar::createForModel($transaksi, $request->file('file'));
+            }
+
             DB::commit();
 
             // Notify staff
@@ -136,7 +143,7 @@ class TransaksiController extends Controller
                 'status' => 'success',
                 'message' => 'Pembayaran berhasil dikirim. Menunggu konfirmasi dari staff.',
                 'data' => [
-                    'transaksi' => $transaksi,
+                    'transaksi' => $transaksi->fresh()->load(['gambars']),
                     'pesanan' => $pesanan->fresh()->load(['pelanggan.user', 'itemPesanans.produk']),
                 ],
             ]);
@@ -175,6 +182,7 @@ class TransaksiController extends Controller
         $request->validate([
             'metode_pembayaran' => 'required|string|max:50',
             'jumlah_bayar' => 'required|numeric|min:0',
+            'file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         try {
@@ -193,13 +201,18 @@ class TransaksiController extends Controller
                 'harga_final' => $request->jumlah_bayar,
             ]);
 
+            // Upload payment proof if provided
+            if ($request->hasFile('file')) {
+                Gambar::createForModel($transaksi, $request->file('file'));
+            }
+
             DB::commit();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Pembayaran booking berhasil dikirim. Menunggu konfirmasi dari staff.',
                 'data' => [
-                    'transaksi' => $transaksi,
+                    'transaksi' => $transaksi->fresh()->load(['gambars']),
                     'booking' => $booking->fresh()->load('pelanggan.user'),
                 ],
             ]);
@@ -217,7 +230,7 @@ class TransaksiController extends Controller
      */
     public function pendingConfirmations(Request $request): JsonResponse
     {
-        $query = Transaksi::with(['pesanans.pelanggan.user', 'bookings.pelanggan.user'])
+        $query = Transaksi::with(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars'])
             ->where('status_transaksi', Transaksi::STATUS_MENUNGGU_KONFIRMASI)
             ->orderBy('created_at', 'desc');
 
@@ -303,7 +316,7 @@ class TransaksiController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Pembayaran berhasil dikonfirmasi.',
-                    'data' => $transaksi->fresh()->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user']),
+                    'data' => $transaksi->fresh()->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars']),
                 ]);
             } else {
                 // Reject payment
@@ -348,7 +361,7 @@ class TransaksiController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Pembayaran ditolak.',
-                    'data' => $transaksi->fresh()->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user']),
+                    'data' => $transaksi->fresh()->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars']),
                 ]);
             }
         } catch (\Exception $e) {
@@ -374,7 +387,7 @@ class TransaksiController extends Controller
             ], 403);
         }
 
-        $transaksi->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user']);
+        $transaksi->load(['pesanans.pelanggan.user', 'bookings.pelanggan.user', 'gambars']);
 
         return response()->json([
             'status' => 'success',
