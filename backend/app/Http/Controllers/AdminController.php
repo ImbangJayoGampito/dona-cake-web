@@ -27,7 +27,7 @@ class AdminController extends Controller
      */
     public function users(Request $request): JsonResponse
     {
-        $query = User::with('pelanggan');
+        $query = User::with(['pelanggan', 'roles']);
 
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
