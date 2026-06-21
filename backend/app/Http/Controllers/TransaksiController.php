@@ -88,7 +88,7 @@ class TransaksiController extends Controller
 
         $request->validate([
             'metode_pembayaran' => 'required|string|max:50',
-            'file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'file' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         try {
@@ -109,10 +109,8 @@ class TransaksiController extends Controller
                 'status_pesanan' => Pesanan::STATUS_MENUNGGU_KONFIRMASI_PEMBAYARAN,
             ]);
 
-            // Upload payment proof if provided
-            if ($request->hasFile('file')) {
-                Gambar::createForModel($transaksi, $request->file('file'));
-            }
+            // Upload payment proof
+            Gambar::createForModel($transaksi, $request->file('file'));
 
             DB::commit();
 
@@ -168,7 +166,7 @@ class TransaksiController extends Controller
         $request->validate([
             'metode_pembayaran' => 'required|string|max:50',
             'jumlah_bayar' => 'required|numeric|min:0',
-            'file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'file' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         try {
@@ -187,10 +185,8 @@ class TransaksiController extends Controller
                 'harga_final' => $request->jumlah_bayar,
             ]);
 
-            // Upload payment proof if provided
-            if ($request->hasFile('file')) {
-                Gambar::createForModel($transaksi, $request->file('file'));
-            }
+            // Upload payment proof
+            Gambar::createForModel($transaksi, $request->file('file'));
 
             DB::commit();
 
@@ -247,6 +243,14 @@ class TransaksiController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Transaksi ini tidak menunggu konfirmasi.',
+            ], 400);
+        }
+
+        // Ensure payment proof exists before staff can confirm
+        if ($transaksi->gambars()->count() === 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada bukti pembayaran yang diupload. Staff tidak dapat mengkonfirmasi pembayaran ini.',
             ], 400);
         }
 
