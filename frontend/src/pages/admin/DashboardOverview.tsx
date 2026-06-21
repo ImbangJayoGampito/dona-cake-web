@@ -13,6 +13,8 @@ import type {
   RevenueChartPoint,
   OrderStatusBreakdown,
 } from "@/models/dashboard-summary.model"
+import api from "@/lib/api/config"
+import { ProtectedRoutes } from "@/lib/routes"
 
 export default function DashboardOverview() {
   const [loading, setLoading] = useState(true)
@@ -20,14 +22,20 @@ export default function DashboardOverview() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null)
   const [chartData, setChartData] = useState<RevenueChartPoint[]>([])
   const [donutData, setDonutData] = useState<OrderStatusBreakdown[]>([])
+  const [recentOrders, setRecentOrders] = useState<RecentOrderRow[]>([])
+  const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([])
 
   useEffect(() => {
     async function fetchDashboardData() {
       setLoading(true)
       setError(null)
       try {
-        const summaryRes = await DashboardService.getSummary()
-        const chartRes = await DashboardService.getRevenueChart("daily")
+        const [summaryRes, chartRes, ordersRes, notifRes] = await Promise.all([
+          DashboardService.getSummary(),
+          DashboardService.getRevenueChart("daily"),
+          api.get(ProtectedRoutes.Orders, { params: { per_page: 5 } }).catch(() => null),
+          api.get(ProtectedRoutes.Notifications, { params: { per_page: 5 } }).catch(() => null)
+        ])
 
         if (summaryRes.isSuccess() && summaryRes.data) {
           setSummary(summaryRes.data)
@@ -43,6 +51,59 @@ export default function DashboardOverview() {
         if (chartRes.isSuccess() && chartRes.data) {
           setChartData(chartRes.data)
         }
+
+        // Map real orders
+        if (ordersRes && (ordersRes.data?.data || ordersRes.data)) {
+          const rawOrders = (ordersRes.data?.data ?? ordersRes.data ?? []) as any[]
+          const mappedOrders = rawOrders.map((o) => {
+            let uiStatus = "Menunggu"
+            if (["selesai"].includes(o.status_pesanan)) uiStatus = "Selesai"
+            else if (["dibayar", "diproses"].includes(o.status_pesanan)) uiStatus = "Diproses"
+            else if (["dibatalkan", "pembayaran_dibatalkan"].includes(o.status_pesanan)) uiStatus = "Dibatalkan"
+            
+            return {
+              id: String(o.id),
+              noPesanan: `#ORD-${String(o.id).padStart(4, "0")}`,
+              namaPelanggan: o.pelanggan?.user?.name ?? "Pelanggan",
+              lokasi: o.pelanggan?.alamat ?? undefined,
+              total: Number(o.total_harga || 0),
+              status: uiStatus,
+            }
+          })
+          setRecentOrders(mappedOrders)
+        }
+
+        // Map real activities (notifications for staff/admin)
+        if (notifRes && (notifRes.data?.data || notifRes.data)) {
+          const rawNotifs = (notifRes.data?.data ?? notifRes.data ?? []) as any[]
+          const mappedActivities = rawNotifs.map((n) => {
+            let variant: "default" | "warning" | "danger" | "info" = "default"
+            if (n.tipe === "system") variant = "info"
+            else if (n.tipe === "booking") variant = "warning"
+            else if (n.tipe === "payment") variant = "default"
+            
+            const createdAt = new Date(n.created_at)
+            const diff = new Date().getTime() - createdAt.getTime()
+            const minutes = Math.floor(diff / 60000)
+            const hours = Math.floor(minutes / 60)
+            const days = Math.floor(hours / 24)
+            
+            let relativeTime = "Baru saja"
+            if (minutes >= 1 && minutes < 60) relativeTime = `${minutes} menit lalu`
+            else if (hours >= 1 && hours < 24) relativeTime = `${hours} jam lalu`
+            else if (days >= 1) relativeTime = `${days} hari lalu`
+
+            return {
+              id: String(n.id),
+              title: n.judul || "Pemberitahuan",
+              description: n.pesan || "",
+              timestamp: relativeTime,
+              variant: variant,
+            }
+          })
+          setRecentActivities(mappedActivities)
+        }
+
       } catch (err) {
         setError(err instanceof Error ? err.message : "Terjadi kesalahan server.")
       } finally {
@@ -52,58 +113,6 @@ export default function DashboardOverview() {
 
     fetchDashboardData()
   }, [])
-
-  // Dummy data untuk pesanan terbaru & aktivitas (karena belum ada endpoint riil)
-  const dummyOrders: RecentOrderRow[] = [
-    {
-      id: "1",
-      noPesanan: "#ORD-001",
-      namaPelanggan: "Budi Santoso",
-      lokasi: "Kec. Sukolilo, Surabaya",
-      total: 150000,
-      status: "Menunggu",
-    },
-    {
-      id: "2",
-      noPesanan: "#ORD-002",
-      namaPelanggan: "Dewi Lestari",
-      lokasi: "Kec. Tegalsari, Surabaya",
-      total: 350000,
-      status: "Diproses",
-    },
-    {
-      id: "3",
-      noPesanan: "#ORD-003",
-      namaPelanggan: "Andi Wijaya",
-      lokasi: "Kec. Gubeng, Surabaya",
-      total: 250000,
-      status: "Selesai",
-    },
-  ]
-
-  const dummyActivities: ActivityItem[] = [
-    {
-      id: "1",
-      title: "Pesanan Baru Masuk",
-      description: "Budi Santoso memesan Black Forest Premium sebesar Rp 150.000",
-      timestamp: "5 menit yang lalu",
-      variant: "info",
-    },
-    {
-      id: "2",
-      title: "Pembayaran Diterima",
-      description: "Transaksi #TRX-9482 senilai Rp 350.000 telah berhasil diverifikasi",
-      timestamp: "20 menit yang lalu",
-      variant: "default",
-    },
-    {
-      id: "3",
-      title: "Stok Menipis",
-      description: "Stok bahan baku Tepung Terigu Segitiga Biru tersisa kurang dari 5kg",
-      timestamp: "1 jam yang lalu",
-      variant: "warning",
-    },
-  ]
 
   if (loading) {
     return (
@@ -162,8 +171,8 @@ export default function DashboardOverview() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <RecentOrdersTable orders={dummyOrders} />
-        <ActivityFeed items={dummyActivities} />
+        <RecentOrdersTable orders={recentOrders} />
+        <ActivityFeed items={recentActivities} />
       </div>
     </div>
   )

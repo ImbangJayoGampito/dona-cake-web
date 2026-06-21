@@ -25,8 +25,8 @@ export class Gambar {
   }
 
   getFullUrl(): string {
-    // If already has full URL
-    if (this.gambar_url.startsWith("http")) {
+    // If already has full URL or is a local blob preview URL
+    if (this.gambar_url.startsWith("http") || this.gambar_url.startsWith("blob:")) {
       return this.gambar_url
     }
     // Otherwise, assume it needs base URL

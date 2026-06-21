@@ -63,6 +63,7 @@ export default function EditProdukDialog({
   const [isLoadingDetail, setIsLoadingDetail] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null)
+  const [stagedFiles, setStagedFiles] = useState<{ id: string; file: File; preview: string }[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const isCreateMode = !produk || produk.id === 0
@@ -74,6 +75,7 @@ export default function EditProdukDialog({
     if (produk.id === 0) {
       setForm(EMPTY_FORM)
       setGambars([])
+      setStagedFiles([])
       return
     }
 
@@ -108,7 +110,7 @@ export default function EditProdukDialog({
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
-  // Upload gambar baru
+  // Upload atau Stage gambar baru
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file || !produk) return
@@ -123,21 +125,30 @@ export default function EditProdukDialog({
       return
     }
 
-    setUploadingIdx(gambars.length) // indikator loading slot baru
-    const res = await ManajemenProdukService.uploadGambar({
-      file,
-      gambarable_type: "App\\Models\\Produk",
-      gambarable_id: produk.id,
-    })
-
-    if (res.isSuccess() && res.data) {
-      setGambars((prev) => [...prev, res.data!])
-      toast.success("Foto berhasil diunggah.")
+    if (isCreateMode) {
+      const preview = URL.createObjectURL(file)
+      setStagedFiles((prev) => [
+        ...prev,
+        { id: `staged-${Date.now()}-${Math.random()}`, file, preview },
+      ])
+      toast.success("Foto ditambahkan ke antrean.")
     } else {
-      toast.error(res.message ?? "Gagal mengunggah foto.")
+      setUploadingIdx(gambars.length) // indikator loading slot baru
+      const res = await ManajemenProdukService.uploadGambar({
+        file,
+        gambarable_type: "App\\Models\\Produk",
+        gambarable_id: produk.id,
+      })
+
+      if (res.isSuccess() && res.data) {
+        setGambars((prev) => [...prev, res.data!])
+        toast.success("Foto berhasil diunggah.")
+      } else {
+        toast.error(res.message ?? "Gagal mengunggah foto.")
+      }
+      setUploadingIdx(null)
     }
 
-    setUploadingIdx(null)
     // Reset input supaya file yang sama bisa dipilih ulang
     if (fileInputRef.current) fileInputRef.current.value = ""
   }
@@ -186,8 +197,30 @@ export default function EditProdukDialog({
       : await ManajemenProdukService.updateProduk(produk.id, payload)
 
     if (res.isSuccess() && res.data) {
+      const savedProduk = res.data
+
+      // Jika dalam Create Mode dan ada gambar yang di-stage, upload sekarang!
+      if (isCreateMode && stagedFiles.length > 0) {
+        toast.info("Mengunggah foto produk...")
+        const uploadPromises = stagedFiles.map(async (sf) => {
+          return ManajemenProdukService.uploadGambar({
+            file: sf.file,
+            gambarable_type: "App\\Models\\Produk",
+            gambarable_id: savedProduk.id,
+          })
+        })
+
+        const uploadResults = await Promise.all(uploadPromises)
+        const successfulUploads = uploadResults
+          .filter((ur) => ur.isSuccess() && ur.data)
+          .map((ur) => ur.data!)
+
+        // Gabungkan gambar yang berhasil diunggah ke objek produk
+        savedProduk.gambars = successfulUploads
+      }
+
       toast.success(isCreateMode ? "Produk berhasil ditambahkan." : "Produk berhasil diperbarui.")
-      onSaved(res.data)
+      onSaved(savedProduk)
       onClose()
     } else {
       toast.error(res.message ?? "Gagal menyimpan perubahan.")
@@ -196,9 +229,24 @@ export default function EditProdukDialog({
     setIsSubmitting(false)
   }
 
+  const displayedImages = [
+    ...gambars.map((g) => ({
+      id: String(g.id),
+      url: g.getFullUrl(),
+      isStaged: false,
+      raw: g,
+    })),
+    ...stagedFiles.map((sf) => ({
+      id: sf.id,
+      url: sf.preview,
+      isStaged: true,
+      file: sf.file,
+    })),
+  ]
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && !isSubmitting && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isCreateMode
@@ -214,33 +262,31 @@ export default function EditProdukDialog({
               Foto Produk
             </p>
 
-            {isCreateMode ? (
-              <div className="flex h-40 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted p-4 text-center">
-                <p className="text-xs font-medium text-foreground mb-1">
-                  Upload Foto Dinonaktifkan
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  Foto produk dapat ditambahkan setelah produk berhasil dibuat.
-                </p>
-              </div>
-            ) : isLoadingDetail ? (
+            {isLoadingDetail ? (
               <div className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border bg-muted">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-2">
-                {gambars.map((g) => (
+                {displayedImages.map((img) => (
                   <div
-                    key={g.id}
+                    key={img.id}
                     className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted"
                   >
                     <img
-                      src={g.getFullUrl()}
-                      alt={g.getAltText()}
+                      src={img.url}
+                      alt="Foto Produk"
                       className="h-full w-full object-cover"
                     />
                     <button
-                      onClick={() => handleDeleteGambar(g)}
+                      type="button"
+                      onClick={() => {
+                        if (img.isStaged) {
+                          setStagedFiles((prev) => prev.filter((sf) => sf.id !== img.id))
+                        } else {
+                          handleDeleteGambar(img.raw)
+                        }
+                      }}
                       className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100"
                     >
                       <X className="h-3 w-3" strokeWidth={2.5} />
@@ -249,8 +295,9 @@ export default function EditProdukDialog({
                 ))}
 
                 {/* Slot upload baru (maks 5 foto) */}
-                {gambars.length < 5 && (
+                {displayedImages.length < 5 && (
                   <button
+                    type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingIdx !== null}
                     className={cn(
@@ -268,20 +315,16 @@ export default function EditProdukDialog({
               </div>
             )}
 
-            {!isCreateMode && (
-              <>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/jpg,image/webp"
-                  className="hidden"
-                  onChange={handleFileSelect}
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Format .jpg .png .webp (Maks 2MB). Maks 5 foto.
-                </p>
-              </>
-            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/jpg,image/webp"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Format .jpg .png .webp (Maks 2MB). Maks 5 foto.
+            </p>
           </div>
 
           {/* ── KANAN: Form fields ── */}

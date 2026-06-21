@@ -69,25 +69,40 @@ export class DashboardService {
   static deriveOrderStatusBreakdown(
     summary: DashboardSummary
   ): OrderStatusBreakdown[] {
-    const diketahui = summary.pesananBaru + summary.bookingMenunggu
-    const sisaBelumDiketahui = Math.max(summary.totalPesanan - diketahui, 0)
+    const sb = summary.statusBreakdown || {}
+
+    const belumBayar = (sb['menunggu_pembayaran'] || 0) + (sb['pembayaran_dibatalkan'] || 0)
+    const menungguKonfirmasi = sb['menunggu_konfirmasi_pembayaran'] || 0
+    const diproses = (sb['dibayar'] || 0) + (sb['diproses'] || 0)
+    const selesai = sb['selesai'] || 0
+    const dibatalkan = sb['dibatalkan'] || 0
 
     return [
       new OrderStatusBreakdown({
-        status: "Menunggu",
-        count: summary.pesananBaru,
+        status: "Belum Bayar",
+        count: belumBayar,
         colorToken: "warning",
       }),
       new OrderStatusBreakdown({
-        status: "Booking Pending",
-        count: summary.bookingMenunggu,
-        colorToken: "destructive",
+        status: "Menunggu Konfirmasi",
+        count: menungguKonfirmasi,
+        colorToken: "primary",
       }),
       new OrderStatusBreakdown({
-        status: "Lainnya (belum terklasifikasi)",
-        count: sisaBelumDiketahui,
-        colorToken: "muted",
+        status: "Diproses",
+        count: diproses,
+        colorToken: "info",
       }),
-    ]
+      new OrderStatusBreakdown({
+        status: "Selesai",
+        count: selesai,
+        colorToken: "success",
+      }),
+      new OrderStatusBreakdown({
+        status: "Dibatalkan",
+        count: dibatalkan,
+        colorToken: "destructive",
+      }),
+    ].filter(item => item.count > 0)
   }
 }

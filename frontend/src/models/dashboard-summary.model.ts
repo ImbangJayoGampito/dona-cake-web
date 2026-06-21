@@ -19,21 +19,23 @@ export default class DashboardSummary {
   totalPesanan: number
   pesananBaru: number
   bookingMenunggu: number
+  statusBreakdown: Record<string, number>
 
   // --- BELUM DIKONFIRMASI (ada di desain, belum ada di contoh response) ---
   totalPendapatanHariIni: number | null
   trendPendapatanPct: number | null
 
-  public constructor(data: Partial<DashboardSummary> = {}) {
-    this.totalUsers = data.totalUsers ?? 0
-    this.totalPelanggan = data.totalPelanggan ?? 0
-    this.totalProduk = data.totalProduk ?? 0
-    this.totalPesanan = data.totalPesanan ?? 0
-    this.pesananBaru = data.pesananBaru ?? 0
-    this.bookingMenunggu = data.bookingMenunggu ?? 0
+  public constructor(data: Record<string, any> = {}) {
+    this.totalUsers = data.totalUsers ?? data.total_users ?? 0
+    this.totalPelanggan = data.totalPelanggan ?? data.total_pelanggan ?? 0
+    this.totalProduk = data.totalProduk ?? data.total_produk ?? 0
+    this.totalPesanan = data.totalPesanan ?? data.total_pesanan ?? 0
+    this.pesananBaru = data.pesananBaru ?? data.pesanan_baru ?? 0
+    this.bookingMenunggu = data.bookingMenunggu ?? data.booking_menunggu ?? 0
+    this.statusBreakdown = data.statusBreakdown ?? data.status_breakdown ?? {}
 
-    this.totalPendapatanHariIni = data.totalPendapatanHariIni ?? null
-    this.trendPendapatanPct = data.trendPendapatanPct ?? null
+    this.totalPendapatanHariIni = data.totalPendapatanHariIni ?? data.total_pendapatan_hari_ini ?? null
+    this.trendPendapatanPct = data.trendPendapatanPct ?? data.trend_pendapatan_pct ?? null
   }
 }
 

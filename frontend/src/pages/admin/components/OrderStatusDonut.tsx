@@ -13,6 +13,7 @@ const COLOR_MAP: Record<string, string> = {
   destructive: "#D94F4F",
   success: "#2E7D52",
   primary: "#C9956C",
+  info: "#3B82F6",
   muted: "#E0DDD9",
 }
 
@@ -27,12 +28,6 @@ export default function OrderStatusDonut({ data, total }: OrderStatusDonutProps)
         <CardTitle className="text-lg font-medium">
           Status Pesanan Hari Ini
         </CardTitle>
-        {/* Penanda jujur: data ini diturunkan kasar dari summary, bukan endpoint
-            breakdown asli — lihat TODO di dashboard-service.ts. Sengaja tidak
-            disembunyikan supaya admin tidak salah baca ini sebagai data presisi. */}
-        <p className="text-xs text-muted-foreground">
-          *Estimasi berdasarkan data ringkasan, belum breakdown penuh
-        </p>
       </CardHeader>
       <CardContent>
         {total === 0 ? (

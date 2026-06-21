@@ -90,7 +90,7 @@ Route::middleware("auth:sanctum")->group(function () {
 
     // ---- Produk Management (Admin & Karyawan) ----
     Route::prefix("produk")
-        ->middleware("role:admin,karyawan")
+        ->middleware("role:admin|karyawan")
         ->group(function () {
             Route::post("/", [ProdukController::class, "store"]);
             Route::put("/{produk}", [ProdukController::class, "update"]);
@@ -117,7 +117,7 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::put("/{pesanan}/status", [
             PesananController::class,
             "update",
-        ])->middleware("role:admin,karyawan");
+        ])->middleware("role:admin|karyawan");
     });
 
     // ---- Booking (Custom Orders) ----
@@ -131,7 +131,7 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::post("/{booking}/verify", [
             BookingController::class,
             "verify",
-        ])->middleware("role:admin,karyawan");
+        ])->middleware("role:admin|karyawan");
     });
 
     // ---- Transaksi (Payments) ----
@@ -254,7 +254,7 @@ Route::middleware("auth:sanctum")->group(function () {
     // =====================================================================
     // STAFF/ADMIN ROUTES
     // =====================================================================
-    Route::middleware("role:admin,karyawan")
+    Route::middleware("role:admin|karyawan")
         ->prefix("staff")
         ->group(function () {
             // Dashboard & Reports

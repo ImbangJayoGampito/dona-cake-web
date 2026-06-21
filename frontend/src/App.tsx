@@ -1,5 +1,5 @@
 // src/App.tsx
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Outlet } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import AuthLayout from "./pages/auth/auth-layout"
 import { useEffect } from "react"
@@ -16,7 +16,7 @@ import ProductDetailPage from "./pages/produk/produk-card"
 import { RouteService } from "./services/route-service"
 
 import { toast } from "sonner"
-import Profile from "./pages/user/profile"
+import Profile from "./pages/user/profil/profile"
 import { AppHeader } from "./components/layout/header"
 import AppLayout from "./pages/layout"
 import BookingLayout from "./pages/booking/layout"
@@ -39,6 +39,15 @@ import AntrianPesananPage from "./pages/karyawan/pesanan/AntrianPesananPage"
 import BookingCustomPage from "./pages/karyawan/booking-custom/BookingCustomPage"
 import UlasanProdukPage from "./pages/karyawan/ulasan/UlasanProdukPage"
 import BookingTempatPage from "./pages/karyawan/booking-tempat/BookingTempatPage"
+
+function HeaderOnlyLayout() {
+  return (
+    <div className="flex min-h-screen flex-col">
+      <AppHeader />
+      <Outlet />
+    </div>
+  )
+}
 
 export function App() {
   const [isLoading, setIsLoading] = useState(true)
@@ -94,17 +103,9 @@ export function App() {
         <Route path={PublicRoutes.Katalog} element={<DonaCakeKatalog />} />
       </Route>
       {/* CATEGORY: Protected routes */}
-      <Route
-        element={
-          <ProtectedRoute>
-            <AppLayout />
-          </ProtectedRoute>
-        }
-      >
+      <Route element={<HeaderOnlyLayout />}>
         <Route path={ProtectedRoutes.Me} element={<Profile />} />
-        <Route path={PublicRoutes.CreateBooking} element={<BookingLayout />} />
-        <Route path={ProtectedRoutes.Cart} element={<KeranjangSteps />} />
-        <Route path={ProtectedRoutes.Orders} element={<OrdersPage />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
 
       {/* ERROR ROUTES */}

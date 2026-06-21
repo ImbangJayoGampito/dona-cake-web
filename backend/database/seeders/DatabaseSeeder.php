@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call(KategoriSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(ProdukSeeder::class);
+        $this->call(PesananSeeder::class);
 
         // Seed fake users and assign role
         User::factory(24)

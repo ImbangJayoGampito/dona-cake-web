@@ -36,6 +36,25 @@ export class ManajemenPenggunaService {
   }
 
   /**
+   * POST /admin/users
+   * Membuat user baru (admin only).
+   */
+  static async createUser(
+    payload: any
+  ): Promise<ApiResponse<AdminUser>> {
+    try {
+      const response = await api.post(AdminRoutes.CreateUser, payload)
+      return ApiResponse.fromApiSingle(
+        response.data,
+        (data: any) => new AdminUser(data.user || data)
+      )
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      return new ApiResponse<AdminUser>(undefined, "error", undefined, message)
+    }
+  }
+
+  /**
    * PATCH /admin/users/{user}/role
    * Mengubah role user: "admin" | "karyawan" | "user".
    */

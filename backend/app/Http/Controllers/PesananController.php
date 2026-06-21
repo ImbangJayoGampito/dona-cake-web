@@ -52,8 +52,18 @@ class PesananController extends Controller
         }
 
         // Filter by status
-        if ($request->has("status")) {
-            $query->where("status_pesanan", $request->status);
+        if ($request->has('status')) {
+            if (str_contains($request->status, ',')) {
+                $statuses = explode(',', $request->status);
+                $query->whereIn('status_pesanan', $statuses);
+            } else {
+                $query->where('status_pesanan', $request->status);
+            }
+        }
+
+        // Filter by today
+        if ($request->boolean('today')) {
+            $query->whereDate('created_at', today());
         }
 
         // Filter by date range
