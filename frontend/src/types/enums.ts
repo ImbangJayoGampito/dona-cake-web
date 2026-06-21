@@ -11,12 +11,13 @@ export type RoleEnum = (typeof RoleEnum)[keyof typeof RoleEnum]
 
 // ============== Pesanan Status ==============
 export const PesananStatus = {
-  MENUNGGU_PEMBAYARAN: "menunggu_pembayaran",
-  DIBAYAR: "dibayar",
-  DIPROSES: "diproses",
-  SELESAI: "selesai",
-  DIBATALKAN: "dibatalkan",
-  PEMBAYARAN_DIBATALKAN: "pembayaran_dibatalkan",
+  MENUNGGU_PEMBAYARAN: 'menunggu_pembayaran',
+  MENUNGGU_KONFIRMASI_PEMBAYARAN: 'menunggu_konfirmasi_pembayaran',
+  DIBAYAR: 'dibayar',
+  DIPROSES: 'diproses',
+  SELESAI: 'selesai',
+  DIBATALKAN: 'dibatalkan',
+  PEMBAYARAN_DIBATALKAN: 'pembayaran_dibatalkan',
 } as const
 export const PESANAN_STATUS_LIST = Object.values(PesananStatus)
 export type PesananStatus = (typeof PesananStatus)[keyof typeof PesananStatus]

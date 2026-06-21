@@ -86,42 +86,36 @@ export class Pesanan {
 
   getStatusBadgeColor(): string {
     const statusColors: Record<PesananStatusType, string> = {
-      [PesananStatus.MENUNGGU_PEMBAYARAN]: "yellow",
-      [PesananStatus.DIBAYAR]: "blue",
-      [PesananStatus.DIPROSES]: "purple",
-      [PesananStatus.SELESAI]: "green",
-      [PesananStatus.DIBATALKAN]: "red",
-      [PesananStatus.PEMBAYARAN_DIBATALKAN]: "orange",
+      [PesananStatus.MENUNGGU_PEMBAYARAN]: 'yellow',
+      [PesananStatus.MENUNGGU_KONFIRMASI_PEMBAYARAN]: 'yellow',
+      [PesananStatus.DIBAYAR]: 'blue',
+      [PesananStatus.DIPROSES]: 'purple',
+      [PesananStatus.SELESAI]: 'green',
+      [PesananStatus.DIBATALKAN]: 'red',
+      [PesananStatus.PEMBAYARAN_DIBATALKAN]: 'orange',
     }
     return statusColors[this.status_pesanan] || "gray"
   }
 
   getStatusLabel(): string {
     const labels: Record<PesananStatusType, string> = {
-      [PesananStatus.MENUNGGU_PEMBAYARAN]: "Menunggu Pembayaran",
-      [PesananStatus.DIBAYAR]: "Dibayar",
-      [PesananStatus.DIPROSES]: "Diproses",
-      [PesananStatus.SELESAI]: "Selesai",
-      [PesananStatus.DIBATALKAN]: "Dibatalkan",
-      [PesananStatus.PEMBAYARAN_DIBATALKAN]: "Pembayaran Dibatalkan",
+      [PesananStatus.MENUNGGU_PEMBAYARAN]: 'Menunggu Pembayaran',
+      [PesananStatus.MENUNGGU_KONFIRMASI_PEMBAYARAN]: 'Menunggu Konfirmasi Pembayaran',
+      [PesananStatus.DIBAYAR]: 'Dibayar',
+      [PesananStatus.DIPROSES]: 'Diproses',
+      [PesananStatus.SELESAI]: 'Selesai',
+      [PesananStatus.DIBATALKAN]: 'Dibatalkan',
+      [PesananStatus.PEMBAYARAN_DIBATALKAN]: 'Pembayaran Dibatalkan',
     }
     return labels[this.status_pesanan] || this.status_pesanan
   }
 
   canTransitionTo(newStatus: PesananStatusType): boolean {
     const transitions: Record<PesananStatusType, PesananStatusType[]> = {
-      [PesananStatus.MENUNGGU_PEMBAYARAN]: [
-        PesananStatus.DIBAYAR,
-        PesananStatus.PEMBAYARAN_DIBATALKAN,
-      ],
-      [PesananStatus.DIBAYAR]: [
-        PesananStatus.DIPROSES,
-        PesananStatus.DIBATALKAN,
-      ],
-      [PesananStatus.DIPROSES]: [
-        PesananStatus.SELESAI,
-        PesananStatus.DIBATALKAN,
-      ],
+      [PesananStatus.MENUNGGU_PEMBAYARAN]: [PesananStatus.MENUNGGU_KONFIRMASI_PEMBAYARAN, PesananStatus.DIBAYAR, PesananStatus.PEMBAYARAN_DIBATALKAN],
+      [PesananStatus.MENUNGGU_KONFIRMASI_PEMBAYARAN]: [PesananStatus.DIBAYAR, PesananStatus.PEMBAYARAN_DIBATALKAN],
+      [PesananStatus.DIBAYAR]: [PesananStatus.DIPROSES, PesananStatus.DIBATALKAN],
+      [PesananStatus.DIPROSES]: [PesananStatus.SELESAI, PesananStatus.DIBATALKAN],
       [PesananStatus.SELESAI]: [],
       [PesananStatus.DIBATALKAN]: [],
       [PesananStatus.PEMBAYARAN_DIBATALKAN]: [

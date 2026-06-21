@@ -36,7 +36,7 @@ export default function ProtectedRoute({
   if (requireRole) {
     const hasRequiredRole =
       (requireRole === "admin" && user.isAdmin()) ||
-      (requireRole === "karyawan" && user.isKaryawan()) ||
+      (requireRole === "karyawan" && (user.isKaryawan() || user.isAdmin())) ||
       (requireRole === "user" && user.isUser())
 
     if (!hasRequiredRole) {

@@ -33,6 +33,13 @@ import LaporanKeuanganPage from "./pages/admin/laporan/LaporanKeuanganPage"
 import MonitorAsistenPage from "./pages/admin/asisten/MonitorAsistenPage"
 import KeranjangSteps from "@/pages/keranjang/KeranjangSteps"
 
+// Karyawan imports
+import KaryawanLayout from "./pages/karyawan/layout/KaryawanLayout"
+import AntrianPesananPage from "./pages/karyawan/pesanan/AntrianPesananPage"
+import BookingCustomPage from "./pages/karyawan/booking-custom/BookingCustomPage"
+import UlasanProdukPage from "./pages/karyawan/ulasan/UlasanProdukPage"
+import BookingTempatPage from "./pages/karyawan/booking-tempat/BookingTempatPage"
+
 export function App() {
   const [isLoading, setIsLoading] = useState(true)
   const setUser = useAuthStore((state) => state.setUser)
@@ -116,6 +123,20 @@ export function App() {
         <Route path="/admin/produk" element={<ManajemenProdukPage />} />
         <Route path="/admin/laporan" element={<LaporanKeuanganPage />} />
         <Route path="/admin/asisten" element={<MonitorAsistenPage />} />
+      </Route>
+
+      {/* KARYAWAN ROUTES */}
+      <Route
+        element={
+          <ProtectedRoute requireRole="karyawan">
+            <KaryawanLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/karyawan/pesanan" element={<AntrianPesananPage />} />
+        <Route path="/karyawan/booking-custom" element={<BookingCustomPage />} />
+        <Route path="/karyawan/ulasan" element={<UlasanProdukPage />} />
+        <Route path="/karyawan/booking-tempat" element={<BookingTempatPage />} />
       </Route>
 
       {/* Example using Button */}
