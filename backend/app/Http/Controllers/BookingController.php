@@ -155,62 +155,86 @@ class BookingController extends Controller
     public function verify(Request $request, Booking $booking): JsonResponse
     {
         $request->validate([
-            "status" => "required|string|in:disetujui,ditolak",
+            "status" => "required|string|in:disetujui,ditolak,selesai",
             "catatan" => "nullable|string|max:500",
         ]);
 
         $newStatus = $request->status;
-        if (
-            $booking->status_verifikasi !== BookingStatus::MENUNGGU_VERIFIKASI
-        ) {
-            return response()->json(
-                [
-                    "status" => "error",
-                    "message" =>
-                        "Booking sudah pernah diverifikasi sebelumnya.",
-                ],
-                400,
-            );
-        }
 
-        $booking->update([
-            "status_verifikasi" =>
-                $newStatus === "disetujui"
-                    ? BookingStatus::DISETUJUI
-                    : BookingStatus::DITOLAK,
-            "catatan" => $request->catatan,
-        ]);
+        if ($newStatus === 'selesai') {
+            if ($booking->status_verifikasi !== BookingStatus::DISETUJUI) {
+                return response()->json(
+                    [
+                        "status" => "error",
+                        "message" => "Hanya booking yang telah disetujui yang dapat diselesaikan.",
+                    ],
+                    400,
+                );
+            }
 
-        // Notify customer
-        if ($booking->pelanggan && $booking->pelanggan->user) {
-            if ($newStatus === "disetujui") {
+            $booking->update([
+                "status_verifikasi" => BookingStatus::SELESAI,
+                "catatan" => $request->catatan ?? $booking->catatan,
+            ]);
+
+            // Notify customer
+            if ($booking->pelanggan && $booking->pelanggan->user) {
                 $this->notificationService->create(
                     $booking->pelanggan->user_id,
-                    "Booking Disetujui",
-                    "Booking custom anda untuk ukuran {$booking->ukuran} telah disetujui! Silakan lakukan pembayaran.",
+                    "Booking Selesai",
+                    "Pesanan kue custom Anda #BK-" . str_pad($booking->id, 4, '0', STR_PAD_LEFT) . " telah selesai dan siap untuk diambil!",
                     "success",
                     Booking::class,
                     $booking->id,
                 );
-            } else {
-                $this->notificationService->create(
-                    $booking->pelanggan->user_id,
-                    "Booking Ditolak",
-                    "Booking custom anda ditolak. Alasan: " .
-                        ($request->catatan ?? "Tidak sesuai ketentuan"),
-                    "error",
-                    Booking::class,
-                    $booking->id,
+            }
+        } else {
+            if ($booking->status_verifikasi !== BookingStatus::MENUNGGU_VERIFIKASI) {
+                return response()->json(
+                    [
+                        "status" => "error",
+                        "message" => "Booking sudah pernah diverifikasi sebelumnya.",
+                    ],
+                    400,
                 );
+            }
+
+            $booking->update([
+                "status_verifikasi" =>
+                    $newStatus === "disetujui"
+                        ? BookingStatus::DISETUJUI
+                        : BookingStatus::DITOLAK,
+                "catatan" => $request->catatan,
+            ]);
+
+            // Notify customer
+            if ($booking->pelanggan && $booking->pelanggan->user) {
+                if ($newStatus === "disetujui") {
+                    $this->notificationService->create(
+                        $booking->pelanggan->user_id,
+                        "Booking Disetujui",
+                        "Booking custom anda untuk ukuran {$booking->ukuran} telah disetujui! Silakan lakukan pembayaran.",
+                        "success",
+                        Booking::class,
+                        $booking->id,
+                    );
+                } else {
+                    $this->notificationService->create(
+                        $booking->pelanggan->user_id,
+                        "Booking Ditolak",
+                        "Booking custom anda ditolak. Alasan: " .
+                            ($request->catatan ?? "Tidak sesuai ketentuan"),
+                        "error",
+                        Booking::class,
+                        $booking->id,
+                    );
+                }
             }
         }
 
         return response()->json([
             "status" => "success",
-            "message" =>
-                "Booking berhasil " .
-                ($newStatus === "disetujui" ? "disetujui" : "ditolak") .
-                ".",
+            "message" => "Booking berhasil diperbarui.",
             "data" => $booking->fresh()->load("pelanggan.user"),
         ]);
     }

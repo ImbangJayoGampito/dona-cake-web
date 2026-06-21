@@ -11,7 +11,7 @@ import { RouteService } from "@/services/route-service"
 import type { Booking, StatusVerifikasi } from "@/types/karyawan.types"
 
 export interface VerifyBookingPayload {
-  status: "disetujui" | "ditolak"
+  status: "disetujui" | "ditolak" | "selesai"
   catatan?: string
 }
 
@@ -25,7 +25,9 @@ export class KaryawanBookingService {
     status?: StatusVerifikasi
   ): Promise<ApiResponse<Booking[]>> {
     try {
-      const params: Record<string, string> = {}
+      const params: Record<string, string> = {
+        per_page: "100"
+      }
       if (status) params.status = status
 
       const response = await api.get(ProtectedRoutes.Bookings, { params })
