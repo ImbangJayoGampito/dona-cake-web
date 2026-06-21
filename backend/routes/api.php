@@ -242,6 +242,7 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::prefix("aktivitas")->group(function () {
         Route::get("/", [HistoriAktivitasController::class, "index"]);
         Route::post("/", [HistoriAktivitasController::class, "store"]);
+        Route::post("/batch", [HistoriAktivitasController::class, "storeBatch"]);
     });
 
     // ---- Gambar (Image upload/management) ----

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProdukRequest;
+use App\Models\Kategori;
 use App\Models\Produk;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,9 +22,17 @@ class ProdukController extends Controller
             $query->where("nama_produk", "like", "%" . $request->search . "%");
         }
 
-        // Filter by category
+        // Filter by kategori_id (exact match from kategori table)
+        if ($request->has("kategori_id")) {
+            $query->where("kategori_id", $request->kategori_id);
+        }
+
+        // Filter by category name/slug (via relationship)
         if ($request->has("kategori")) {
-            $query->where("kategori", $request->kategori);
+            $query->whereHas("kategori", function ($q) use ($request) {
+                $q->where("nama_kategori", "like", "%" . $request->kategori . "%")
+                  ->orWhere("slug", $request->kategori);
+            });
         }
 
         // Filter by price range
@@ -127,14 +136,11 @@ class ProdukController extends Controller
     }
 
     /**
-     * Get unique categories for filter
+     * Get all categories for filter
      */
     public function categories(): JsonResponse
     {
-        $categories = Produk::select("kategori")
-            ->whereNotNull("kategori")
-            ->distinct()
-            ->pluck("kategori");
+        $categories = Kategori::all();
 
         return response()->json([
             "status" => "success",
