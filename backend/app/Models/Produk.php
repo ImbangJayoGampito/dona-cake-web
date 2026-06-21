@@ -38,6 +38,7 @@ class Produk extends Model
         "slug",
         "kategori_id", // Changed from 'kategori'
         "deskripsi",
+        "keterangan",
         "rating_rata_rata",
     ];
 

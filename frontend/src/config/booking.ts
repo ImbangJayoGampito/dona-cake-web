@@ -233,9 +233,7 @@ export default class BookingConfig {
       total += this.calculateFrostingPrice(config.frosting)
     }
 
-    if (config.theme) {
-      total += this.calculateThemePrice(config.theme)
-    }
+
 
     if (config.packaging) {
       total += this.calculatePackagingPrice(config.packaging)
@@ -244,71 +242,5 @@ export default class BookingConfig {
     return total
   }
 
-  static getPriceBreakdown(config: {
-    size?: string
-    flavors?: string[]
-    frosting?: string
-    theme?: string
-    packaging?: string
-  }): {
-    base: number
-    size: { id: string; name: string; price: number; priceLabel: string }
-    flavors: { id: string; name: string; price: number; priceLabel: string }[]
-    frosting: { id: string; name: string; price: number; priceLabel: string }
-    theme: { id: string; name: string; price: number; priceLabel: string }
-    packaging: { id: string; name: string; price: number; priceLabel: string }
-    total: number
-  } {
-    const size = config.size ? this.getSizeById(config.size) : undefined
-    const frosting = config.frosting
-      ? this.getFrostingById(config.frosting)
-      : undefined
-    const theme = config.theme ? this.getThemeById(config.theme) : undefined
-    const packaging = config.packaging
-      ? this.getPackagingById(config.packaging)
-      : undefined
-
-    const flavorPrices =
-      config.flavors?.map((id) => {
-        const flavor = this.getFlavorById(id)
-        return {
-          id,
-          name: flavor?.name || id,
-          price: flavor?.price || 0,
-          priceLabel: flavor?.priceLabel || "Standar",
-        }
-      }) || []
-
-    const total = this.calculateTotalPrice(config)
-
-    return {
-      base: this.BASE_PRICE,
-      size: {
-        id: size?.id || "",
-        name: size?.name || "Tidak dipilih",
-        price: size?.price || 0,
-        priceLabel: size?.priceLabel || "Standar",
-      },
-      flavors: flavorPrices,
-      frosting: {
-        id: frosting?.id || "",
-        name: frosting?.name || "Tidak dipilih",
-        price: frosting?.price || 0,
-        priceLabel: frosting?.priceLabel || "Standar",
-      },
-      theme: {
-        id: theme?.id || "",
-        name: theme?.name || "Tidak dipilih",
-        price: theme?.price || 0,
-        priceLabel: theme?.priceLabel || "Standar",
-      },
-      packaging: {
-        id: packaging?.id || "",
-        name: packaging?.name || "Tidak dipilih",
-        price: packaging?.price || 0,
-        priceLabel: packaging?.priceLabel || "Standar",
-      },
-      total,
-    }
-  }
+  
 }

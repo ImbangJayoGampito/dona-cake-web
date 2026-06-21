@@ -6,6 +6,7 @@ use App\Models\HistoriAktivitas;
 use App\Models\Pelanggan;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class HistoriAktivitasController extends Controller
 {
@@ -75,6 +76,66 @@ class HistoriAktivitasController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Aktivitas tercatat.',
+        ], 201);
+    }
+
+    /**
+     * Store batch of purchase preferences (histori preferensi produk yang dibeli).
+     *
+     * Request body:
+     * {
+     *   "preferensi": [
+     *     { "produk_terkait": 1 },
+     *     { "produk_terkait": 5 },
+     *     ...
+     *   ]
+     * }
+     */
+    public function storeBatch(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'preferensi' => 'required|array|min:1',
+            'preferensi.*.produk_terkait' => 'required|integer|exists:produks,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validasi gagal.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $pelanggan = Pelanggan::where('user_id', $request->user()->id)->first();
+        if (!$pelanggan) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Profil pelanggan tidak ditemukan.',
+            ], 400);
+        }
+
+        $now = now();
+        $data = [];
+        foreach ($request->preferensi as $item) {
+            $data[] = [
+                'pelanggan_id' => $pelanggan->id,
+                'jenis_aktivitas' => 'purchase',
+                'produk_terkait' => $item['produk_terkait'],
+                'bobot_interaksi' => 1.0,
+                'waktu_akses' => $now,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        HistoriAktivitas::insert($data);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Preferensi berhasil dicatat.',
+            'data' => [
+                'total' => count($data),
+            ],
         ], 201);
     }
 }

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ApiResponse } from "@/lib/api/api-response" // adjust path
+import ApiResponse from "@/lib/api/api-response"
 import type { PaginationMeta } from "@/types/pagination.types"
 
 interface PaginatedCardListProps<T> {
@@ -36,7 +36,7 @@ export default function PaginatedCardGrid<T>({
       const json = await res.json()
 
       // Use your ApiResponse class to parse the response
-      const apiResponse = ApiResponse.fromApiResponse<T[]>(json)
+      const apiResponse = ApiResponse.fromApiArray<T[]>(json)
 
       if (apiResponse.isSuccess()) {
         setData(apiResponse.data as T[])

@@ -7,6 +7,8 @@ import Stepper from "@/components/booking/stepper"
 import { useEffect, useState } from "react"
 import type { BookingForm } from "@/types/booking.types"
 import BookingConfig from "@/config/booking"
+import BookingService from "@/services/booking-service"
+import { toast } from "sonner"
 export default function BookingLayout() {
   const [step, setStep] = useState(1)
   const [order, setOrder] = useState<BookingForm>({
@@ -18,6 +20,15 @@ export default function BookingLayout() {
     packaging: "standar",
     tgl_ambil: new Date().toISOString(),
   })
+  const bookNow = async () => {
+    const response = await BookingService.createBooking(order)
+    if (response.isSuccess()) {
+      toast.success("Pesanan berhasil dibuat")
+      next()
+    } else {
+      toast.error("Gagal membuat pesanan")
+    }
+  }
   const next = () => setStep(step + 1)
   const back = () => setStep(step - 1)
   return (
@@ -25,7 +36,18 @@ export default function BookingLayout() {
       <main>
         <main className="flex-1">
           <div className="mx-auto max-w-5xl px-4 pb-10">
-            {step < 5 && <Stepper current={step} />}
+            {step < 5 && (
+              <Stepper
+                current={step}
+                steps={[
+                  "Konfigurasi",
+                  "Referensi",
+                  "Tanggal",
+                  "Konfirmasi",
+                  "Berhasil",
+                ]}
+              />
+            )}
 
             {step === 1 && (
               <Step1Configure
@@ -59,7 +81,7 @@ export default function BookingLayout() {
                 setOrder={setOrder}
                 onBack={back}
                 steps={step}
-                onNext={next}
+                onNext={bookNow}
               />
             )}
             {step === 5 && <Step5Success onHome={() => setStep(1)} />}

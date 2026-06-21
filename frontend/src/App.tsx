@@ -20,7 +20,8 @@ import Profile from "./pages/user/profil/profile"
 import { AppHeader } from "./components/layout/header"
 import AppLayout from "./pages/layout"
 import BookingLayout from "./pages/booking/layout"
-
+import OrdersPage from "./pages/keranjang/pesanan2_orders_page"
+import DonaCakeKatalog from "./pages/katalog/main_search"
 // Admin imports
 import ProtectedRoute from "./components/layout/ProtectedRoute"
 import AdminLayout from "./components/layout/admin/AdminLayout"
@@ -30,6 +31,7 @@ import ManajemenPenggunaPage from "./pages/admin/pengguna/ManajemenPenggunaPage"
 import ManajemenProdukPage from "./pages/admin/produk/ManajemenProdukPage"
 import LaporanKeuanganPage from "./pages/admin/laporan/LaporanKeuanganPage"
 import MonitorAsistenPage from "./pages/admin/asisten/MonitorAsistenPage"
+import KeranjangSteps from "@/pages/keranjang/KeranjangSteps"
 
 // Karyawan imports
 import KaryawanLayout from "./pages/karyawan/layout/KaryawanLayout"
@@ -91,13 +93,14 @@ export function App() {
       {/* Generanl routes idk man fuck React */}
       <Route element={<AppLayout />}>
         <Route path={PublicRoutes.Home} element={<MainHome />} />
-        <Route path={PublicRoutes.CreateBooking} element={<BookingLayout />} />
+
         <Route
           path={RouteService.convertToReactRouterParam(
             PublicRoutes.ProductDetail
           )}
           element={<ProductDetailPage />}
         />
+        <Route path={PublicRoutes.Katalog} element={<DonaCakeKatalog />} />
       </Route>
       {/* CATEGORY: Protected routes */}
       <Route element={<HeaderOnlyLayout />}>
@@ -147,4 +150,3 @@ export function App() {
 }
 
 export default App
-

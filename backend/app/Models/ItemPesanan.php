@@ -17,20 +17,15 @@ use Illuminate\Support\Carbon;
  */
 class ItemPesanan extends Model
 {
-    protected $fillable = [
-        'pesanan_id',
-        'produk_id',
-        'kuantitas',
-        'subtotal',
-    ];
+    protected $fillable = ["pesanan_id", "produk_id", "kuantitas", "subtotal"];
 
     protected $casts = [
-        'pesanan_id' => 'integer',
-        'produk_id' => 'integer',
-        'kuantitas' => 'integer',
-        'subtotal' => 'float',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        "pesanan_id" => "integer",
+        "produk_id" => "integer",
+        "kuantitas" => "integer",
+        "subtotal" => "float",
+        "created_at" => "datetime",
+        "updated_at" => "datetime",
     ];
 
     public function pesanan(): BelongsTo

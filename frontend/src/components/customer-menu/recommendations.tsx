@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ProductService } from "@/services/produk-service"
+import { ProdukService } from "@/services/produk-service"
 
 import { useEffect, useState } from "react"
 import { Produk } from "@/models/produk.model"
@@ -10,7 +10,7 @@ import { ShoppingCart } from "lucide-react"
 export default function Recommendations() {
   const [recommendedProducts, setRecommendedProducts] = useState<Produk[]>([])
   useEffect(() => {
-    ProductService.getRecommendations().then((response) => {
+    ProdukService.getRecommendations().then((response) => {
       if (response.isSuccess()) {
         setRecommendedProducts(response.data ?? [])
         setRecommendedProducts(response.data?.slice(0, 2) ?? [])
@@ -18,7 +18,7 @@ export default function Recommendations() {
     })
   }, [])
   const handleAddToCart = (product: Produk) => {
-    ProductService.addToCart(product, 1).then((response) => {
+    ProdukService.addToCart(product, 1).then((response) => {
       if (response.isSuccess()) {
         toast.success("Produk berhasil ditambahkan ke keranjang")
       } else {

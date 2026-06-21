@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator"
 import { Info, Calendar, Clock } from "lucide-react"
 import type { BookingForm } from "@/types/booking.types"
 import BookingConfig from "@/config/booking"
-import { ProductService } from "@/services/produk-service"
+import { ProdukService } from "@/services/produk-service"
 import { getDateFromDatetime, getTimeFromDatetime } from "@/lib/time_management"
 export default function OrderSummary({
   order,
@@ -95,7 +95,7 @@ export default function OrderSummary({
             {step >= 3 ? "TOTAL ESTIMASI" : "Estimasi Total"}
           </span>
           <span className="text-base text-primary">
-            Rp {ProductService.formatPrice(total)}
+            Rp {ProdukService.formatPrice(total)}
           </span>
         </div>
 
@@ -105,7 +105,7 @@ export default function OrderSummary({
             <div>
               <p className="font-semibold">DP 50% yang dibayar sekarang:</p>
               <p className="mt-0.5 text-sm font-bold">
-                Rp {ProductService.formatPrice(dp)}
+                Rp {ProdukService.formatPrice(dp)}
               </p>
             </div>
           </div>

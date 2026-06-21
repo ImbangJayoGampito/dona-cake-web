@@ -1,12 +1,9 @@
-export default function Stepper({ current }: { current: number }) {
-  const steps = [
-    "Konfigurasi",
-    "Referensi",
-    "Tanggal",
-    "Konfirmasi",
-    "Berhasil",
-  ]
+interface StepperProps {
+  current: number
+  steps: string[]
+}
 
+export default function Stepper({ current, steps }: StepperProps) {
   // Ensure current is within valid range
   const validCurrent = Math.min(Math.max(current, 1), steps.length)
 
