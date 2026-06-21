@@ -5,7 +5,7 @@ import api from "@/lib/api/config"
 import { RouteService } from "./route-service"
 import { Keranjang } from "@/models/keranjang.model"
 import type { KeranjangResponse } from "@/types/keranjang.types"
-
+import type { StoreKeranjangRequest } from "@/types/keranjang.types"
 export class KeranjangService {
   // In your service
   static async updateKeranjang(

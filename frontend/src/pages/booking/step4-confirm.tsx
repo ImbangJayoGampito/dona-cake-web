@@ -162,16 +162,6 @@ export default function Step4Confirm({
             <div className="mb-4 grid grid-cols-3 gap-2">
               {[
                 { id: "kartu", label: "Kartu", icon: <CreditCard size={14} /> },
-                {
-                  id: "transfer",
-                  label: "Transfer",
-                  icon: <Building2 size={14} />,
-                },
-                {
-                  id: "ewallet",
-                  label: "E-Wallet",
-                  icon: <Wallet size={14} />,
-                },
               ].map((m) => (
                 <button
                   key={m.id}

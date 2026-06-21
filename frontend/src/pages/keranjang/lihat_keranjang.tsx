@@ -71,7 +71,7 @@ export default function CartPage({ onNext }: CartPageProps) {
 
       setKeranjang(
         itemsArray.map((i) => ({
-          keranjang: i,
+          keranjang: i instanceof Keranjang ? i : new Keranjang(i),
           checked: false,
           kuantitas: i.kuantitas,
         }))
@@ -118,7 +118,7 @@ export default function CartPage({ onNext }: CartPageProps) {
           return {
             ...i,
             kuantitas: newKuantitas,
-            keranjang: { ...i.keranjang, kuantitas: newKuantitas },
+            keranjang: new Keranjang({ ...i.keranjang, kuantitas: newKuantitas }),
           }
         }
         return i
