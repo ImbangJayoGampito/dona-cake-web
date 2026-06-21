@@ -2,14 +2,15 @@ import axios, { AxiosError } from "axios"
 import type { InternalAxiosRequestConfig, AxiosInstance } from "axios"
 import { TokenStorage } from "@/lib/local-storage/token"
 import { PublicRoutes } from "@/lib/routes"
-const API_URL = process.env.VITE_API_URL || "http://localhost:3000/api"
-console.log("VITE_API_URL from env:", process.env.VITE_API_URL)
-console.log("API_URL =", API_URL) // Should print "/api"
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+console.log("VITE_API_URL from env:", import.meta.env.VITE_API_URL);
+console.log("API_URL =", API_URL); // Should print the backend URL
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 })
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {

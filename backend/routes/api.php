@@ -52,8 +52,11 @@ Route::prefix("kategori")->group(function () {
     Route::get("/", [KategoriController::class, "apiIndex"]);
 });
 
-// Public reviews
-Route::get("/ulasan", [UlasanController::class, "index"]);
+      // Public reviews
+      Route::get("/ulasan", [UlasanController::class, "index"]);
+
+      // Public image serving (no auth required)
+      Route::get("/image/public/{gambar}", [GambarController::class, "getPublicFile"]);
 
 // Popular products (for unauthenticated recommendations)
 Route::get("/popular", function (RecommendationService $service) {
@@ -125,6 +128,7 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::get("/", [BookingController::class, "index"]);
         Route::post("/", [BookingController::class, "store"]);
         Route::get("/{booking}", [BookingController::class, "show"]);
+        Route::patch("/{booking}", [BookingController::class, "update"]);
         Route::post("/{booking}/cancel", [BookingController::class, "cancel"]);
 
         // Staff/Admin only
@@ -246,8 +250,9 @@ Route::middleware("auth:sanctum")->group(function () {
     });
 
     // ---- Gambar (Image upload/management) ----
-    Route::prefix("gambar")->group(function () {
+    Route::prefix("image")->group(function () {
         Route::post("/upload", [GambarController::class, "upload"]);
+        Route::get("/protected/{gambar}", [GambarController::class, "getProtectedFile"]);
         Route::delete("/{gambar}", [GambarController::class, "destroy"]);
     });
 

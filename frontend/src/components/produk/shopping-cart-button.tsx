@@ -7,7 +7,7 @@ import type { StoreKeranjangRequest } from "@/types/keranjang.types"
 interface ShoppingCartButtonProps {
   produk: Produk
 }
-export function ShoppingCartButton({ produk }: ShoppingCartButtonProps) {
+export default function ShoppingCartButton({ produk }: ShoppingCartButtonProps) {
   const createCart = async () => {
     const request: StoreKeranjangRequest = {
       produk_id: produk.id,
@@ -25,8 +25,9 @@ export function ShoppingCartButton({ produk }: ShoppingCartButtonProps) {
     })
   }
   return (
-    <Button onClick={createCart}>
+    <Button  className="justify-items-center" onClick={createCart}>
       <ShoppingCart />
+      Tambah ke Keranjang
     </Button>
   )
 }

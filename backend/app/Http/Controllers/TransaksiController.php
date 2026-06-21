@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\BookingStatus;
 use App\Models\Transaksi;
 use App\Models\Pesanan;
 use App\Models\Booking;
@@ -170,7 +171,7 @@ class TransaksiController extends Controller
             ], 403);
         }
 
-        if ($booking->status_verifikasi !== Booking::STATUS_DISETUJUI) {
+        if ($booking->status_verifikasi !== BookingStatus::DISETUJUI) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Booking belum disetujui atau sudah dibayar.',

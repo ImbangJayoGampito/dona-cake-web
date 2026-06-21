@@ -7,7 +7,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import Kategori from "@/models/kategori.model"
+import ShoppingCartButton from "@/components/produk/shopping-cart-button"
 import {
   Select,
   SelectContent,
@@ -36,10 +38,9 @@ import {
 import { KategoriService } from "@/services/kategori-service"
 import { ProdukService } from "@/services/produk-service"
 import type { Produk } from "@/models/produk.model"
-
 import type { ProdukFilters } from "@/types/produk.types"
 
-// ─── HeroSearch ─────────────────────────────────────────────────────────────
+// ─── HeroSearch ──────────────────────────────────────────────────────────────
 interface HeroSearchProps {
   query: string
   setQuery: (query: string) => void
@@ -48,9 +49,7 @@ interface HeroSearchProps {
 
 function HeroSearch({ query, setQuery, onSearch }: HeroSearchProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      onSearch()
-    }
+    if (e.key === "Enter") onSearch()
   }
 
   return (
@@ -85,7 +84,7 @@ function HeroSearch({ query, setQuery, onSearch }: HeroSearchProps) {
   )
 }
 
-// ─── FilterSidebar ──────────────────────────────────────────────────────────
+// ─── FilterSidebar ───────────────────────────────────────────────────────────
 interface FilterSidebarProps {
   categories: Kategori[]
   selectedCats: string[]
@@ -109,9 +108,7 @@ function FilterSidebar({
     <Card className="w-full shadow-sm">
       <CardContent className="space-y-5 pt-5">
         <div className="flex items-center justify-between">
-          <span className="text-base font-semibold text-foreground">
-            Filter
-          </span>
+          <span className="text-base font-semibold text-foreground">Filter</span>
           <button
             onClick={onReset}
             className="text-xs font-medium text-destructive hover:text-destructive/80"
@@ -155,9 +152,7 @@ function FilterSidebar({
           </p>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-sm text-foreground">
-                Hanya Stok Tersedia
-              </Label>
+              <Label className="text-sm text-foreground">Hanya Stok Tersedia</Label>
               <Switch
                 checked={onlyStock}
                 onCheckedChange={setOnlyStock}
@@ -177,7 +172,7 @@ function FilterSidebar({
   )
 }
 
-// ─── Product Card ──────────────────────────────────────────────────────────
+// ─── Product Card ────────────────────────────────────────────────────────────
 interface ProductCardProps {
   product: Produk
   view: "list" | "grid"
@@ -192,7 +187,6 @@ function ProductCard({ product, view }: ProductCardProps) {
             🎂
           </div>
           <div className="min-w-0 flex-1">
-            <div className="mb-1 flex flex-wrap items-center gap-2"></div>
             <p className="truncate text-sm font-semibold text-foreground">
               {product.nama_produk}
             </p>
@@ -213,9 +207,9 @@ function ProductCard({ product, view }: ProductCardProps) {
           </div>
           <div className="shrink-0">
             {product.isInStock() ? (
-              <Button size="sm" className="gap-1">
-                <ShoppingBag size={13} /> Tambah
-              </Button>
+              <div className="flex items-center justify-center">
+                <ShoppingCartButton produk={product} />
+              </div>
             ) : (
               <Button size="sm" variant="outline" className="gap-1 text-xs">
                 <Phone size={13} /> Hubungi Admin
@@ -260,19 +254,9 @@ function ProductCard({ product, view }: ProductCardProps) {
         </div>
 
         {product.isInStock() ? (
-          <Button
-            size="sm"
-            variant="secondary"
-            className="w-full gap-1.5 text-xs font-medium"
-          >
-            <ShoppingBag size={13} /> Tambah ke Keranjang
-          </Button>
+          <ShoppingCartButton produk={product} />
         ) : (
-          <Button
-            size="sm"
-            variant="outline"
-            className="w-full gap-1.5 text-xs"
-          >
+          <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs">
             <Phone size={13} /> Hubungi Admin
           </Button>
         )}
@@ -281,7 +265,75 @@ function ProductCard({ product, view }: ProductCardProps) {
   )
 }
 
-// ─── Main Page ──────────────────────────────────────────────────────────────
+// ─── Skeleton Components ─────────────────────────────────────────────────────
+const ProductCardSkeleton = ({ view }: { view: "grid" | "list" }) => {
+  if (view === "list") {
+    return (
+      <Card className="shadow-sm">
+        <CardContent className="flex items-center gap-4 p-4">
+          <Skeleton className="h-20 w-20 shrink-0 rounded-xl" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+            <Skeleton className="h-3 w-1/3" />
+          </div>
+          <Skeleton className="h-8 w-20" />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <Card className="overflow-hidden shadow-sm">
+      <Skeleton className="h-44 w-full" />
+      <CardContent className="space-y-2 p-3">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-3 w-1/2" />
+        <Skeleton className="h-4 w-1/3" />
+        <Skeleton className="h-8 w-full" />
+      </CardContent>
+    </Card>
+  )
+}
+
+const FilterSidebarSkeleton = () => (
+  <Card className="w-full shadow-sm">
+    <CardContent className="space-y-5 pt-5">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-6 w-24" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+      <Separator />
+      <div>
+        <Skeleton className="mb-3 h-4 w-20" />
+        <div className="space-y-2.5">
+          {Array(5)
+            .fill(0)
+            .map((_, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+      <Separator />
+      <div>
+        <Skeleton className="mb-3 h-4 w-28" />
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-5 w-10" />
+        </div>
+      </div>
+      <Separator />
+      <Skeleton className="h-9 w-full" />
+    </CardContent>
+  </Card>
+)
+
+// ─── Main Page ───────────────────────────────────────────────────────────────
 export default function DonaCakeKatalog() {
   // ─── State ────────────────────────────────────────────────────────────────
   const [products, setProducts] = useState<Produk[]>([])
@@ -291,13 +343,11 @@ export default function DonaCakeKatalog() {
   const [currentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
 
-  // Filter states
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCats, setSelectedCats] = useState<string[]>([])
   const [onlyStock, setOnlyStock] = useState(false)
   const [sort, setSort] = useState("terpopuler")
 
-  // UI states
   const [view, setView] = useState<"grid" | "list">("grid")
 
   // ─── Sort Helpers ──────────────────────────────────────────────────────────
@@ -338,20 +388,15 @@ export default function DonaCakeKatalog() {
         sort_order: sortConfig.sort_order,
       }
 
-      // Add category filter if selected
       if (selectedCats.length > 0) {
-        // Send first selected category (or join them if API supports)
         filterParams.kategori = selectedCats[0]
       }
-
-      console.log("📤 Fetching with filters:", filterParams)
 
       const result = await ProdukService.searchProducts(filterParams)
 
       if (result.status === "success" && result.data) {
         let productsData = result.data
 
-        // Client-side stock filter (since API doesn't support it)
         if (onlyStock) {
           productsData = productsData.filter((p: Produk) => p.stok > 0)
         }
@@ -378,12 +423,10 @@ export default function DonaCakeKatalog() {
 
   const handleSearch = () => {
     setCurrentPage(1)
-    // fetchProducts will be called by useEffect
   }
 
   const handleApplyFilters = () => {
     setCurrentPage(1)
-    // fetchProducts will be called by useEffect
   }
 
   const handleResetFilters = () => {
@@ -403,11 +446,12 @@ export default function DonaCakeKatalog() {
     setCurrentPage(newPage)
   }
 
-  // ─── Auto-fetch when dependencies change ──────────────────────────────────
+  // ─── Auto‑fetch ────────────────────────────────────────────────────────────
   useEffect(() => {
     fetchProducts()
   }, [currentPage, searchQuery, selectedCats, sort, onlyStock, fetchProducts])
 
+  // ─── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans">
       <HeroSearch
@@ -420,15 +464,19 @@ export default function DonaCakeKatalog() {
         <div className="flex flex-col items-start gap-6 md:grid md:grid-cols-[220px_1fr]">
           {/* Sidebar */}
           <div className="order-1 md:sticky md:top-20 md:order-none">
-            <FilterSidebar
-              categories={categories}
-              selectedCats={selectedCats}
-              toggleCat={toggleCat}
-              onlyStock={onlyStock}
-              setOnlyStock={setOnlyStock}
-              onApply={handleApplyFilters}
-              onReset={handleResetFilters}
-            />
+            {isLoading ? (
+              <FilterSidebarSkeleton />
+            ) : (
+              <FilterSidebar
+                categories={categories}
+                selectedCats={selectedCats}
+                toggleCat={toggleCat}
+                onlyStock={onlyStock}
+                setOnlyStock={setOnlyStock}
+                onApply={handleApplyFilters}
+                onReset={handleResetFilters}
+              />
+            )}
           </div>
 
           {/* Product area */}
@@ -436,64 +484,77 @@ export default function DonaCakeKatalog() {
             {/* Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-foreground">
-                  Menampilkan{" "}
-                  <span className="font-semibold">{products.length}</span> dari{" "}
-                  <span className="font-semibold">{totalProducts}</span> produk
-                </p>
-                {/* Active filters */}
-                {(selectedCats.length > 0 || onlyStock || searchQuery) && (
-                  <div className="flex flex-wrap gap-1">
-                    {searchQuery && (
-                      <Badge variant="secondary" className="text-xs">
-                        "{searchQuery}"
-                        <button
-                          onClick={() => setSearchQuery("")}
-                          className="ml-1 hover:text-destructive"
-                        >
-                          <X size={12} />
-                        </button>
-                      </Badge>
+                {isLoading ? (
+                  <>
+                    <Skeleton className="h-4 w-48" />
+                    <Skeleton className="h-4 w-32" />
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium text-foreground">
+                      Menampilkan{" "}
+                      <span className="font-semibold">{products.length}</span>{" "}
+                      dari <span className="font-semibold">{totalProducts}</span>{" "}
+                      produk
+                    </p>
+                    {(selectedCats.length > 0 || onlyStock || searchQuery) && (
+                      <div className="flex flex-wrap gap-1">
+                        {searchQuery && (
+                          <Badge variant="secondary" className="text-xs">
+                            "{searchQuery}"
+                            <button
+                              onClick={() => setSearchQuery("")}
+                              className="ml-1 hover:text-destructive"
+                            >
+                              <X size={12} />
+                            </button>
+                          </Badge>
+                        )}
+                        {selectedCats.map((cat) => (
+                          <Badge key={cat} variant="secondary" className="text-xs">
+                            {cat}
+                            <button
+                              onClick={() => toggleCat(cat)}
+                              className="ml-1 hover:text-destructive"
+                            >
+                              <X size={12} />
+                            </button>
+                          </Badge>
+                        ))}
+                        {onlyStock && (
+                          <Badge variant="secondary" className="text-xs">
+                            Stok Tersedia
+                            <button
+                              onClick={() => setOnlyStock(false)}
+                              className="ml-1 hover:text-destructive"
+                            >
+                              <X size={12} />
+                            </button>
+                          </Badge>
+                        )}
+                      </div>
                     )}
-                    {selectedCats.map((cat) => (
-                      <Badge key={cat} variant="secondary" className="text-xs">
-                        {cat}
-                        <button
-                          onClick={() => toggleCat(cat)}
-                          className="ml-1 hover:text-destructive"
-                        >
-                          <X size={12} />
-                        </button>
-                      </Badge>
-                    ))}
-                    {onlyStock && (
-                      <Badge variant="secondary" className="text-xs">
-                        Stok Tersedia
-                        <button
-                          onClick={() => setOnlyStock(false)}
-                          className="ml-1 hover:text-destructive"
-                        >
-                          <X size={12} />
-                        </button>
-                      </Badge>
-                    )}
-                  </div>
+                  </>
                 )}
               </div>
 
               <div className="flex items-center gap-2">
-                <Select value={sort} onValueChange={handleSortChange}>
-                  <SelectTrigger className="h-8 w-36 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="terpopuler">Terpopuler</SelectItem>
-                    <SelectItem value="termurah">Termurah</SelectItem>
-                    <SelectItem value="termahal">Termahal</SelectItem>
-                    <SelectItem value="terbaru">Terbaru</SelectItem>
-                    <SelectItem value="rating">Rating Tertinggi</SelectItem>
-                  </SelectContent>
-                </Select>
+                {isLoading ? (
+                  <Skeleton className="h-8 w-36" />
+                ) : (
+                  <Select value={sort} onValueChange={handleSortChange}>
+                    <SelectTrigger className="h-8 w-36 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="terpopuler">Terpopuler</SelectItem>
+                      <SelectItem value="termurah">Termurah</SelectItem>
+                      <SelectItem value="termahal">Termahal</SelectItem>
+                      <SelectItem value="terbaru">Terbaru</SelectItem>
+                      <SelectItem value="rating">Rating Tertinggi</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
                 <div className="flex overflow-hidden rounded-md border">
                   <button
                     onClick={() => setView("grid")}
@@ -519,15 +580,26 @@ export default function DonaCakeKatalog() {
               </div>
             </div>
 
-            {/* Loading state */}
-            {isLoading && (
-              <div className="flex justify-center py-8">
-                <div className="text-muted-foreground">Loading products...</div>
-              </div>
-            )}
-
-            {/* Grid / List */}
-            {!isLoading && (
+            {/* Product grid / list with skeletons */}
+            {isLoading ? (
+              view === "grid" ? (
+                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                  {Array(8)
+                    .fill(0)
+                    .map((_, i) => (
+                      <ProductCardSkeleton key={i} view="grid" />
+                    ))}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {Array(4)
+                    .fill(0)
+                    .map((_, i) => (
+                      <ProductCardSkeleton key={i} view="list" />
+                    ))}
+                </div>
+              )
+            ) : (
               <>
                 {view === "grid" ? (
                   <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -542,8 +614,6 @@ export default function DonaCakeKatalog() {
                     ))}
                   </div>
                 )}
-
-                {/* Empty state */}
                 {products.length === 0 && !isLoading && (
                   <div className="py-12 text-center">
                     <p className="text-muted-foreground">
@@ -557,78 +627,86 @@ export default function DonaCakeKatalog() {
             {/* Pagination */}
             {totalProducts > 0 && (
               <div className="pt-4">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (currentPage > 1) handlePageChange(currentPage - 1)
-                        }}
-                        className={
-                          currentPage <= 1
-                            ? "pointer-events-none opacity-50"
-                            : ""
-                        }
-                      />
-                    </PaginationItem>
-
-                    {Array.from(
-                      { length: Math.min(3, lastPage) },
-                      (_, i) => i + 1
-                    ).map((n) => (
-                      <PaginationItem key={n}>
-                        <PaginationLink
+                {isLoading ? (
+                  <div className="flex justify-center gap-2">
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                ) : (
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
                           href="#"
                           onClick={(e) => {
                             e.preventDefault()
-                            handlePageChange(n)
+                            if (currentPage > 1) handlePageChange(currentPage - 1)
                           }}
-                          isActive={currentPage === n}
-                        >
-                          {n}
-                        </PaginationLink>
+                          className={
+                            currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                          }
+                        />
                       </PaginationItem>
-                    ))}
 
-                    {lastPage > 3 && (
-                      <>
-                        <PaginationItem>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                        <PaginationItem>
+                      {Array.from(
+                        { length: Math.min(3, lastPage) },
+                        (_, i) => i + 1
+                      ).map((n) => (
+                        <PaginationItem key={n}>
                           <PaginationLink
                             href="#"
                             onClick={(e) => {
                               e.preventDefault()
-                              handlePageChange(lastPage)
+                              handlePageChange(n)
                             }}
+                            isActive={currentPage === n}
                           >
-                            {lastPage}
+                            {n}
                           </PaginationLink>
                         </PaginationItem>
-                      </>
-                    )}
+                      ))}
 
-                    <PaginationItem>
-                      <PaginationNext
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (currentPage < lastPage) {
-                            handlePageChange(currentPage + 1)
+                      {lastPage > 3 && (
+                        <>
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                          <PaginationItem>
+                            <PaginationLink
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                handlePageChange(lastPage)
+                              }}
+                            >
+                              {lastPage}
+                            </PaginationLink>
+                          </PaginationItem>
+                        </>
+                      )}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            if (currentPage < lastPage) {
+                              handlePageChange(currentPage + 1)
+                            }
+                          }}
+                          className={
+                            currentPage >= lastPage
+                              ? "pointer-events-none opacity-50"
+                              : ""
                           }
-                        }}
-                        className={
-                          currentPage >= lastPage
-                            ? "pointer-events-none opacity-50"
-                            : ""
-                        }
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
               </div>
             )}
           </div>

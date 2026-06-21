@@ -3,6 +3,7 @@ import { PublicRoutes, ProtectedRoutes } from "@/lib/routes"
 import ApiResponse from "@/lib/api/api-response"
 import api from "@/lib/api/config"
 import { RouteService } from "./route-service"
+import { CurrencyService } from "./currency-service"
 import type { ProdukFilters } from "@/types/produk.types"
 
 export class ProdukService {
@@ -62,11 +63,7 @@ export class ProdukService {
     }
   }
   static formatPrice(price: number): string {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(price)
+    return CurrencyService.formatPrice(price)
   }
   static async addToCart(
     product: Produk,

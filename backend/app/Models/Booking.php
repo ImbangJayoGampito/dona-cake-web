@@ -31,7 +31,7 @@ use Illuminate\Support\Carbon;
  * @property-read Kategori|null $kategori
  * @property-read Notifikasi[] $notifikasis
  */
-class Booking extends Model
+class  Booking extends Model
 {
     protected $table = "bookings";
 

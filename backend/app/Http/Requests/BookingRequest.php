@@ -17,7 +17,6 @@ class BookingRequest extends FormRequest
 
         return [
             // Booking Information
-            "pelanggan_id" => "required|exists:pelanggans,id",
             "kategori_id" => "nullable|exists:kategoris,id",
 
             // Cake Configuration

@@ -1,4 +1,5 @@
 import type { Booking } from "@/types/karyawan.types"
+import GambarService from "@/services/gambar-service"
 
 interface Props {
   booking: Booking
@@ -14,6 +15,16 @@ function formatTglAmbil(tgl: string | null): string {
     day: "numeric",
     month: "short",
   }) + " • " + d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) + " WIB"
+}
+
+/** Helper to build absolute URL for images */
+function getImageUrl(path: string | null) {
+  if (!path) return null;
+  if (path.startsWith('http') || path.startsWith('data:')) return path;
+  // If you have a Vite proxy, use window.location.origin
+  // Otherwise use your API base URL from environment
+  const base = import.meta.env.VITE_API_URL || window.location.origin;
+  return `${base}${path}`;
 }
 
 /** Parse deskripsi_custom menjadi tags */
@@ -40,20 +51,26 @@ export default function BookingCustomCard({
 
   return (
     <div className="flex gap-4 rounded-xl border border-border bg-card p-5">
-      {/* Foto referensi — tampilkan dari desain_custom_url jika ada */}
-      <div className="h-44 w-40 shrink-0 overflow-hidden rounded-lg bg-muted">
-        {booking.desain_custom_url ? (
-          <img
-            src={booking.desain_custom_url}
-            alt="Referensi desain"
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-            No Image
-          </div>
-        )}
-      </div>
+        {/* Foto referensi — tampilkan dari desain_custom_url jika ada */}
+        <div className="h-44 w-40 shrink-0 overflow-hidden rounded-lg bg-muted">
+          {booking.desain_custom_url ? (
+            <img
+              src={getImageUrl(booking.desain_custom_url) || ''}
+              alt="Referensi desain"
+              className="h-full w-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  // Fallback to placeholder if image fails to load
+                  target.src = '/placeholder-image.jpg';
+                }}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+              No Image
+            </div>
+          )}
+        </div>
 
       {/* Detail */}
       <div className="flex flex-1 flex-col">

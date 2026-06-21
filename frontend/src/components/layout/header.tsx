@@ -81,10 +81,10 @@ export function AppHeader() {
                     Keranjang
                   </Button>
                   <Button
-                    onClick={() => redirectTo(ProtectedRoutes.Orders)}
+                    onClick={() => redirectTo(ProtectedRoutes.Pantau)}
                     variant="ghost"
                   >
-                    Pesanan
+                    Pantau
                   </Button>
                 </div>
                 {/* Avatar on the far right */}
@@ -154,10 +154,10 @@ export function AppHeader() {
                       Keranjang
                     </Button>
                     <Button
-                      onClick={() => redirectTo(ProtectedRoutes.Orders)}
+                      onClick={() => redirectTo(ProtectedRoutes.Pantau)}
                       variant="ghost"
                     >
-                      Pesanan
+                      Pantau
                     </Button>
 
                     <div className="justify-center border-t pt-4">

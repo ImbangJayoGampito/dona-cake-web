@@ -13,8 +13,10 @@ import {
   Building2,
   Wallet,
   ArrowRight,
+  MessageCircle,
 } from "lucide-react"
 import OrderSummary from "@/components/booking/order-summary"
+import BookingConfig from "@/config/booking"
 import type { BookingForm } from "@/types/booking.types"
 import { getTimeFromDatetime, getDateFromDatetime } from "@/lib/time_management"
 
@@ -39,6 +41,7 @@ export default function Step4Confirm({
   const [cardNumber, setCardNumber] = useState("")
   const [expiryDate, setExpiryDate] = useState("")
   const [cvc, setCvc] = useState("")
+  const [whatsappNumber, setWhatsAppNumber] = useState("")
 
   // Calculate DP amount (50% of total)
   const totalAmount = order.harga_final || 350000
@@ -48,6 +51,7 @@ export default function Step4Confirm({
   const handleNext = () => {
     setOrder({
       ...order,
+      whatsapp_number: `62${whatsappNumber}`,
     })
     onNext()
   }
@@ -104,7 +108,8 @@ export default function Step4Confirm({
                   KONFIGURASI KUE
                 </p>
                 <p className="mt-0.5 font-medium text-foreground">
-                  {order.ukuran}, {order.rasa_kue}
+                  {order.ukuran},{" "}
+                  {BookingConfig.formatFlavorLabels(order.rasa_kue)}
                 </p>
               </div>
               <div>
@@ -226,6 +231,31 @@ export default function Step4Confirm({
             )}
           </div>
 
+          {/* WhatsApp Number Input */}
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-foreground">
+              Nomor WhatsApp untuk Konfirmasi
+            </Label>
+            <div className="flex items-center gap-2">
+              <div className="flex h-10 w-12 items-center justify-center rounded-lg border border-border bg-muted text-sm font-semibold">
+                +62
+              </div>
+              <Input
+                placeholder="81234567890"
+                className="flex-1 border-border text-foreground"
+                value={whatsappNumber}
+                onChange={(e) => setWhatsAppNumber(e.target.value)}
+                type="tel"
+                inputMode="tel"
+                pattern="[0-9]*"
+                maxLength={12}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Nomor WhatsApp akan digunakan untuk konfirmasi pesanan dan pembayaran
+            </p>
+          </div>
+
           <div className="flex items-start gap-2">
             <Checkbox
               id="terms"
@@ -250,15 +280,15 @@ export default function Step4Confirm({
       <OrderSummary order={{ ...order }} step={steps} />
 
       <div className="md:col-span-2">
-        <Button
-          onClick={handleNext}
-          disabled={!agreed}
-          className="w-full bg-primary py-3 text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Konfirmasi & Bayar {payMode === "dp" ? "DP" : "Lunas"} Rp{" "}
-          {paymentAmount.toLocaleString()}
-          <ArrowRight size={18} className="ml-2" />
-        </Button>
+          <Button
+            onClick={handleNext}
+            disabled={!agreed || !whatsappNumber || whatsappNumber.length < 10}
+            className="w-full bg-primary py-3 text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Konfirmasi & Bayar {payMode === "dp" ? "DP" : "Lunas"} Rp{" "}
+            {paymentAmount.toLocaleString()}
+            <ArrowRight size={18} className="ml-2" />
+          </Button>
         <div className="mt-4 flex justify-start">
           <Button
             variant="ghost"

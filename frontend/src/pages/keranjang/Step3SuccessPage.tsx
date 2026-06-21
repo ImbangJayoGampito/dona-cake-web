@@ -27,7 +27,7 @@ interface SuccessPageProps {
 
 // ─── Page 3: Pesanan Berhasil ─────────────────────────────────────────────────
 
-export default function SuccessPage({
+export default function Step3SuccessPage({
   onHome,
   onTrack,
   pesanan,
@@ -83,7 +83,8 @@ export default function SuccessPage({
                 Kembali ke Beranda
               </Button>
               <WhatsAppButton
-                pesanan={pesanan}
+                id_pesanan={pesanan.id}
+                type_of_message="Pesanan"
                 beginningMessage="Saya mau meminta konfirmasi pembayaran pada produk ini."
               />
             </div>

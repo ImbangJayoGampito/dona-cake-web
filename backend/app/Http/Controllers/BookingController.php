@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
+use App\Models\Gambar;
 use App\Models\Pelanggan;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
@@ -57,6 +58,12 @@ class BookingController extends Controller
 
     /**
      * Store a newly created booking (custom order).
+     *
+     * Accepts an optional raw file upload ("desain_custom_file"). If present,
+     * the file is stored and a Gambar record is created polymorphically
+     * attached to the Booking, and its URL is what gets saved on
+     * desain_custom_url — never a client-supplied string. This guarantees
+     * the stored path always matches what's actually written to disk.
      */
     public function store(BookingRequest $request): JsonResponse
     {
@@ -73,6 +80,12 @@ class BookingController extends Controller
             );
         }
 
+        // Validate the optional design file upload separately from the
+        // rest of the booking payload (BookingRequest handles the rest).
+        $request->validate([
+            "desain_custom_file" => "nullable|image|mimes:jpeg,png,jpg,webp|max:2048",
+        ]);
+
         try {
             DB::beginTransaction();
 
@@ -80,13 +93,25 @@ class BookingController extends Controller
                 "pelanggan_id" => $pelanggan->id,
                 "ukuran" => $request->ukuran,
                 "tgl_ambil" => $request->tgl_ambil,
-                "desain_custom_url" => $request->desain_custom_url,
+                "desain_custom_url" => null,
                 "catatan" => $request->catatan,
                 "status_verifikasi" => BookingStatus::MENUNGGU_VERIFIKASI,
                 "rasa_kue" => $request->rasa_kue,
                 "jenis_frosting" => $request->jenis_frosting,
                 "harga_final" => $request->harga_final,
             ]);
+
+            // If a design image was uploaded, store it and attach via Gambar.
+            if ($request->hasFile("desain_custom_file")) {
+                $gambar = Gambar::createForModel(
+                    $booking,
+                    $request->file("desain_custom_file"),
+                );
+
+                $booking->update([
+                    "desain_custom_url" => $gambar->gambar_url,
+                ]);
+            }
 
             DB::commit();
 
@@ -104,7 +129,7 @@ class BookingController extends Controller
                     "status" => "success",
                     "message" =>
                         "Booking berhasil dibuat. Menunggu verifikasi admin.",
-                    "data" => $booking->load("pelanggan.user"),
+                    "data" => $booking->fresh()->load("pelanggan.user"),
                 ],
                 201,
             );
@@ -254,6 +279,42 @@ class BookingController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "Booking berhasil dibatalkan.",
+        ]);
+    }
+
+    /**
+     * Update booking details (partial update).
+     */
+    public function update(Request $request, Booking $booking): JsonResponse
+    {
+        $user = $request->user();
+
+        // Check if user has access to this booking
+        if ($user->hasRole("user")) {
+            $pelanggan = Pelanggan::where("user_id", $user->id)->first();
+            if (!$pelanggan || $booking->pelanggan_id !== $pelanggan->id) {
+                return response()->json(
+                    [
+                        "status" => "error",
+                        "message" => "Anda tidak memiliki akses ke booking ini.",
+                    ],
+                    403,
+                );
+            }
+        }
+
+        $validated = $request->validate([
+            "desain_custom_url" => "nullable|string|max:500",
+            "catatan" => "nullable|string|max:500",
+            "status_verifikasi" => "nullable|string|in:menunggu_verifikasi,disetujui,ditolak,dibatalkan,selesai",
+        ]);
+
+        $booking->update($validated);
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Booking berhasil diperbarui.",
+            "data" => $booking->load("pelanggan.user"),
         ]);
     }
 }
