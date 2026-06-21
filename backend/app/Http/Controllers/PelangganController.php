@@ -16,10 +16,9 @@ class PelangganController extends Controller
         $pelanggan = Pelanggan::where('user_id', $request->user()->id)->first();
 
         if (!$pelanggan) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Profil pelanggan tidak ditemukan.',
-            ], 404);
+            $pelanggan = Pelanggan::create([
+                'user_id' => $request->user()->id,
+            ]);
         }
 
         $pelanggan->load('user');
@@ -38,10 +37,9 @@ class PelangganController extends Controller
         $pelanggan = Pelanggan::where('user_id', $request->user()->id)->first();
 
         if (!$pelanggan) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Profil pelanggan tidak ditemukan.',
-            ], 404);
+            $pelanggan = Pelanggan::create([
+                'user_id' => $request->user()->id,
+            ]);
         }
 
         $request->validate([

@@ -22,7 +22,7 @@ export default function ProdukCard({
     : "bg-primary text-white"
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-shadow hover:shadow-md">
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-white dark:bg-card shadow-sm transition-shadow hover:shadow-md">
       {/* Foto produk */}
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img

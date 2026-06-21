@@ -20,11 +20,18 @@ export type StatusKDS = "dibayar" | "diproses" | "selesai"
 
 export interface ItemPesanan {
   id: number
+  pesanan_id: number
   produk_id: number
-  nama_produk: string
-  harga: number
-  jumlah: number
+  kuantitas: number
   subtotal: number
+  produk?: {
+    id: number
+    nama_produk: string
+    harga: number
+    stok: number
+    slug?: string
+    deskripsi?: string
+  }
 }
 
 export interface Pesanan {

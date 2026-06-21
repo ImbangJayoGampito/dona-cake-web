@@ -4,6 +4,25 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
+if (!class_exists('RequestParseBodyException')) {
+    class RequestParseBodyException extends \Exception {}
+}
+
+if (!function_exists('request_parse_body')) {
+    function request_parse_body(): array {
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        $post = [];
+        $files = [];
+
+        if (str_contains($contentType, 'application/x-www-form-urlencoded')) {
+            parse_str(file_get_contents('php://input'), $post);
+        }
+
+        return [$post ?: $_POST, $files ?: $_FILES];
+    }
+}
+
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',

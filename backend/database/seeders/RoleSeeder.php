@@ -94,5 +94,18 @@ class RoleSeeder extends Seeder
             ]
         );
         $adminUser->assignRole($admin);
+
+        // -------------------------------------------------------
+        // Default karyawan user
+        // -------------------------------------------------------
+        $karyawanUser = User::firstOrCreate(
+            ['email' => 'karyawan@example.com'],
+            [
+                'username' => 'karyawan',
+                'name'     => 'Karyawan Test',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $karyawanUser->assignRole($karyawan);
     }
 }

@@ -11,6 +11,7 @@ import UserTable from "./components/UserTable"
 import BulkActionBar from "./components/BulkActionBar"
 import EditRoleDialog from "./components/EditRoleDialog"
 import DeleteUserDialog from "./components/DeleteUserDialog"
+import AddUserDialog from "./components/AddUserDialog"
 
 type LoadState = "loading" | "success" | "error"
 
@@ -23,6 +24,7 @@ export default function ManajemenPenggunaPage() {
   const [pagination, setPagination] = useState<PaginationMeta | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [filters, setFilters] = useState<UserFilters>(DEFAULT_FILTERS)
+  const [isAddOpen, setIsAddOpen] = useState(false)
 
   // Selection state
   const [selectedIds, setSelectedIds] = useState<number[]>([])
@@ -173,7 +175,7 @@ export default function ManajemenPenggunaPage() {
               Kelola hak akses dan informasi detail pelanggan serta staf Anda.
             </p>
           </div>
-          <Button className="gap-2 bg-primary hover:bg-primary/80">
+          <Button onClick={() => setIsAddOpen(true)} className="gap-2 bg-primary hover:bg-primary/80">
             <UserPlus className="h-4 w-4" strokeWidth={1.75} />
             Tambah Pengguna
           </Button>
@@ -234,6 +236,15 @@ export default function ManajemenPenggunaPage() {
         open={deleteTarget !== null}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDeleteConfirm}
+      />
+
+      {/* Modal Tambah Pengguna Baru */}
+      <AddUserDialog
+        open={isAddOpen}
+        onClose={() => setIsAddOpen(false)}
+        onUserAdded={(newUser) => {
+          setUsers((prev) => [newUser, ...prev])
+        }}
       />
     </>
   )

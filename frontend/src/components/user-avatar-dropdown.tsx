@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/lib/state/logged-user"
 import { useNavigate } from "react-router-dom"
 import { UserService } from "@/services/user-service"
-import { PublicRoutes } from "@/lib/routes"
+import { PublicRoutes, ProtectedRoutes } from "@/lib/routes"
 
 export function UserAvatarDropdown() {
   const { user, logout } = useAuthStore()
@@ -48,7 +48,7 @@ export function UserAvatarDropdown() {
             </p>
           </div>
         </div>
-        <DropdownMenuItem onClick={() => navigate("/profile")}>
+        <DropdownMenuItem onClick={() => navigate(ProtectedRoutes.Me)}>
           Profile
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>

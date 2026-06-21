@@ -154,6 +154,21 @@ class AdminController extends Controller
         $bookingMenunggu = Booking::where('status_verifikasi', BookingStatus::MENUNGGU_VERIFIKASI->value)->count();
         $transaksiMenungguKonfirmasi = \App\Models\Transaksi::where('status_transaksi', 'menunggu_konfirmasi')->count();
 
+        $statusBreakdown = [
+            'menunggu_pembayaran' => \App\Models\Pesanan::where('status_pesanan', 'menunggu_pembayaran')->count(),
+            'menunggu_konfirmasi_pembayaran' => \App\Models\Pesanan::where('status_pesanan', 'menunggu_konfirmasi_pembayaran')->count(),
+            'dibayar' => \App\Models\Pesanan::where('status_pesanan', 'dibayar')->count(),
+            'diproses' => \App\Models\Pesanan::where('status_pesanan', 'diproses')->count(),
+            'selesai' => \App\Models\Pesanan::where('status_pesanan', 'selesai')->count(),
+            'dibatalkan' => \App\Models\Pesanan::where('status_pesanan', 'dibatalkan')->count(),
+            'pembayaran_dibatalkan' => \App\Models\Pesanan::where('status_pesanan', 'pembayaran_dibatalkan')->count(),
+        ];
+
+        $pesananHariIni = \App\Models\Pesanan::whereDate('created_at', today())->count();
+        $sedangDiproses = \App\Models\Pesanan::whereIn('status_pesanan', ['dibayar', 'diproses'])->count();
+        $siapDiambil = \App\Models\Pesanan::where('status_pesanan', 'selesai')->count();
+        $pending = \App\Models\Pesanan::whereIn('status_pesanan', ['menunggu_pembayaran', 'menunggu_konfirmasi_pembayaran'])->count();
+
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -164,6 +179,11 @@ class AdminController extends Controller
                 'pesanan_baru' => $pesananBaru,
                 'booking_menunggu' => $bookingMenunggu,
                 'transaksi_menunggu_konfirmasi' => $transaksiMenungguKonfirmasi,
+                'status_breakdown' => $statusBreakdown,
+                'pesanan_hari_ini' => $pesananHariIni,
+                'sedang_diproses' => $sedangDiproses,
+                'siap_diambil' => $siapDiambil,
+                'pending' => $pending,
             ],
         ]);
     }

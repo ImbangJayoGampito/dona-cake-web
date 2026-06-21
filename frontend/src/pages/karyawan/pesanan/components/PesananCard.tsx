@@ -47,7 +47,7 @@ function CardBaru({ pesanan, onUpdateStatus, isUpdating }: Props) {
         </span>
       </div>
       <p className="font-semibold text-foreground">
-        {firstItem?.nama_produk ?? "Pesanan"}
+        {firstItem?.produk?.nama_produk ?? "Pesanan"}
       </p>
       {pesanan.item_pesanans && pesanan.item_pesanans.length > 1 && (
         <p className="text-xs text-muted-foreground">
@@ -87,7 +87,7 @@ function CardDiproses({ pesanan, onUpdateStatus, isUpdating }: Props) {
         </span>
       </div>
       <p className="font-semibold text-foreground">
-        {firstItem?.nama_produk ?? "Pesanan"}
+        {firstItem?.produk?.nama_produk ?? "Pesanan"}
       </p>
       <p className="text-xs text-muted-foreground">Status: Sedang Diproses</p>
       {/* Progress bar visual */}
@@ -134,7 +134,7 @@ function CardSiap({ pesanan }: Omit<Props, "onUpdateStatus" | "isUpdating">) {
         </svg>
       </div>
       <p className="font-semibold text-foreground">
-        {firstItem?.nama_produk ?? "Pesanan"}
+        {firstItem?.produk?.nama_produk ?? "Pesanan"}
       </p>
       <button
         type="button"
