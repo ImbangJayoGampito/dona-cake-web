@@ -59,7 +59,9 @@ export default function OrderSummary({
           </div>
           <div className="flex justify-between text-foreground">
             <span className="text-muted-foreground">Rasa:</span>
-            <span className="font-medium">{order.rasa_kue || "-"}</span>
+            <span className="font-medium">
+              {BookingConfig.formatFlavorLabels(order.rasa_kue)}
+            </span>
           </div>
           {pkg > 0 && (
             <div className="flex justify-between text-foreground">

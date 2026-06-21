@@ -14,13 +14,13 @@ import { UserService } from "./services/user-service"
 import { PublicRoutes, ProtectedRoutes } from "./lib/routes"
 import ProductDetailPage from "./pages/produk/produk-card"
 import { RouteService } from "./services/route-service"
-
+import PantauPage from "./pages/keranjang/pantauPage"
 import { toast } from "sonner"
 import Profile from "./pages/user/profil/profile"
 import { AppHeader } from "./components/layout/header"
 import AppLayout from "./pages/layout"
 import BookingLayout from "./pages/booking/layout"
-import OrdersPage from "./pages/keranjang/pesanan2_orders_page"
+import OrdersPage from "./pages/keranjang/pantauPage"
 import DonaCakeKatalog from "./pages/katalog/main_search"
 // Admin imports
 import ProtectedRoute from "./components/layout/ProtectedRoute"
@@ -32,6 +32,8 @@ import ManajemenProdukPage from "./pages/admin/produk/ManajemenProdukPage"
 import LaporanKeuanganPage from "./pages/admin/laporan/LaporanKeuanganPage"
 import MonitorAsistenPage from "./pages/admin/asisten/MonitorAsistenPage"
 import KeranjangSteps from "@/pages/keranjang/KeranjangSteps"
+import PayOrderPage from "@/pages/transaksi/PayOrderPage"
+import PayBookingPage from "@/pages/transaksi/PayBookingPage"
 
 // Karyawan imports
 import KaryawanLayout from "./pages/karyawan/layout/KaryawanLayout"
@@ -101,12 +103,25 @@ export function App() {
           element={<ProductDetailPage />}
         />
         <Route path={PublicRoutes.Katalog} element={<DonaCakeKatalog />} />
+
       </Route>
       {/* CATEGORY: Protected routes */}
-      <Route element={<HeaderOnlyLayout />}>
-        <Route path={ProtectedRoutes.Me} element={<Profile />} />
-        <Route path="/profile" element={<Profile />} />
-      </Route>
+        <Route element={<HeaderOnlyLayout />}>
+          <Route path={ProtectedRoutes.Me} element={<Profile />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path={ProtectedRoutes.Pantau} element={<PantauPage />} />
+           <Route path={PublicRoutes.CreateBooking} element={<BookingLayout />} />
+          <Route path={ProtectedRoutes.Cart} element={<KeranjangSteps />} />
+          {/* Payment Routes */}
+          <Route
+            path={RouteService.convertToReactRouterParam(ProtectedRoutes.PayOrder)}
+            element={<PayOrderPage />}
+          />
+          <Route
+            path={RouteService.convertToReactRouterParam(ProtectedRoutes.PayBooking)}
+            element={<PayBookingPage />}
+          />
+        </Route>
 
       {/* ERROR ROUTES */}
       <Route path="/403" element={<AksesDitolakPage />} />

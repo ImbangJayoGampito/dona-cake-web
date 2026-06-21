@@ -30,7 +30,7 @@ export class Gambar {
       return this.gambar_url
     }
     // Otherwise, assume it needs base URL
-    const baseUrl = process.env.VITE_API_URL ? process.env.VITE_API_URL.replace("/api", "") : ""
+    const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace("/api", "") : ""
     return `${baseUrl}${this.gambar_url}`
   }
 

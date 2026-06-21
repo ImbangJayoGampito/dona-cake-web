@@ -172,6 +172,13 @@ export default class BookingConfig {
     return this.FLAVORS.find((f) => f.id === id)
   }
 
+  static formatFlavorLabels(flavorIds: string[]): string {
+    if (!flavorIds.length) return "-"
+    return flavorIds
+      .map((id) => this.getFlavorById(id)?.name ?? id)
+      .join(", ")
+  }
+
   static getFrostingById(id: string): BookingPriceAdditional | undefined {
     return this.FROSTINGS.find((f) => f.id === id)
   }

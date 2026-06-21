@@ -12,19 +12,22 @@ import {
   ArrowRight,
 } from "lucide-react"
 import { Pesanan } from "@/models/pesanan.model"
+
 interface WhatsAppButtonProps {
-  pesanan: Pesanan
+  id_pesanan: number
+  type_of_message: string
   beginningMessage?: string
 }
 export default function WhatsAppButton({
-  pesanan,
+  id_pesanan,
+  type_of_message,
   beginningMessage,
 }: WhatsAppButtonProps) {
   const whatsappPhone = "6281819200000" // Format: country code + number without +
 
   // Generate WhatsApp URL with optional message
   const generateWhatsAppUrl = () => {
-    const message = `Halo, saya ingin bertanya tentang pesanan dengan ID: ${pesanan?.id || ""}
+    const message = `Halo, saya ingin bertanya tentang ${type_of_message} dengan ID: ${id_pesanan}
       ${beginningMessage ? `\n\n${beginningMessage}` : ""}`
     return `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`
   }

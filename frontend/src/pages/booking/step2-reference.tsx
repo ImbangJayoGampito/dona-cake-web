@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,11 +23,13 @@ import {
   Building2,
   Wallet,
   CheckCircle2,
+  X,
 } from "lucide-react"
-import { useEffect } from "react"
 import type { BookingForm } from "@/types/booking.types"
 import OrderSummary from "@/components/booking/order-summary"
 import BookingConfig from "@/config/booking"
+import { useDropzone } from "react-dropzone"
+
 const TEXT_COLORS = ["#fff", "#2d2016", "#c8a84b", "#e87ca0", "#2d6e3e"]
 
 interface Step1Interface {
@@ -44,6 +46,39 @@ export default function Step2Reference(props: Step1Interface) {
   const [textColor, setTextColor] = useState("#2d2016")
   const [customText, setCustomText] = useState("")
   const [notes, setNotes] = useState("")
+  const [filePreview, setFilePreview] = useState<string | null>(null)
+
+  // Generate preview when file changes
+  useEffect(() => {
+    if (order.desain_custom_file) {
+      const preview = URL.createObjectURL(order.desain_custom_file)
+      setFilePreview(preview)
+      return () => URL.revokeObjectURL(preview)
+    } else {
+      setFilePreview(null)
+    }
+  }, [order.desain_custom_file])
+
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpg', '.jpeg'],
+    },
+    maxFiles: 1,
+    maxSize: 5 * 1024 * 1024,
+    onDrop: (acceptedFiles) => {
+      if (acceptedFiles.length > 0) {
+        setOrder((prev) => ({
+          ...prev,
+          desain_custom_file: acceptedFiles[0],
+        }))
+      }
+    },
+  })
+
+  const handleRemoveFile = () => {
+    setOrder((prev) => ({ ...prev, desain_custom_file: null }))
+  }
 
   const handleNext = () => {
     setOrder({
@@ -51,6 +86,7 @@ export default function Step2Reference(props: Step1Interface) {
       packaging: packaging,
       deskripsi_custom: customText,
       catatan: notes,
+
     })
     nextStep(steps + 1)
   }
@@ -61,6 +97,7 @@ export default function Step2Reference(props: Step1Interface) {
 
   return (
     <div className="grid items-start gap-6 md:grid-cols-[1fr_280px]">
+      {/* Left column: main form */}
       <Card className="border-border shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <div>
@@ -75,19 +112,53 @@ export default function Step2Reference(props: Step1Interface) {
           {/* Upload */}
           <div>
             <Label className="mb-2 block text-xs font-semibold tracking-widest text-muted-foreground">
-              UPLOAD FOTO REFERENSI
+              UPLOAD FOTO REFERENSI <span className="text-destructive">*</span>
             </Label>
-            <div className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 transition-colors hover:bg-primary/10">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Upload size={18} className="text-primary" />
+            {!filePreview ? (
+              <div
+                {...getRootProps()}
+                className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 transition-colors hover:bg-primary/10"
+              >
+                <input {...getInputProps()} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <Upload size={18} className="text-primary" />
+                </div>
+                <p className="text-sm font-medium text-foreground">
+                  Klik atau drag foto ke sini
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Mendukung JPG, PNG (Maks. 5MB)
+                </p>
               </div>
-              <p className="text-sm font-medium text-foreground">
-                Klik atau drag foto ke sini
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Mendukung JPG, PNG (Maks. 5MB)
-              </p>
-            </div>
+            ) : (
+              <div className="relative rounded-xl border border-border p-2">
+                <div className="flex items-center gap-4">
+                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg">
+                    <img
+                      src={filePreview}
+                      alt="Preview"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 truncate text-sm text-foreground">
+                    {order.desain_custom_file?.name}
+                    <p className="text-xs text-muted-foreground">
+                      {(order.desain_custom_file?.size ?? 0) > 1024 * 1024
+                        ? `${(order.desain_custom_file!.size / (1024 * 1024)).toFixed(2)} MB`
+                        : `${(order.desain_custom_file!.size / 1024).toFixed(0)} KB`}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 text-muted-foreground hover:text-destructive"
+                    onClick={handleRemoveFile}
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Text & Color */}
@@ -191,11 +262,10 @@ export default function Step2Reference(props: Step1Interface) {
         </CardContent>
       </Card>
 
-      <OrderSummary
-        order={order}
-        step={steps}
-      />
+      {/* Right column: Order Summary */}
+      <OrderSummary order={order} step={steps} />
 
+      {/* Navigation buttons – spans both columns */}
       <div className="flex items-center justify-between pt-2 md:col-span-2">
         <Button
           variant="ghost"
@@ -205,12 +275,20 @@ export default function Step2Reference(props: Step1Interface) {
         >
           <ChevronLeft size={16} className="mr-1" /> Kembali
         </Button>
-        <Button
-          onClick={handleNext}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          Lanjut: Pilih Tanggal <ChevronRight size={16} className="ml-1" />
-        </Button>
+        <div className="flex items-center gap-3">
+          {!order.desain_custom_file && (
+            <span className="text-xs text-muted-foreground">
+              Upload foto terlebih dahulu
+            </span>
+          )}
+          <Button
+            onClick={handleNext}
+            disabled={!order.desain_custom_file}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          >
+            Lanjut: Pilih Tanggal <ChevronRight size={16} className="ml-1" />
+          </Button>
+        </div>
       </div>
     </div>
   )

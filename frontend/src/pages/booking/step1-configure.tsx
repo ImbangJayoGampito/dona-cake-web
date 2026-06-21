@@ -41,7 +41,6 @@ import type { BookingForm } from "@/types/booking.types"
 
 export default function Step1Configure(props: Step1Interface) {
   const [size, setSize] = useState(BookingConfig.SIZES[0].id)
-  const [flavors, setFlavors] = useState([BookingConfig.FLAVORS[0].id])
   const [frosting, setFrosting] = useState(BookingConfig.FROSTINGS[0].id)
   const [selectedKategori, setSelectedKategori] = useState<Kategori | null>(
     null
@@ -61,15 +60,19 @@ export default function Step1Configure(props: Step1Interface) {
     fetchKategori()
   }, [])
 
-  const toggleFlavor = (f: string) => {
-    setFlavors((prev) =>
-      prev.includes(f)
-        ? prev.filter((x) => x !== f)
-        : prev.length < 2
-          ? [...prev, f]
-          : prev
-    )
-    setOrderTemp()
+  const toggleFlavor = (flavorId: string) => {
+    setOrder((prev) => {
+      const current = prev.rasa_kue
+
+      if (current.includes(flavorId)) {
+        const next = current.filter((id) => id !== flavorId)
+        return next.length > 0 ? { ...prev, rasa_kue: next } : prev
+      }
+
+      if (current.length >= 2) return prev
+
+      return { ...prev, rasa_kue: [...current, flavorId] }
+    })
   }
   const changeSize = (s: string) => {
     setSize(s)
@@ -85,11 +88,12 @@ export default function Step1Configure(props: Step1Interface) {
       id: order.id,
       tgl_ambil: order.tgl_ambil,
       ukuran: size,
-      rasa_kue: flavors,
+      rasa_kue: order.rasa_kue,
       jenis_frosting: frosting,
       kategori_id: selectedKategori?.id ?? null,
       tema_dekorasi: order.tema_dekorasi,
       desain_custom_url: order.desain_custom_url,
+      desain_custom_file: order.desain_custom_file,
       deskripsi_custom: order.deskripsi_custom,
       harga_final: order.harga_final,
       catatan: order.catatan,
@@ -154,7 +158,7 @@ export default function Step1Configure(props: Step1Interface) {
                   key={f.id}
                   onClick={() => toggleFlavor(f.id)}
                   className={`rounded-full border px-4 py-1.5 text-sm transition-all ${
-                    flavors.includes(f.id)
+                    order.rasa_kue.includes(f.id)
                       ? "border-primary bg-primary font-medium text-primary-foreground"
                       : "border-border text-foreground hover:border-muted-foreground"
                   }`}
@@ -253,7 +257,8 @@ export default function Step1Configure(props: Step1Interface) {
         </Button>
         <Button
           onClick={onNext}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          disabled={order.rasa_kue.length === 0}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
         >
           Lanjut: Referensi & Catatan{" "}
           <ChevronRight size={16} className="ml-1" />

@@ -16,12 +16,14 @@ export const PublicRoutes = {
   Kategori: "/kategori",
   Katalog: "/katalog",
   CreateBooking: "/booking/create",
+  GetPublicGambar: "/image/public/{gambar}",
 } as const
 
 // =============================================================================
 // PROTECTED ROUTES (Any authenticated user)
 // =============================================================================
 export const ProtectedRoutes = {
+  Pantau: "/pantau",
   // Auth management
   Logout: "/auth/logout",
   LogoutAll: "/auth/logout-all",
@@ -82,10 +84,13 @@ export const ProtectedRoutes = {
 
   // Activity
   Aktivitas: "/aktivitas",
+  AktivitasBatch: "/aktivitas/batch",
 
-  // Images
-  UploadGambar: "/gambar/upload",
-  DeleteGambar: "/gambar/{gambar}",
+   // Images
+   UploadGambar: "/image/upload",
+   GetPublicGambar: "/image/public/{gambar}",
+   GetProtectedGambar: "/image/protected/{gambar}",
+   DeleteGambar: "/image/{gambar}",
 } as const
 
 // =============================================================================

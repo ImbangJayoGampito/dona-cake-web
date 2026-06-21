@@ -1,5 +1,7 @@
 // models/histori-aktivitas.model.ts
 import { AktivitasJenis, type AktivitasJenis as AktivitasJenisType } from '@/types/enums'
+import { Produk } from './produk.model'
+import { type StoreHistoriAktivitasBatchRequest, type StoreHistoriAktivitasRequest } from '@/types/histori-aktivitas.types'
 
 export class HistoriAktivitas {
   id: number
@@ -61,5 +63,33 @@ export class HistoriAktivitas {
       [AktivitasJenis.SEARCH]: '🔍',
     }
     return icons[this.jenis_aktivitas] || '📋'
+  }
+
+  /**
+   * Create a single activity request for tracking product activity
+   * @param produk The product associated with the activity
+   * @param jenisAktivitas The type of activity being tracked
+   * @returns StoreHistoriAktivitasRequest object ready for API submission
+   */
+  static createSingle(produk: Produk, jenisAktivitas: AktivitasJenisType): StoreHistoriAktivitasRequest {
+    return {
+      jenis_aktivitas: jenisAktivitas,
+      produk_terkait: produk.id
+    }
+  }
+
+  /**
+   * Create multiple activity requests for tracking product activities in batch
+   * @param produkArray Array of products associated with the activities
+   * @param jenisAktivitas The type of activity being tracked (same for all products)
+   * @returns StoreHistoriAktivitasBatchRequest object ready for API submission
+   */
+  static createMultiples(produkArray: Produk[], jenisAktivitas: AktivitasJenisType): StoreHistoriAktivitasBatchRequest {
+    return {
+      aktivitas: produkArray.map(produk => ({
+        jenis_aktivitas: jenisAktivitas,
+        produk_terkait: produk.id
+      }))
+    }
   }
 }

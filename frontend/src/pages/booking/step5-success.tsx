@@ -1,14 +1,20 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { CheckCircle2, Mail, ArrowRight } from "lucide-react"
+import { CheckCircle2, Mail, ArrowRight, MessageCircle } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { PublicRoutes } from "@/lib/routes"
-interface Step4Interface {
+import { ProtectedRoutes } from "@/lib/routes"
+import { Booking } from "@/models/booking.model"
+import WhatsAppButton from "@/components/whatsapp_button"
+import { CurrencyService } from "@/services/currency-service"
+
+interface Step5Interface {
+  booking: Booking
   onHome: () => void
 }
 
-export default function Step5Success(props: Step4Interface) {
-  const onHome = props.onHome
+export default function Step5Success(props: Step5Interface) {
+  const { booking, onHome } = props
+  const navigate = useNavigate()
   return (
     <div className="flex justify-center py-8">
       <Card className="w-full max-w-lg border-border shadow-sm">
@@ -20,7 +26,7 @@ export default function Step5Success(props: Step4Interface) {
             />
           </div>
 
-          <div>
+           <div>
             <h1 className="text-2xl font-semibold text-foreground">
               Booking Berhasil! 🎉
             </h1>
@@ -35,7 +41,7 @@ export default function Step5Success(props: Step4Interface) {
                 ID PESANAN
               </p>
               <p className="mt-0.5 text-sm font-semibold text-foreground">
-                #DC-20250528-0042
+                #DC-{booking.id.toString().padStart(4, '0')}
               </p>
             </div>
             <div>
@@ -43,33 +49,37 @@ export default function Step5Success(props: Step4Interface) {
                 METODE PEMBAYARAN
               </p>
               <p className="mt-0.5 text-sm font-semibold text-foreground">
-                Kartu Kredit
+                Transfer Bank
               </p>
             </div>
             <div>
               <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">
                 TOTAL PEMBAYARAN
               </p>
-              <p className="mt-0.5 text-sm font-semibold text-foreground">
-                Rp 410.000
-              </p>
+             <p className="mt-0.5 text-sm font-semibold text-foreground">
+               {CurrencyService.formatPrice(booking.harga_final || 0 )}
+             </p>
             </div>
             <div>
               <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">
                 WAKTU PENGAMBILAN
               </p>
               <p className="mt-0.5 text-sm font-semibold text-foreground">
-                07 Mei 2025
+                {booking.tgl_ambil?.toLocaleDateString('id-ID', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric'
+                }) || 'Belum ditentukan'}
               </p>
             </div>
           </div>
 
-          {/* Progress */}
+          {/* Progress - Only show up to Diterima */}
           <div className="w-full">
             <div className="relative flex items-center justify-between">
               <div className="absolute top-3 right-0 left-0 z-0 h-0.5 bg-border" />
-              <div className="absolute top-3 left-0 z-0 h-0.5 w-2/5 bg-primary" />
-              {["Diterima", "Pembayaran", "Diproses", "Siap", "Selesai"].map(
+              <div className="absolute top-3 left-0 z-0 h-0.5 w-1/5 bg-primary" />
+              {["Diterima"].map(
                 (s, i) => (
                   <div
                     key={s}
@@ -77,10 +87,10 @@ export default function Step5Success(props: Step4Interface) {
                   >
                     <div
                       className={`flex h-6 w-6 items-center justify-center rounded-full ${
-                        i <= 2 ? "bg-primary" : "bg-border"
+                        i <= 0 ? "bg-primary" : "bg-border"
                       }`}
                     >
-                      {i <= 2 ? (
+                      {i <= 0 ? (
                         <CheckCircle2
                           size={14}
                           className="text-primary-foreground"
@@ -98,19 +108,20 @@ export default function Step5Success(props: Step4Interface) {
             </div>
           </div>
 
-          <div className="flex w-full items-center gap-2 rounded-lg bg-muted/50 px-4 py-2.5 text-xs text-muted-foreground">
-            <Mail size={13} />
-            <span>
-              Konfirmasi pesanan telah dikirim ke{" "}
-              <span className="font-semibold text-foreground">
-                email@kamu.com
-              </span>
-            </span>
-          </div>
 
           <div className="flex w-full gap-3">
-            <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
-              Lacak Pesananku <ArrowRight size={14} className="ml-1" />
+            <WhatsAppButton
+              id_pesanan={booking.id}
+              type_of_message="booking"
+              beginningMessage={`Halo, saya ingin mengkonfirmasi booking dengan ID: ${booking.id}`}
+            />
+          </div>
+          <div className="flex w-full gap-3">
+            <Button
+              onClick={() => navigate(ProtectedRoutes.Pantau)}
+              className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Lacak Sekarang <ArrowRight size={14} className="ml-1" />
             </Button>
             <Button
               onClick={onHome}

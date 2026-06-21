@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 import type { Booking } from "@/types/karyawan.types"
 import { Calendar, CheckCircle2, AlertTriangle, User } from "lucide-react"
+import GambarService from "@/services/gambar-service"
 
 interface Props {
   booking: Booking
@@ -25,6 +26,15 @@ function isUrgent(tglAmbil: string | null): boolean {
   return diff > 0 && diff <= 24 * 60 * 60 * 1000 // ≤ 24 jam (1 hari)
 }
 
+/** Helper to build absolute URL for images */
+function getImageUrl(path: string | null) {
+  if (!path) return null;
+  if (path.startsWith('http') || path.startsWith('data:')) return path;
+  // If you have a Vite proxy, use window.location.origin
+  // Otherwise use your API base URL from environment
+  const base = import.meta.env.VITE_API_URL || window.location.origin;
+  return `${base}${path}`;
+}
 function parseTags(deskripsi: string | null): string[] {
   if (!deskripsi) return []
   try {
@@ -60,9 +70,15 @@ export default function BookingCustomCard({
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
         {booking.desain_custom_url ? (
           <img
-            src={booking.desain_custom_url}
+            src={getImageUrl(booking.desain_custom_url) || ''}
             alt="Referensi desain custom"
             className="h-full w-full object-cover transition-transform hover:scale-105"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              // Fallback to placeholder if image fails to load
+              target.src = '/placeholder-image.jpg';
+            }}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-muted/60 text-xs text-muted-foreground">

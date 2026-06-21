@@ -2,11 +2,11 @@ import { Mail } from "lucide-react"
 import Stepper from "@/components/booking/stepper"
 import { useState } from "react"
 import { Pesanan } from "@/models/pesanan.model"
-import PaymentPage from "./pembayaran"
+import Step2PaymentPage from "./Step2PaymentPage"
 import { useNavigate } from "react-router-dom"
 import { PublicRoutes, ProtectedRoutes } from "@/lib/routes"
-import SuccessPage from "./success_page"
-import CartPage from "./lihat_keranjang"
+import Step3SuccessPage from "./Step3SuccessPage"
+import Step1PurchaseCartPage from "./Step1PurchaseCartPage"
 import { PesananService } from "@/services/pesanan-service"
 import { toast } from "sonner"
 export default function KeranjangSteps() {
@@ -27,7 +27,7 @@ export default function KeranjangSteps() {
       <Stepper steps={["Keranjang", "Pembayaran", "Selesai"]} current={steps} />
 
       {steps === 1 && (
-        <CartPage
+        <Step1PurchaseCartPage
           onNext={(KeranjangInteract) => {
             // Make a new pesanan
             const pesanan = new Pesanan({})
@@ -38,7 +38,7 @@ export default function KeranjangSteps() {
         />
       )}
       {steps === 2 && pesananState !== undefined && (
-        <PaymentPage
+        <Step2PaymentPage
           pesanan={pesananState}
           onNext={() => {
             PesananService.createPesanan(pesananState).then((response) => {
@@ -59,13 +59,13 @@ export default function KeranjangSteps() {
         />
       )}
       {steps === 3 && pesananState !== undefined && (
-        <SuccessPage
+        <Step3SuccessPage
           pesanan={pesananState}
           onHome={() => {
             navigate(PublicRoutes.Home)
           }}
           onTrack={() => {
-            navigate(ProtectedRoutes.Orders)
+            navigate(ProtectedRoutes.Pantau)
           }}
         />
       )}
