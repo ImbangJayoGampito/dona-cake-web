@@ -49,6 +49,15 @@ class KategoriSeeder extends Seeder
             "urutan" => 4,
             "is_active" => true,
         ],
+        [
+            "id" => "kue-basah",
+            "nama_kategori" => "Kue Basah",
+            "slug" => "kue-basah",
+            "deskripsi" => "Kue basah tradisional dan modern yang lezat",
+            "color" => "bg-amber-500",
+            "urutan" => 5,
+            "is_active" => true,
+        ],
     ];
 
     public function run(): void
