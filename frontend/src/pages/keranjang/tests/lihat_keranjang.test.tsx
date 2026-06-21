@@ -1,9 +1,5 @@
-import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { BrowserRouter } from 'react-router-dom';
-import CartPage from '../Step1PurchaseCartPage';
-import { KeranjangService } from '@/services/keranjang-service';
+// ⚠️ IMPORTANT: These mocks MUST be at the VERY TOP, before any imports
+jest.mock('@/assets/placeholder.png', () => 'test-image-stub');
 
 // Mock the services
 jest.mock('@/services/keranjang-service', () => ({
@@ -62,6 +58,14 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
   useParams: jest.fn(),
 }));
+
+// Now import everything
+import React from 'react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { BrowserRouter } from 'react-router-dom';
+import CartPage from '../Step1PurchaseCartPage';
+import { KeranjangService } from '@/services/keranjang-service';
 
 const renderWithRouter = (ui: React.ReactElement) => {
   return render(

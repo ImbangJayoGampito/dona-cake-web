@@ -1,14 +1,13 @@
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, jest } from "@jest/globals"
 import HistoriAktivitasService from "./histori-aktivitas-service"
 import { Produk } from "@/models/produk.model"
 import { AktivitasJenis } from "@/types/enums"
-import ApiResponse from "@/lib/api/api-response"
 import api from "@/lib/api/config"
 
 // Mock the API
-vi.mock("@/lib/api/config", () => ({
+jest.mock("@/lib/api/config", () => ({
   default: {
-    post: vi.fn(),
+    post: jest.fn(),
   },
 }))
 
@@ -29,13 +28,13 @@ describe("HistoriAktivitasService", () => {
   }
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    jest.resetAllMocks()
   })
 
   describe("createSingle", () => {
     it("should create a single activity record", async () => {
       // Mock successful API response
-      vi.mocked(api.post).mockResolvedValue(mockSuccessResponse)
+      ;(api.post as jest.Mock).mockResolvedValue(mockSuccessResponse)
 
       const result = await HistoriAktivitasService.createSingle(
         mockProduk,
@@ -55,7 +54,7 @@ describe("HistoriAktivitasService", () => {
 
     it("should handle API errors", async () => {
       const mockError = new Error("Network error")
-      vi.mocked(api.post).mockRejectedValue(mockError)
+      ;(api.post as jest.Mock).mockRejectedValue(mockError)
 
       const result = await HistoriAktivitasService.createSingle(
         mockProduk,
@@ -69,7 +68,7 @@ describe("HistoriAktivitasService", () => {
 
   describe("createMultiples", () => {
     it("should create multiple activity records", async () => {
-      vi.mocked(api.post).mockResolvedValue(mockSuccessResponse)
+      ;(api.post as jest.Mock).mockResolvedValue(mockSuccessResponse)
 
       const result = await HistoriAktivitasService.createMultiples(
         mockProduk,
@@ -100,7 +99,7 @@ describe("HistoriAktivitasService", () => {
         stok: 5,
       })
 
-      vi.mocked(api.post).mockResolvedValue(mockSuccessResponse)
+      ;(api.post as jest.Mock).mockResolvedValue(mockSuccessResponse)
 
       const result = await HistoriAktivitasService.createBatchActivities([
         { produk: mockProduk, jenisAktivitas: AktivitasJenis.VIEW_PRODUCT },
