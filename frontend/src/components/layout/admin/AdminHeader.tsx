@@ -2,6 +2,7 @@ import { Search, Bell, HelpCircle, Sun, Moon } from "lucide-react"
 import { useAuthStore } from "@/lib/state/logged-user"
 import { RoleEnum } from "@/types/enums"
 import { useTheme } from "@/components/theme-provider"
+import { UserAvatarDropdown } from "@/components/user-avatar-dropdown"
 
 const ROLE_LABEL: Record<string, string> = {
   [RoleEnum.Admin]: "Super Admin",
@@ -65,15 +66,19 @@ export default function AdminHeader() {
           <HelpCircle className="h-5 w-5" strokeWidth={1.75} />
         </button>
 
-        <div className="flex items-center gap-3 border-l border-white/10 pl-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
-            {getInitials(displayName)}
-          </div>
-          <div className="leading-tight">
-            <p className="text-sm font-medium text-white">{displayName}</p>
-            <p className="text-xs text-white/50">{roleLabel}</p>
-          </div>
-        </div>
+        <UserAvatarDropdown
+          trigger={
+            <button className="flex items-center gap-3 border-l border-white/10 pl-5 text-left focus:outline-none hover:opacity-90 transition-opacity">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
+                {getInitials(displayName)}
+              </div>
+              <div className="leading-tight">
+                <p className="text-sm font-medium text-white">{displayName}</p>
+                <p className="text-xs text-white/50">{roleLabel}</p>
+              </div>
+            </button>
+          }
+        />
       </div>
     </header>
   )

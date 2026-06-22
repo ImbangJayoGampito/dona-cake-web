@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Bell, Sun, Moon } from "lucide-react"
 import { useAuthStore } from "@/lib/state/logged-user"
 import { useTheme } from "@/components/theme-provider"
+import { UserAvatarDropdown } from "@/components/user-avatar-dropdown"
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/)
@@ -75,15 +76,19 @@ export default function KaryawanHeader() {
           <Bell className="h-5 w-5" strokeWidth={1.75} />
         </button>
 
-        <div className="flex items-center gap-3 border-l border-white/10 pl-5">
-          <div className="text-right leading-tight">
-            <p className="text-sm font-medium text-white">{displayName}</p>
-            <p className="text-xs text-white/50">Karyawan</p>
-          </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
-            {getInitials(displayName)}
-          </div>
-        </div>
+        <UserAvatarDropdown
+          trigger={
+            <button className="flex items-center gap-3 border-l border-white/10 pl-5 text-right focus:outline-none hover:opacity-90 transition-opacity">
+              <div className="text-right leading-tight">
+                <p className="text-sm font-medium text-white">{displayName}</p>
+                <p className="text-xs text-white/50">Karyawan</p>
+              </div>
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
+                {getInitials(displayName)}
+              </div>
+            </button>
+          }
+        />
       </div>
     </header>
   )

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -5,35 +6,42 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/lib/state/logged-user"
 import { useNavigate } from "react-router-dom"
 import { UserService } from "@/services/user-service"
 import { PublicRoutes, ProtectedRoutes } from "@/lib/routes"
 
-export function UserAvatarDropdown() {
-  const { user, logout } = useAuthStore()
+interface UserAvatarDropdownProps {
+  trigger?: ReactNode
+}
+
+export function UserAvatarDropdown({ trigger }: UserAvatarDropdownProps = {}) {
+  const { user } = useAuthStore()
   const navigate = useNavigate()
 
   const handleLogout = () => {
     UserService.logoutAll()
-    
     navigate(PublicRoutes.Home)
   }
 
-  if (!user) return null // or show a login button
+  if (!user) return null
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback>
-              {user.name?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button variant="ghost" className="relative rounded-full">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback>
+                {user.name?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <div className="flex items-center justify-start gap-2 p-2">
@@ -52,12 +60,14 @@ export function UserAvatarDropdown() {
         <DropdownMenuItem onClick={() => navigate(ProtectedRoutes.Me)}>
           Profile
         </DropdownMenuItem>
-        {user.isAdmin() && (
+        {(user.isAdmin() || user.isKaryawan()) && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("/admin/dashboard")}>
-              Dashboard Admin
-            </DropdownMenuItem>
+            {user.isAdmin() && (
+              <DropdownMenuItem onClick={() => navigate("/admin/dashboard")}>
+                Dashboard Admin
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={() => navigate("/karyawan/pesanan")}>
               Dashboard Karyawan
             </DropdownMenuItem>
