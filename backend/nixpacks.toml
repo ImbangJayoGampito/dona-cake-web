@@ -1,2 +1,0 @@
-[phases.deploy]
-precmds = ["php artisan migrate --force"]
