@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
     git \
     && docker-php-ext-install pdo_mysql gd zip exif
 
-# Enable Apache Mod Rewrite
+# Disable conflicting Apache MPMs and enable rewrite
+RUN a2dismod mpm_event mpm_worker || true
 RUN a2enmod rewrite
 
 # Change Apache document root to Laravel public directory
