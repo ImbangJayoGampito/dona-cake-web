@@ -63,7 +63,10 @@ class PesananController extends Controller
 
         // Filter by today
         if ($request->boolean('today')) {
-            $query->whereDate('created_at', today());
+            $query->where(function ($q) {
+                $q->whereDate('created_at', today())
+                  ->orWhereIn('status_pesanan', ['dibayar', 'diproses']);
+            });
         }
 
         // Filter by date range
