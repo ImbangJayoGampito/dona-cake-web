@@ -5,6 +5,7 @@ import {
   Users,
   BookOpen,
   Settings,
+  MessageSquare,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
   { to: "/admin/laporan", label: "Laporan & Analitik", icon: Landmark },
   { to: "/admin/pengguna", label: "Pengguna", icon: Users },
   { to: "/admin/produk", label: "Daftar Produk", icon: BookOpen },
+  { to: "/admin/asisten", label: "Monitor Asisten", icon: MessageSquare },
   { to: "/admin/sistem", label: "Sistem", icon: Settings },
 ] as const
 

@@ -34,6 +34,7 @@ import MonitorAsistenPage from "./pages/admin/asisten/MonitorAsistenPage"
 import KeranjangSteps from "@/pages/keranjang/KeranjangSteps"
 import PayOrderPage from "@/pages/transaksi/PayOrderPage"
 import PayBookingPage from "@/pages/transaksi/PayBookingPage"
+import ChatPage from "./pages/asisten_virtual/ChatPage"
 
 // Karyawan imports
 import KaryawanLayout from "./pages/karyawan/layout/KaryawanLayout"
@@ -121,6 +122,7 @@ export function App() {
             path={RouteService.convertToReactRouterParam(ProtectedRoutes.PayBooking)}
             element={<PayBookingPage />}
           />
+          <Route path="/asisten-virtual" element={<ChatPage />} />
         </Route>
 
       {/* ERROR ROUTES */}

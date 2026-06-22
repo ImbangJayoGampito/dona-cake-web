@@ -3,6 +3,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -51,6 +52,18 @@ export function UserAvatarDropdown() {
         <DropdownMenuItem onClick={() => navigate(ProtectedRoutes.Me)}>
           Profile
         </DropdownMenuItem>
+        {user.isAdmin() && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate("/admin/dashboard")}>
+              Dashboard Admin
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/karyawan/pesanan")}>
+              Dashboard Karyawan
+            </DropdownMenuItem>
+          </>
+        )}
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

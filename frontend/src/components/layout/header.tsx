@@ -11,7 +11,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Rocket, Shield, Zap, Globe, ChevronRight, Menu } from "lucide-react"
+import { Rocket, Shield, Zap, Globe, ChevronRight, Menu, Bot } from "lucide-react"
 import { useState } from "react"
 import { User } from "@/models/user.model"
 import { useAuthStore } from "@/lib/state/logged-user"
@@ -88,7 +88,16 @@ export function AppHeader() {
                   </Button>
                 </div>
                 {/* Avatar on the far right */}
-                <div className="ml-4 flex items-center justify-between">
+                <div className="ml-4 flex items-center gap-2">
+                  <Button
+                    onClick={() => redirectTo("/asisten-virtual")}
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-full"
+                    title="Asisten AI"
+                  >
+                    <Bot className="h-5 w-5" />
+                  </Button>
                   <UserAvatarDropdown />
                   <ModeToggle />
                 </div>
@@ -158,6 +167,14 @@ export function AppHeader() {
                       variant="ghost"
                     >
                       Pantau
+                    </Button>
+                    <Button
+                      onClick={() => redirectTo("/asisten-virtual")}
+                      variant="ghost"
+                      className="w-full justify-center gap-2"
+                    >
+                      <Bot className="h-4 w-4" />
+                      Asisten AI
                     </Button>
 
                     <div className="justify-center border-t pt-4">

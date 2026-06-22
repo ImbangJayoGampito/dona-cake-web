@@ -1,0 +1,10 @@
+// src/pages/asisten/index.ts
+export { default as ChatPage } from "./ChatPage"
+export { default as ChatSidebar } from "./components/ChatSidebar"
+export { default as ChatHeader } from "./components/ChatHeader"
+export { default as ChatInput } from "./components/ChatInput"
+export { default as MessageList } from "./components/MessageList"
+export { default as MessageBubble } from "./components/MessageBubble"
+export { default as ProductCard } from "./components/ProductCard"
+export { default as QuickReplies } from "./components/QuickReplies"
+export { default as EscalationBanner } from "./components/EscalationBanner"
