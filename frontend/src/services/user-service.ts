@@ -12,7 +12,8 @@ export class UserService {
   // ---------- LOGIN ----------
   public static async login(
     username: string,
-    password: string
+    password: string,
+
   ): Promise<ApiResponse<LoginData>> {
     try {
       const response = await api.post(PublicRoutes.Login, {
@@ -32,7 +33,8 @@ export class UserService {
         const { user, token } = apiResponse.data
         // Update auth store and token storage
         useAuthStore.getState().setUser(user)
-        TokenStorage.setToken(token)
+
+   
       }
       return apiResponse
     } catch (error: any) {

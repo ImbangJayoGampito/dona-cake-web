@@ -35,6 +35,7 @@ import KeranjangSteps from "@/pages/keranjang/KeranjangSteps"
 import PayOrderPage from "@/pages/transaksi/PayOrderPage"
 import PayBookingPage from "@/pages/transaksi/PayBookingPage"
 import ChatPage from "./pages/asisten_virtual/ChatPage"
+import { Loader2 } from "lucide-react"
 
 // Karyawan imports
 import KaryawanLayout from "./pages/karyawan/layout/KaryawanLayout"
@@ -77,13 +78,13 @@ export function App() {
     initAuth()
   }, [logout, setUser]) // dependencies are stable
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        Loading...
-      </div>
-    )
-  }
+      if (isLoading) {
+        return (
+          <div className="flex h-screen items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        )
+      }
   return (
     <Routes>
       {/* CATEGORY: Public routes */}
