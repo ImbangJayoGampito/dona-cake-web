@@ -60,15 +60,7 @@ class HistoriAktivitasController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Profil tidak ditemukan.'], 400);
         }
 
-        $bobot = [
-            'view'        => 0.3,
-            'click'       => 0.5,
-            'add_to_cart' => 0.8,
-            'purchase'    => 1.0,
-            'like'        => 0.7,
-            'wishlist'    => 0.6,
-            'review'      => 0.9,
-        ];
+        $bobot = \App\Enums\ActivityWeight::getAll();
 
         HistoriAktivitas::create([
             'pelanggan_id'    => $pelanggan->id,
@@ -94,7 +86,7 @@ class HistoriAktivitasController extends Controller
     {
         $request->validate([
             'aktivitas' => 'required|array',
-            'aktivitas.*.jenis_aktivitas' => 'required|string|in:view,click,add_to_cart,purchase,like,wishlist,review',
+            'aktivitas.*.jenis_aktivitas' => 'required|string|in:login,order,booking,review,view_product,search,add_to_cart',
             'aktivitas.*.produk_terkait' => 'required|integer|exists:produks,id',
         ]);
 
@@ -103,15 +95,7 @@ class HistoriAktivitasController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Profil tidak ditemukan.'], 400);
         }
 
-        $bobot = [
-            'view'        => 0.3,
-            'click'       => 0.5,
-            'add_to_cart' => 0.8,
-            'purchase'    => 1.0,
-            'like'        => 0.7,
-            'wishlist'    => 0.6,
-            'review'      => 0.9,
-        ];
+        $bobot = \App\Enums\ActivityWeight::getAll();
 
         $aktivitasToCreate = [];
         foreach ($request->aktivitas as $aktivitas) {

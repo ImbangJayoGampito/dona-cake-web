@@ -51,7 +51,7 @@ export class Produk {
       this.gambarUtama = this.gambars[0]
     }
   }
-
+  
   getGambarUtamaUrl(): string {
     // Or create a fallback image from placeholderURL
     return this.gambarUtama?.gambar_url ?? new Gambar().gambar_url

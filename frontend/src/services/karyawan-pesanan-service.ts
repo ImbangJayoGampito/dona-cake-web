@@ -8,7 +8,8 @@ import { StaffRoutes, ProtectedRoutes, UpdateOrderStatus } from "@/lib/routes"
 import ApiResponse from "@/lib/api/api-response"
 import api from "@/lib/api/config"
 import { RouteService } from "@/services/route-service"
-import type { Pesanan, StaffDashboardStats, StatusKDS } from "@/types/karyawan.types"
+import type { StaffDashboardStats, StatusKDS } from "@/types/karyawan.types"
+import { Pesanan } from "@/models/pesanan.model"
 
 export class KaryawanPesananService {
   /**
@@ -18,13 +19,14 @@ export class KaryawanPesananService {
   static async getPesananKDS(): Promise<ApiResponse<Pesanan[]>> {
     try {
       // Ambil pesanan yang relevan untuk KDS dalam satu request
+      // Include all statuses: waiting for payment, waiting for confirmation, paid, processing, completed
       const response = await api.get(ProtectedRoutes.Orders, {
         params: {
-          status: "dibayar,diproses,selesai",
+          status: "menunggu_pembayaran,menunggu_konfirmasi_pembayaran,dibayar,diproses,selesai",
           today: true,
         },
       })
-      return ApiResponse.fromApiArray(response.data, (data) => data as Pesanan)
+      return ApiResponse.fromApiArray(response.data, (data) => new Pesanan(data))
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       return new ApiResponse<Pesanan[]>(undefined, "error", undefined, message)
@@ -47,7 +49,7 @@ export class KaryawanPesananService {
       const response = await api.put(url, { status_pesanan: status })
       return ApiResponse.fromApiSingle(
         response.data,
-        (data) => data as Pesanan
+        (data) => new Pesanan(data)
       )
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)

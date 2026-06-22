@@ -50,6 +50,7 @@ class PesananController extends Controller
             }
             $query->where("pelanggan_id", $pelanggan->id);
         }
+        // For karyawan or admin, get everyone's orders (no filtering by pelanggan_id)
 
         // Filter by status
         if ($request->has('status')) {

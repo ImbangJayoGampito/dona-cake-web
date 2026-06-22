@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Search, MapPin, MessageCircle } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Search } from "lucide-react"
 import { ProdukService } from "@/services/produk-service"
 import { Pesanan } from "@/models/pesanan.model"
 import { Booking } from "@/models/booking.model"
@@ -144,6 +145,15 @@ export default function PantauPage() {
     // setTab('semua')
   }, [activeTab])
 
+  // Cleanup viewingImage object URLs to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (viewingImage?.url?.startsWith('blob:')) {
+        URL.revokeObjectURL(viewingImage.url)
+      }
+    }
+  }, [viewingImage])
+
   // 8. Helper functions
   const getImageUrl = (path: string | null) => {
     if (!path) return null;
@@ -165,6 +175,11 @@ export default function PantauPage() {
     setIsCancelDialogOpen(false)
     PesananService.cancelPesanan(selectedOrder).then((response) => {
       if (response.isSuccess()) {
+        // Update the selected order with the response data immediately
+        if (response.data) {
+          setSelectedOrder(response.data)
+        }
+        // Then fetch all orders to update the list
         fetchOrders()
         toast.success("Pesanan berhasil dibatalkan")
       } else {
@@ -214,7 +229,73 @@ export default function PantauPage() {
     setSelectedBooking(booking)
   }
 
-  // 9. Render (unchanged)
+  // ─── Skeleton Components ─────────────────────────────────────────────────────
+  const PesananCardSkeleton = () => (
+    <Card className="border-border">
+      <CardContent className="flex items-center gap-3 p-4">
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-4 w-16 rounded-full" />
+          </div>
+          <Skeleton className="h-3 w-16" />
+          <Skeleton className="h-3 w-12" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const BookingCardSkeleton = () => (
+    <Card className="border-border">
+      <CardContent className="flex items-center gap-3 p-4">
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-4 w-16 rounded-full" />
+          </div>
+          <Skeleton className="h-3 w-16" />
+          <Skeleton className="h-3 w-20" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const DetailSkeleton = () => (
+    <Card className="shadow-sm">
+      <CardContent className="space-y-5 p-6">
+        <div className="flex items-start justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-7 w-32" />
+          </div>
+          <Skeleton className="h-6 w-28 rounded-full" />
+        </div>
+        <div className="grid grid-cols-2 gap-4 rounded-xl bg-muted/30 p-4">
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-4 w-28" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-4 w-28" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Skeleton className="mb-3 h-3 w-24" />
+          <Skeleton className="h-14 w-full rounded-xl" />
+          <Skeleton className="h-14 w-full rounded-xl" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+        </div>
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </CardContent>
+    </Card>
+  )
+  // ── End Skeleton Components ─────────────────────────────────────────────────
+
+  // 9. Render
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {isCancelDialogOpen && (
@@ -299,14 +380,20 @@ export default function PantauPage() {
 
             {activeTab === 'pesanan' ? (
               <>
-                {filteredOrders.length === 0 ? (
+                {isLoading && orders.length === 0 ? (
+                  <>
+                    <PesananCardSkeleton />
+                    <PesananCardSkeleton />
+                    <PesananCardSkeleton />
+                  </>
+                ) : filteredOrders.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
                     Tidak ada pesanan yang cocok.
                   </p>
                 ) : (
                   filteredOrders.map((order) => {
                     const status = order.status_pesanan
-                    const statusLabel = status
+                    const statusLabel = order.getStatusLabel()
                     const statusColor = getPesananColor(status)
                     const totalItem = order.itemPesanans?.length || 0
 
@@ -350,7 +437,13 @@ export default function PantauPage() {
               </>
             ) : (
               <>
-                {filteredBookings.length === 0 ? (
+                {isLoading && bookings.length === 0 ? (
+                  <>
+                    <BookingCardSkeleton />
+                    <BookingCardSkeleton />
+                    <BookingCardSkeleton />
+                  </>
+                ) : filteredBookings.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
                     Tidak ada booking yang cocok.
                   </p>
@@ -403,7 +496,9 @@ export default function PantauPage() {
           </div>
 
           {activeTab === 'pesanan' ? (
-            selectedOrder ? (
+            isLoading && !selectedOrder ? (
+              <DetailSkeleton />
+            ) : selectedOrder ? (
               <Card className="shadow-sm">
                 <CardContent className="space-y-5 p-6">
                   <div className="flex items-start justify-between">
@@ -420,7 +515,7 @@ export default function PantauPage() {
                         selectedOrder.status_pesanan
                       )}-500 px-3 py-1.5 text-xs font-semibold text-white`}
                     >
-                      ● {selectedOrder.status_pesanan}
+                      ● {selectedOrder.getStatusLabel()}
                     </Badge>
                   </div>
 
@@ -523,7 +618,9 @@ export default function PantauPage() {
               </Card>
             )
           ) : (
-            selectedBooking ? (
+            isLoading && !selectedBooking ? (
+              <DetailSkeleton />
+            ) : selectedBooking ? (
               <Card className="shadow-sm">
                 <CardContent className="space-y-5 p-6">
                   <div className="flex items-start justify-between">

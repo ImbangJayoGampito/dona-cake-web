@@ -9,6 +9,8 @@ import Step3SuccessPage from "./Step3SuccessPage"
 import Step1PurchaseCartPage from "./Step1PurchaseCartPage"
 import { PesananService } from "@/services/pesanan-service"
 import { toast } from "sonner"
+import HistoriAktivitasService from "@/services/histori-aktivitas-service"
+import { AktivitasJenis } from "@/types/enums"
 export default function KeranjangSteps() {
   const [steps, setSteps] = useState(1)
   const [pesananState, setPesananState] = useState<Pesanan | undefined>(
@@ -41,10 +43,28 @@ export default function KeranjangSteps() {
         <Step2PaymentPage
           pesanan={pesananState}
           onNext={() => {
-            PesananService.createPesanan(pesananState).then((response) => {
-              if (response.isSuccess()) {
+            PesananService.createPesanan(pesananState).then(async (response) => {
+              if (response.isSuccess() && response.data) {
                 // update pesananStatus
                 setPesananState(response.data)
+                // Track purchase activity for all products in the order
+                try {
+                  const pesanan = response.data
+                  if (pesanan.itemPesanans && pesanan.itemPesanans.length > 0) {
+                    const activities = pesanan.itemPesanans
+                      .filter(item => item.produk) 
+                      .map(item => ({
+                        produk: item.produk!,
+                        jenisAktivitas: AktivitasJenis.ORDER
+                      }))
+                    if (activities.length > 0) {
+                      await HistoriAktivitasService.createBatchActivities(activities)
+                    }
+                  }
+                } catch (error) {
+                  // Silent error handling - don't show error to user
+                  console.error("Failed to track purchase activities:", error)
+                }
                 StepForward()
               } else {
                 toast.error(

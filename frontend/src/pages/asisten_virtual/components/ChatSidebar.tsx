@@ -40,8 +40,8 @@ export default function ChatSidebar({
 
   const filtered = sessions.filter(
     (s) =>
-      s.title.toLowerCase().includes(search.toLowerCase()) ||
-      s.lastMessage.toLowerCase().includes(search.toLowerCase())
+      (s.title?.toLowerCase() || "").includes(search.toLowerCase()) ||
+      (s.lastMessage?.toLowerCase() || "").includes(search.toLowerCase())
   )
 
   return (

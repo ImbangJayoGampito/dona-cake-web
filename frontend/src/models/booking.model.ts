@@ -75,7 +75,6 @@ export class Booking {
   canCancel(): boolean {
     return ([
     BookingStatus.MENUNGGU_VERIFIKASI,
-    BookingStatus.DISETUJUI,
   ] as BookingStatusType[]).includes(this.status_verifikasi)
   }
 }

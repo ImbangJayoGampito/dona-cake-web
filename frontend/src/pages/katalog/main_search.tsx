@@ -35,8 +35,11 @@ import {
   Phone,
   X,
 } from "lucide-react"
+import GambarService from "@/services/gambar-service"
 import { KategoriService } from "@/services/kategori-service"
 import { ProdukService } from "@/services/produk-service"
+import HistoriAktivitasService from "@/services/histori-aktivitas-service"
+import { AktivitasJenis } from "@/types/enums"
 import type { Produk } from "@/models/produk.model"
 import type { ProdukFilters } from "@/types/produk.types"
 
@@ -179,12 +182,50 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product, view }: ProductCardProps) {
+  const [imgSrc, setImgSrc] = useState<string | null>(null)
+  const [imgLoaded, setImgLoaded] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    const gambarUtamaId = product.gambarUtama?.id
+
+    if (gambarUtamaId && gambarUtamaId > 0) {
+      GambarService.getPublicFile(gambarUtamaId)
+        .then((blob) => {
+          if (!cancelled) {
+            setImgSrc(URL.createObjectURL(blob))
+            setImgLoaded(true)
+          }
+        })
+        .catch(() => {
+          // Fallback: image failed to load
+          if (!cancelled) {
+            setImgLoaded(false)
+          }
+        })
+    }
+
+    return () => {
+      cancelled = true
+    }
+  }, [product.gambarUtama?.id])
+
+  const showImage = imgSrc !== null && imgLoaded
+
   if (view === "list") {
     return (
       <Card className="shadow-sm transition-shadow hover:shadow-md">
         <CardContent className="flex items-center gap-4 p-4">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl text-4xl">
-            🎂
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted">
+            {showImage ? (
+              <img
+                src={imgSrc!}
+                alt={product.nama_produk}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span className="text-4xl">🎂</span>
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-foreground">
@@ -223,8 +264,16 @@ function ProductCard({ product, view }: ProductCardProps) {
 
   return (
     <Card className="overflow-hidden shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
-      <div className="relative flex h-44 items-center justify-center">
-        <span className="text-7xl">🎂</span>
+      <div className="relative flex h-44 items-center justify-center overflow-hidden bg-muted">
+        {showImage ? (
+          <img
+            src={imgSrc!}
+            alt={product.nama_produk}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <span className="text-7xl">🎂</span>
+        )}
         {!product.isInStock() && (
           <div className="absolute inset-0 flex items-center justify-center rounded-t-lg bg-black/40">
             <span className="rounded bg-secondary px-3 py-1 text-xs font-bold text-secondary-foreground">
@@ -349,6 +398,8 @@ export default function DonaCakeKatalog() {
   const [sort, setSort] = useState("terpopuler")
 
   const [view, setView] = useState<"grid" | "list">("grid")
+  const [recommendations, setRecommendations] = useState<Produk[]>([])
+  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false)
 
   // ─── Sort Helpers ──────────────────────────────────────────────────────────
   const getSortConfig = (sortValue: string) => {
@@ -450,6 +501,38 @@ export default function DonaCakeKatalog() {
   useEffect(() => {
     fetchProducts()
   }, [currentPage, searchQuery, selectedCats, sort, onlyStock, fetchProducts])
+
+  // ─── Fetch Recommendations ──────────────────────────────────────────────────
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      setIsLoadingRecommendations(true)
+      try {
+        const result = await ProdukService.getRecommendations()
+        if (result.status === "success" && result.data) {
+          setRecommendations(result.data)
+        }
+      } catch (error) {
+        console.error("Error fetching recommendations:", error)
+      } finally {
+        setIsLoadingRecommendations(false)
+      }
+    }
+
+    fetchRecommendations()
+  }, [])
+
+  // ─── Log product views to Histori Aktivitas after cards are rendered ──────
+  useEffect(() => {
+    if (!isLoading && products.length > 0) {
+      const activities = products.map((p) => ({
+        produk: p,
+        jenisAktivitas: AktivitasJenis.VIEW_PRODUCT,
+      }))
+      HistoriAktivitasService.createBatchActivities(activities).catch(() => {
+        // Silent fail – activity logging should not disrupt the user experience
+      })
+    }
+  }, [products, isLoading])
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
@@ -579,6 +662,18 @@ export default function DonaCakeKatalog() {
                 </div>
               </div>
             </div>
+
+            {/* Recommendations Section */}
+            {!isLoadingRecommendations && recommendations.length > 0 && (
+              <div className="space-y-3">
+                <h2 className="text-lg font-semibold text-foreground">Rekomendasi untuk Anda</h2>
+                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                  {recommendations.slice(0, 4).map((product) => (
+                    <ProductCard key={`rec-${product.id}`} product={product} view="grid" />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Product grid / list with skeletons */}
             {isLoading ? (

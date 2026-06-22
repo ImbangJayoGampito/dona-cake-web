@@ -48,6 +48,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       // Auto-select sesi pertama jika belum ada yang aktif
       if (sessions.length > 0 && !get().activeSessionId) {
         await get().selectSession(sessions[0].id)
+      } else if (sessions.length > 0 && get().activeSessionId) {
+        // Jika sudah ada sesi aktif, muat ulang pesannya
+        const activeSession = sessions.find(s => s.id === get().activeSessionId)
+        if (activeSession) {
+          await get().selectSession(activeSession.id)
+        }
       }
     } else {
       set({
@@ -76,8 +82,23 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         ...get().sessions.map((s) => ({ ...s, isActive: false })),
       ]
       set({ sessions: updatedSessions, activeSessionId: newSession.id })
-      // Muat pesan awal sesi baru
-      await get().selectSession(newSession.id)
+
+      // Kirim pesan awal otomatis untuk memulai percakapan
+      const greetingResult = await ChatService.sendMessage(newSession.id, {
+        text: "Halo"
+      })
+
+      if (greetingResult.isSuccess()) {
+        // Muat pesan awal sesi baru (sekarang akan ada pesan)
+        await get().selectSession(newSession.id)
+      } else {
+        // Jika gagal kirim pesan awal, muat sesi kosong
+        await get().selectSession(newSession.id)
+        set({
+          isLoadingMessages: false,
+          error: greetingResult.message ?? "Gagal memulai percakapan",
+        })
+      }
     } else {
       set({
         isLoadingMessages: false,
@@ -109,39 +130,47 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     }
   },
 
-  sendMessage: async (text: string) => {
-    const sessionId = get().activeSessionId
-    if (!sessionId || !text.trim()) return
+   sendMessage: async (text: string) => {
+     const sessionId = get().activeSessionId
+     if (!sessionId || !text.trim()) return
 
-    set({ isSendingMessage: true, error: null })
-    const result = await ChatService.sendMessage(sessionId, { text })
+     set({ isSendingMessage: true, error: null })
+     const result = await ChatService.sendMessage(sessionId, { text })
 
-    if (result.isSuccess()) {
-      const { userMessage, aiMessage } = result.data!
-      set((state) => ({
-        messages: [...state.messages, userMessage, aiMessage],
-        isSendingMessage: false,
-        // Update preview sesi di sidebar
-        sessions: state.sessions.map((s) =>
-          s.id === sessionId
-            ? {
-                ...s,
-                lastMessage: text,
-                updatedAt: new Date().toISOString(),
-              }
-            : s
-        ),
-        // Tandai eskalasi jika tipe pesan adalah escalation_offer
-        isEscalated:
-          aiMessage.type === "escalation_offer" ? true : state.isEscalated,
-      }))
-    } else {
-      set({
-        isSendingMessage: false,
-        error: result.message ?? "Gagal mengirim pesan",
-      })
-    }
-  },
+     if (result.isSuccess()) {
+       const { userMessage, aiMessage } = result.data!
+
+       // Check if the AI message contains product IDs that need to be fetched
+       let finalAiMessage = aiMessage
+       if (aiMessage.productCard && aiMessage.productCard.id) {
+         // Fetch product details and update the message
+         finalAiMessage = await ChatService.fetchAndUpdateProductDetails(aiMessage)
+       }
+
+       set((state) => ({
+         messages: [...state.messages, userMessage, finalAiMessage],
+         isSendingMessage: false,
+         // Update preview sesi di sidebar
+         sessions: state.sessions.map((s) =>
+           s.id === sessionId
+             ? {
+                 ...s,
+                 lastMessage: text,
+                 updatedAt: new Date().toISOString(),
+               }
+             : s
+         ),
+         // Tandai eskalasi jika tipe pesan adalah escalation_offer
+         isEscalated:
+           finalAiMessage.type === "escalation_offer" ? true : state.isEscalated,
+       }))
+     } else {
+       set({
+         isSendingMessage: false,
+         error: result.message ?? "Gagal mengirim pesan",
+       })
+     }
+   },
 
   sendQuickReply: async (intent: string) => {
     const sessionId = get().activeSessionId
@@ -187,7 +216,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     const sessionId = get().activeSessionId
     if (!sessionId) return
 
-    const result = await ChatService.escalateSession(sessionId)
+    const result = await ChatService.escalateSession(sessionId, {
+      alasan: "Percakapan membutuhkan bantuan manusia",
+      komentar: "Pengguna meminta untuk dihubungkan dengan CS"
+    })
     if (result.isSuccess()) {
       set((state) => ({
         isEscalated: true,

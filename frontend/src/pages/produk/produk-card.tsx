@@ -24,6 +24,7 @@ import { toast } from "sonner"
 import { Produk } from "@/models/produk.model"
 import { UlasanService } from "@/services/ulasan-service"
 import { Ulasan } from "@/models/ulasan.model"
+import type { CreateUlasanPayload } from "@/types/ulasan.types"
 import { ProductCard } from "@/components/produk/produk-card"
 import { Gambar } from "@/models/gambar.model"
 
@@ -79,13 +80,14 @@ export default function ProductDetailPage() {
       return
     }
 
-    const ulasan = new Ulasan()
-    ulasan.komentar = reviewText
-    ulasan.rating = reviewRating
-    ulasan.produk_id = product?.id
+    const payload: CreateUlasanPayload = {
+      produk_id: product.id,
+      rating: reviewRating,
+      komentar: reviewText,
+    }
 
     try {
-      const response = await UlasanService.createUlasan(ulasan)
+      const response = await UlasanService.createUlasan(payload)
       if (response.isSuccess()) {
         toast.success("Ulasan berhasil dikirim")
         setReviewText("")

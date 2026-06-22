@@ -30,8 +30,9 @@ export class Pesanan {
       ? new Date(data.tgl_pesanan)
       : new Date()
     this.total_harga = data.total_harga ?? 0
-    this.status_pesanan =
+    this.status_pesanan = this.convertStatusToEnum(
       data.status_pesanan ?? PesananStatus.MENUNGGU_PEMBAYARAN
+    )
     this.created_at = data.created_at ? new Date(data.created_at) : new Date()
     this.updated_at = data.updated_at ? new Date(data.updated_at) : new Date()
 
@@ -123,5 +124,25 @@ export class Pesanan {
       ],
     }
     return transitions[this.status_pesanan]?.includes(newStatus) ?? false
+  }
+
+  private convertStatusToEnum(status: string | PesananStatusType): PesananStatusType {
+    // If it's already an enum value, return as is
+    if (Object.values(PesananStatus).includes(status as PesananStatusType)) {
+      return status as PesananStatusType
+    }
+
+    // Convert string to enum
+    const statusMap: Record<string, PesananStatusType> = {
+      'menunggu_pembayaran': PesananStatus.MENUNGGU_PEMBAYARAN,
+      'menunggu_konfirmasi_pembayaran': PesananStatus.MENUNGGU_KONFIRMASI_PEMBAYARAN,
+      'dibayar': PesananStatus.DIBAYAR,
+      'diproses': PesananStatus.DIPROSES,
+      'selesai': PesananStatus.SELESAI,
+      'dibatalkan': PesananStatus.DIBATALKAN,
+      'pembayaran_dibatalkan': PesananStatus.PEMBAYARAN_DIBATALKAN,
+    }
+
+    return statusMap[status as string] ?? PesananStatus.MENUNGGU_PEMBAYARAN
   }
 }

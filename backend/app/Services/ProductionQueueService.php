@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\BookingStatus;
 use App\Models\Pesanan;
 use App\Models\Booking;
 use App\Models\ItemPesanan;
@@ -35,7 +36,7 @@ class ProductionQueueService
 
         // Get bookings that need production
         $bookings = Booking::with(['pelanggan.user'])
-            ->whereIn('status_verifikasi', [Booking::STATUS_DISETUJUI])
+            ->whereIn('status_verifikasi', [BookingStatus::DISETUJUI->value])
             ->get()
             ->map(function ($item) {
                 return [
@@ -90,7 +91,7 @@ class ProductionQueueService
             ->whereBetween('tgl_pesanan', [$today, $tomorrow])
             ->count();
 
-        $bookingCount = Booking::where('status_verifikasi', Booking::STATUS_DISETUJUI)
+        $bookingCount = Booking::where('status_verifikasi', BookingStatus::DISETUJUI->value)
             ->whereBetween('tgl_ambil', [$today, $tomorrow])
             ->count();
 

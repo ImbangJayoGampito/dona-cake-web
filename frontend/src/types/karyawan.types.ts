@@ -16,7 +16,7 @@ export type StatusPesanan =
   | "pembayaran_dibatalkan"
 
 /** Status yang relevan untuk KDS karyawan */
-export type StatusKDS = "dibayar" | "diproses" | "selesai"
+export type StatusKDS = "dibayar" | "diproses" | "selesai" | "menunggu_pembayaran" | "menunggu_konfirmasi_pembayaran"
 
 export interface ItemPesanan {
   id: number

@@ -99,6 +99,7 @@ export const AktivitasJenis = {
   REVIEW: "review",
   VIEW_PRODUCT: "view_product",
   SEARCH: "search",
+  ADD_TO_CART: "add_to_cart",
 } as const
 
 export type AktivitasJenis =

@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils"
 import type { Booking } from "@/types/karyawan.types"
 import { Calendar, CheckCircle2, AlertTriangle, User } from "lucide-react"
 import GambarService from "@/services/gambar-service"
+import { useState, useEffect } from "react"
 
 interface Props {
   booking: Booking
@@ -33,7 +34,9 @@ function getImageUrl(path: string | null) {
   // If you have a Vite proxy, use window.location.origin
   // Otherwise use your API base URL from environment
   const base = import.meta.env.VITE_API_URL || window.location.origin;
-  return `${base}${path}`;
+  // Ensure path starts with / if it doesn't already
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${base}${normalizedPath}`;
 }
 function parseTags(deskripsi: string | null): string[] {
   if (!deskripsi) return []
@@ -56,6 +59,14 @@ export default function BookingCustomCard({
   const tags = parseTags(booking.deskripsi_custom)
   const bookingIdStr = `#BK-${String(booking.id).padStart(4, "0")}`
   const urgent = isUrgent(booking.tgl_ambil)
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
+
+  // Reset image state when booking changes
+  useEffect(() => {
+    setImageLoaded(false)
+    setImageError(false)
+  }, [booking.desain_custom_url])
 
   return (
     <div
@@ -69,17 +80,30 @@ export default function BookingCustomCard({
       {/* Design Reference Image */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
         {booking.desain_custom_url ? (
-          <img
-            src={getImageUrl(booking.desain_custom_url) || ''}
-            alt="Referensi desain custom"
-            className="h-full w-full object-cover transition-transform hover:scale-105"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.onerror = null;
-              // Fallback to placeholder if image fails to load
-              target.src = '/placeholder-image.jpg';
-            }}
-          />
+          <>
+            {!imageLoaded && !imageError && (
+              <div className="flex h-full w-full items-center justify-center bg-muted/60">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent"></div>
+              </div>
+            )}
+            <img
+              src={getImageUrl(booking.desain_custom_url) || ''}
+              alt="Referensi desain custom"
+              className={cn(
+                "h-full w-full object-cover transition-transform hover:scale-105",
+                (imageLoaded || imageError) ? "block" : "hidden"
+              )}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => {
+                setImageError(true);
+              }}
+            />
+            {imageError && (
+              <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-muted/80 text-xs text-muted-foreground">
+                Gambar tidak tersedia
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-muted/60 text-xs text-muted-foreground">
             No design image uploaded

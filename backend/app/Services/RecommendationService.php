@@ -6,6 +6,7 @@ use App\Models\Produk;
 use App\Models\HistoriAktivitas;
 use App\Models\Pelanggan;
 use App\Models\ItemPesanan;
+use App\Enums\ActivityWeight;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
@@ -24,15 +25,7 @@ use Illuminate\Support\Facades\Cache;
 class RecommendationService
 {
     // Bobot interaksi sesuai Tabel 29 CP300
-    const ACTION_WEIGHTS = [
-        'view'        => 0.3,
-        'click'       => 0.5,
-        'add_to_cart' => 0.8,
-        'purchase'    => 1.0,
-        'like'        => 0.7,
-        'wishlist'    => 0.6,
-        'review'      => 0.9,
-    ];
+    // Now using ActivityWeight enum instead of constant array
 
     // Parameter laju alpha (λ ∈ [0,1])
     const LAMBDA = 0.1;
@@ -70,11 +63,29 @@ class RecommendationService
      */
     public function getPopularProducts(int $limit = 10): array
     {
-        return Produk::withCount(['itemPesanans as total_terjual' => function ($q) {
+        $products = Produk::withCount(['itemPesanans as total_terjual' => function ($q) {
                 $q->select(DB::raw('COALESCE(SUM(kuantitas), 0)'));
             }])
             ->orderBy('total_terjual', 'desc')
             ->orderBy('rating_rata_rata', 'desc')
+            ->limit($limit)
+            ->with(['gambarUtama', 'ulasans'])
+            ->get();
+
+        // If no popular products found, return random products as ultimate fallback
+        if ($products->isEmpty()) {
+            return $this->getRandomProducts($limit);
+        }
+
+        return $products->toArray();
+    }
+
+    /**
+     * Produk acak — fallback terakhir jika tidak ada produk populer.
+     */
+    public function getRandomProducts(int $limit = 10): array
+    {
+        return Produk::inRandomOrder()
             ->limit($limit)
             ->with(['gambarUtama', 'ulasans'])
             ->get()
@@ -175,7 +186,7 @@ class RecommendationService
             ->get();
 
         foreach ($history as $h) {
-            $w   = self::ACTION_WEIGHTS[$h->jenis_aktivitas] ?? 0.3;
+            $w   = ActivityWeight::getWeight($h->jenis_aktivitas);
             $pid = (int) $h->produk_terkait;
             $scores[$pid] = ($scores[$pid] ?? 0) + $w;
         }
@@ -190,8 +201,8 @@ class RecommendationService
         foreach ($purchases as $p) {
             $pid = (int) $p->produk_id;
             // purchase sudah tercatat di histori juga, tapi item_pesanans bisa punya sinyal lebih
-            // Tambahkan bobot purchase × kuantitas (sesuai bobot purchase = 1.0)
-            $scores[$pid] = ($scores[$pid] ?? 0) + ($p->total * self::ACTION_WEIGHTS['purchase']);
+            // Tambahkan bobot order × kuantitas (sesuai bobot order = 1.0)
+            $scores[$pid] = ($scores[$pid] ?? 0) + ($p->total * ActivityWeight::getWeight('order'));
         }
 
         return $scores;

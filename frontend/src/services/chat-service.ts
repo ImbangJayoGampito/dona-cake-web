@@ -7,13 +7,17 @@ import { ChatSession } from "@/models/chat-session.model"
 import type { ChatSessionPreview } from "@/models/chat-session.model"
 import type { ChatMessage } from "@/models/chat-message.model"
 import { ChatMessageModel } from "@/models/chat-message.model"
+import { ProdukService } from "./produk-service"
+import { Produk } from "@/models/produk.model"
+import type {
+  FrontendMessagePayload,
+  SendChatMessagePayload,
+  ReportConversationPayload
+} from "@/types/chatbot-chat.types"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export interface SendMessagePayload {
-  text?: string
-  intent?: string
-}
+// Use the imported types instead of local definitions
 
 export interface ConversationFilter {
   userId?: string
@@ -97,7 +101,7 @@ const MOCK_INITIAL_MESSAGES: ChatMessage[] = [
 
 // ─── USE_MOCK toggle ──────────────────────────────────────────────────────────
 // Ubah ke false ketika backend sudah siap
-const USE_MOCK = true
+const USE_MOCK = false
 
 // ─── Service ─────────────────────────────────────────────────────────────────
 
@@ -177,8 +181,30 @@ export class ChatService {
         id: sessionId,
       })
       const response = await api.get(url)
-      const raw: ChatMessage[] = (response.data.data?.messages ?? []).map(
-        (m: ChatMessage) => new ChatMessageModel(m)
+
+      // Transform backend history format to frontend message format
+      const raw: ChatMessage[] = (response.data.data?.history ?? []).map(
+        (h: any) => {
+          // Parse JSON content if it's a string
+          let content = h.content
+          if (typeof content === 'string') {
+            try {
+              const parsed = JSON.parse(content)
+              content = parsed.jawaban || content
+            } catch (e) {
+              // If not JSON, use as-is
+            }
+          }
+
+          return new ChatMessageModel({
+            id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+            sessionId,
+            from: h.role === 'user' ? 'user' : 'ai',
+            type: 'text',
+            text: content,
+            timestamp: h.timestamp,
+          })
+        }
       )
       return new ApiResponse<ChatMessage[]>(raw, "success")
     } catch (error) {
@@ -189,7 +215,7 @@ export class ChatService {
 
   static async sendMessage(
     sessionId: string,
-    payload: SendMessagePayload
+    payload: FrontendMessagePayload
   ): Promise<ApiResponse<SendMessageResponse>> {
     if (USE_MOCK) {
       const userMsg = new ChatMessageModel({
@@ -279,9 +305,83 @@ export class ChatService {
       const url = RouteService.replaceParams(ProtectedRoutes.SendMessage, {
         id: sessionId,
       })
-      const response = await api.post(url, payload)
+      // Transform frontend payload to backend-required format
+      const backendPayload: SendChatMessagePayload = {
+        prompt: payload.text ?? payload.intent ?? ""
+      }
+      const response = await api.post(url, backendPayload)
+
+       // Transform backend response to frontend expected format
+       const userMessage = new ChatMessageModel({
+         id: `msg_${Date.now()}`,
+         sessionId,
+         from: "user" as const,
+         type: "text" as const,
+         text: payload.text ?? payload.intent ?? "",
+         timestamp: new Date().toISOString(),
+       })
+
+       // Parse the backend response which may contain product IDs
+       let aiMessage: ChatMessageModel
+       const backendResponse = response.data.data.response
+
+       // Check if response contains JSON with jawaban and id_produk
+       if (typeof backendResponse === 'string') {
+         try {
+           const parsedResponse = JSON.parse(backendResponse)
+           if (parsedResponse.jawaban && parsedResponse.id_produk) {
+             // This is the new format with product recommendations
+             aiMessage = new ChatMessageModel({
+               id: `msg_${Date.now() + 1}`,
+               sessionId,
+               from: "ai" as const,
+               type: "text_with_product_card" as const,
+               text: parsedResponse.jawaban,
+               timestamp: new Date().toISOString(),
+               // We'll fetch product details separately and add them to the message
+               productCard: {
+                 id: parsedResponse.id_produk.join(','), // Store as comma-separated string
+                 name: "Loading products...",
+                 description: "Fetching product details...",
+                 emoji: "🎂",
+               }
+             })
+           } else {
+             // Fallback to text-only message
+             aiMessage = new ChatMessageModel({
+               id: `msg_${Date.now() + 1}`,
+               sessionId,
+               from: "ai" as const,
+               type: "text" as const,
+               text: parsedResponse.jawaban || backendResponse,
+               timestamp: new Date().toISOString(),
+             })
+           }
+         } catch (e) {
+           // If not JSON, use as-is
+           aiMessage = new ChatMessageModel({
+             id: `msg_${Date.now() + 1}`,
+             sessionId,
+             from: "ai" as const,
+             type: "text" as const,
+             text: backendResponse,
+             timestamp: new Date().toISOString(),
+           })
+         }
+       } else {
+         // Direct text response
+         aiMessage = new ChatMessageModel({
+           id: `msg_${Date.now() + 1}`,
+           sessionId,
+           from: "ai" as const,
+           type: "text" as const,
+           text: backendResponse,
+           timestamp: new Date().toISOString(),
+         })
+       }
+
       return new ApiResponse<SendMessageResponse>(
-        response.data.data,
+        { userMessage, aiMessage },
         "success",
         response.data.message
       )
@@ -323,7 +423,8 @@ export class ChatService {
   }
 
   static async escalateSession(
-    sessionId: string
+    sessionId: string,
+    payload: ReportConversationPayload
   ): Promise<ApiResponse<void>> {
     if (USE_MOCK) {
       return new ApiResponse<void>(
@@ -338,7 +439,7 @@ export class ChatService {
         ProtectedRoutes.ReportConversation,
         { id: sessionId }
       )
-      const response = await api.post(url)
+      const response = await api.post(url, payload)
       return new ApiResponse<void>(
         undefined,
         "success",
@@ -353,7 +454,7 @@ export class ChatService {
 
   static async endSession(sessionId: string): Promise<ApiResponse<void>> {
     if (USE_MOCK) {
-      return new ApiResponse<void>(
+      return new ApiResponse(
         undefined,
         "success",
         undefined,
@@ -374,6 +475,100 @@ export class ChatService {
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error)
       return new ApiResponse<void>(undefined, "error", undefined, msg)
+    }
+  }
+
+  /**
+   * Fetch product details for a message that contains product IDs
+   * and update the message with the product information
+   */
+  static async fetchAndUpdateProductDetails(message: ChatMessage): Promise<ChatMessage> {
+    if (!message.productCard || !message.productCard.id) {
+      return message
+    }
+
+    // Parse the product IDs (they're stored as comma-separated string)
+    const productIds = message.productCard.id.split(',').map(id => id.trim())
+
+    // Add timeout to prevent infinite loading
+    const timeoutPromise = new Promise<ChatMessage>((resolve) => {
+      setTimeout(() => {
+        console.warn("Product fetch timed out, removing product card")
+        const updatedMessage = new ChatMessageModel({ ...message })
+        updatedMessage.productCard = undefined
+        resolve(updatedMessage)
+      }, 10000) // 10 second timeout
+    })
+
+    try {
+      // Race between the actual fetch and the timeout
+      const result = await Promise.race([
+        (async () => {
+      // Fetch product details for each ID with better error handling
+      const products = await Promise.all(
+        productIds.map(async (id) => {
+          try {
+            console.log(`Fetching product with ID: ${id}`)
+            return await ProdukService.getProductById(parseInt(id))
+          } catch (error) {
+            console.error(`Failed to fetch product ID ${id}:`, error)
+            // Return a failed response so we can filter it out
+            return new ApiResponse<Produk>(undefined, "error", undefined, `Failed to fetch product ${id}`)
+          }
+        })
+      )
+
+          // Filter successful responses
+          const successfulProducts = products
+            .filter((response: ApiResponse<Produk>) => response.isSuccess())
+            .map((response: ApiResponse<Produk>) => response.data)
+
+          if (successfulProducts.length === 0) {
+            // No products found, remove the product card
+            const updatedMessage = new ChatMessageModel({ ...message })
+            updatedMessage.productCard = undefined
+            return updatedMessage
+          }
+
+          // For now, just use the first product found
+          // In a real implementation, you might want to show multiple products
+          const firstProduct = successfulProducts[0]
+
+          if (!firstProduct) {
+            // No product found, remove the product card
+            const updatedMessage = new ChatMessageModel({ ...message })
+            updatedMessage.productCard = undefined
+            return updatedMessage
+          }
+
+          // Update the message with the product details
+          const updatedMessage = new ChatMessageModel({
+            ...message,
+            productCard: {
+              id: firstProduct.id.toString(),
+              name: firstProduct.nama_produk,
+              description: firstProduct.deskripsi || "Produk lezat dari Dona Cake",
+              price: firstProduct.harga,
+              badge: firstProduct.kategori || "Rekomendasi",
+              slug: "", // Produk model doesn't have slug property
+              imageUrl: firstProduct.gambars && firstProduct.gambars.length > 0 ? firstProduct.gambars[0].gambar_url : undefined,
+              emoji: "🎂",
+            }
+          })
+
+          return updatedMessage
+        })(),
+        timeoutPromise
+      ])
+
+      return result
+
+    } catch (error) {
+      console.error("Failed to fetch product details:", error)
+      // Remove product card on error to prevent infinite loading
+      const updatedMessage = new ChatMessageModel({ ...message })
+      updatedMessage.productCard = undefined
+      return updatedMessage
     }
   }
 

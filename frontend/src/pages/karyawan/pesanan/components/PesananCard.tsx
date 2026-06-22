@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
-import type { Pesanan, StatusKDS } from "@/types/karyawan.types"
+import type { StatusKDS } from "@/types/karyawan.types"
+import { Pesanan } from "@/models/pesanan.model"
 
 interface Props {
   pesanan: Pesanan
   onUpdateStatus: (id: number, newStatus: StatusKDS) => void
   isUpdating: boolean
+}
+
+interface BelumDibayarProps {
+  pesanan: Pesanan
+  onVerify: (id: number) => void
+  isVerifying: boolean
 }
 
 /** Format elapsed time dari created_at pesanan */
@@ -33,8 +40,8 @@ function useElapsed(createdAt: string) {
 
 // Kolom "PESANAN BARU" (status: dibayar)
 function CardBaru({ pesanan, onUpdateStatus, isUpdating }: Props) {
-  const { elapsed, isLate } = useElapsed(pesanan.created_at)
-  const firstItem = pesanan.item_pesanans?.[0]
+  const { elapsed, isLate } = useElapsed(pesanan.created_at.toString())
+  const firstItem = pesanan.itemPesanans?.[0]
 
   return (
     <div className="rounded-lg border border-border bg-card p-4">
@@ -49,9 +56,9 @@ function CardBaru({ pesanan, onUpdateStatus, isUpdating }: Props) {
       <p className="font-semibold text-foreground">
         {firstItem?.produk?.nama_produk ?? "Pesanan"}
       </p>
-      {pesanan.item_pesanans && pesanan.item_pesanans.length > 1 && (
+      {pesanan.itemPesanans && pesanan.itemPesanans.length > 1 && (
         <p className="text-xs text-muted-foreground">
-          +{pesanan.item_pesanans.length - 1} item lainnya
+          +{pesanan.itemPesanans.length - 1} item lainnya
         </p>
       )}
       <div className="mt-3 flex items-center justify-between">
@@ -73,8 +80,8 @@ function CardBaru({ pesanan, onUpdateStatus, isUpdating }: Props) {
 
 // Kolom "SEDANG DIPROSES" (status: diproses)
 function CardDiproses({ pesanan, onUpdateStatus, isUpdating }: Props) {
-  const { elapsed } = useElapsed(pesanan.created_at)
-  const firstItem = pesanan.item_pesanans?.[0]
+  const { elapsed } = useElapsed(pesanan.created_at.toString())
+  const firstItem = pesanan.itemPesanans?.[0]
 
   return (
     <div className="rounded-lg border border-border bg-card p-4">
@@ -96,7 +103,7 @@ function CardDiproses({ pesanan, onUpdateStatus, isUpdating }: Props) {
       </div>
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">
-          {pesanan.pelanggan?.nama ?? "Karyawan"}
+          {pesanan.pelanggan?.user?.name ?? "Karyawan"}
         </span>
         <button
           type="button"
@@ -119,7 +126,7 @@ function CardSiap({
   pesanan: Pesanan
   onDismiss: (id: number) => void
 }) {
-  const firstItem = pesanan.item_pesanans?.[0]
+  const firstItem = pesanan.itemPesanans?.[0]
 
   return (
     <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
@@ -161,4 +168,43 @@ function CardSiap({
   )
 }
 
-export { CardBaru, CardDiproses, CardSiap }
+// Kolom "BELUM DIBAYAR" (status: menunggu_pembayaran, menunggu_konfirmasi_pembayaran)
+function CardBelumDibayar({ pesanan, onVerify, isVerifying }: BelumDibayarProps) {
+  const firstItem = pesanan.itemPesanans?.[0]
+
+  return (
+    <div className="rounded-lg border border-border bg-card p-4">
+      <div className="mb-2 flex items-start justify-between">
+        <span className="text-sm font-semibold text-primary">
+          #DC-{String(pesanan.id).padStart(4, "0")}
+        </span>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+          {pesanan.status_pesanan === "menunggu_pembayaran" ? "Menunggu Pembayaran" : "Menunggu Konfirmasi"}
+        </span>
+      </div>
+      <p className="font-semibold text-foreground">
+        {firstItem?.produk?.nama_produk ?? "Pesanan"}
+      </p>
+      {pesanan.itemPesanans && pesanan.itemPesanans.length > 1 && (
+        <p className="text-xs text-muted-foreground">
+          +{pesanan.itemPesanans.length - 1} item lainnya
+        </p>
+      )}
+      <div className="mt-3 flex items-center justify-between">
+        <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+          Takeaway
+        </span>
+        <button
+          type="button"
+          disabled={isVerifying}
+          onClick={() => onVerify(pesanan.id)}
+          className="rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+        >
+          Verifikasi
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export { CardBaru, CardDiproses, CardSiap, CardBelumDibayar }
