@@ -29,5 +29,5 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 # Setup permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Start script to run migrations and start apache
-CMD php artisan migrate --force && apache2-foreground
+# Start script to run migrations, fix permissions, and start apache
+CMD php artisan migrate --force ; chown -R www-data:www-data storage bootstrap/cache ; apache2-foreground
