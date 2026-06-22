@@ -35,7 +35,14 @@ export function Login() {
       const loginResponse = await UserService.login(username, password)
 
       if (loginResponse.isSuccess()) {
-        navigate(PublicRoutes.Home)
+        const loggedUser = loginResponse.data?.user
+        if (loggedUser?.isAdmin()) {
+          navigate("/admin/dashboard")
+        } else if (loggedUser?.isKaryawan()) {
+          navigate("/karyawan/pesanan")
+        } else {
+          navigate(PublicRoutes.Home)
+        }
       } else {
         let errorMessage = loginResponse.message || "Registration failed"
 

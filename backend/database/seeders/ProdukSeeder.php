@@ -57,14 +57,16 @@ class ProdukSeeder extends Seeder
         $rating = rand(40, 50) / 10;
         $deskripsi = $nama . " - Kue berkualitas premium dengan rasa yang lezat";
 
-        Produk::create([
-            "nama_produk" => $nama,
-            "harga" => $harga,
-            "stok" => $stok,
-            "kategori_id" => $kategoriId,
-            "deskripsi" => $deskripsi,
-            "keterangan" => $keterangan,
-            "rating_rata_rata" => $rating,
-        ]);
+        Produk::firstOrCreate(
+            ["nama_produk" => $nama],
+            [
+                "harga" => $harga,
+                "stok" => $stok,
+                "kategori_id" => $kategoriId,
+                "deskripsi" => $deskripsi,
+                "keterangan" => $keterangan,
+                "rating_rata_rata" => $rating,
+            ]
+        );
     }
 }

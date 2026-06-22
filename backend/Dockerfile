@@ -30,4 +30,4 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Start script to run migrations, fix permissions, enforce single MPM, and start apache
-CMD php artisan migrate --force ; chown -R www-data:www-data storage bootstrap/cache ; a2dismod mpm_event mpm_worker || true ; a2enmod mpm_prefork || true ; apache2-foreground
+CMD php artisan migrate --force ; php artisan db:seed --force ; chown -R www-data:www-data storage bootstrap/cache ; a2dismod mpm_event mpm_worker || true ; a2enmod mpm_prefork || true ; apache2-foreground
