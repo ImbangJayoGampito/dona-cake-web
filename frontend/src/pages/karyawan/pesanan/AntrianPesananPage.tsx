@@ -17,6 +17,14 @@ export default function AntrianPesananPage() {
   const [error, setError] = useState<string | null>(null)
   const [updatingId, setUpdatingId] = useState<number | null>(null)
   const [isPolling, setIsPolling] = useState(false)
+  const [dismissedIds, setDismissedIds] = useState<number[]>(() => {
+    try {
+      const saved = localStorage.getItem("kds_dismissed_orders")
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+  })
 
   const fetchData = useCallback(async (silent = false) => {
     if (!silent) setLoading(true)
@@ -82,6 +90,16 @@ export default function AntrianPesananPage() {
     }
   }
 
+  const handleDismiss = (id: number) => {
+    setDismissedIds((prev) => {
+      const next = [...prev, id]
+      localStorage.setItem("kds_dismissed_orders", JSON.stringify(next))
+      return next
+    })
+  }
+
+  const visiblePesanan = pesanan.filter((p) => !dismissedIds.includes(p.id))
+
   if (loading) {
     return (
       <div className="flex h-full flex-col gap-6">
@@ -124,9 +142,10 @@ export default function AntrianPesananPage() {
 
       {/* KDS Board */}
       <KdsBoard
-        pesanan={pesanan}
+        pesanan={visiblePesanan}
         onUpdateStatus={handleUpdateStatus}
         updatingId={updatingId}
+        onDismiss={handleDismiss}
       />
     </div>
   )

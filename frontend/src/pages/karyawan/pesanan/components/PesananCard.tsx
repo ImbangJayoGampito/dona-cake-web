@@ -112,7 +112,13 @@ function CardDiproses({ pesanan, onUpdateStatus, isUpdating }: Props) {
 }
 
 // Kolom "SIAP" (status: selesai)
-function CardSiap({ pesanan }: Omit<Props, "onUpdateStatus" | "isUpdating">) {
+function CardSiap({
+  pesanan,
+  onDismiss,
+}: {
+  pesanan: Pesanan
+  onDismiss: (id: number) => void
+}) {
   const firstItem = pesanan.item_pesanans?.[0]
 
   return (
@@ -136,12 +142,21 @@ function CardSiap({ pesanan }: Omit<Props, "onUpdateStatus" | "isUpdating">) {
       <p className="font-semibold text-foreground">
         {firstItem?.produk?.nama_produk ?? "Pesanan"}
       </p>
-      <button
-        type="button"
-        className="mt-3 w-full rounded-lg bg-emerald-600 py-1.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-      >
-        Panggil
-      </button>
+      <div className="mt-3 flex gap-2">
+        <button
+          type="button"
+          className="flex-1 rounded-lg bg-emerald-600 py-1.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          Panggil
+        </button>
+        <button
+          type="button"
+          onClick={() => onDismiss(pesanan.id)}
+          className="flex-1 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-transparent py-1.5 text-sm font-semibold text-emerald-700 dark:text-emerald-300 transition-colors hover:bg-emerald-100 dark:hover:bg-emerald-950/50"
+        >
+          Sembunyikan
+        </button>
+      </div>
     </div>
   )
 }

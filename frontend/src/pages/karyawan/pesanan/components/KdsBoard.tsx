@@ -5,9 +5,10 @@ interface Props {
   pesanan: Pesanan[]
   onUpdateStatus: (id: number, newStatus: StatusKDS) => void
   updatingId: number | null
+  onDismiss: (id: number) => void
 }
 
-export default function KdsBoard({ pesanan, onUpdateStatus, updatingId }: Props) {
+export default function KdsBoard({ pesanan, onUpdateStatus, updatingId, onDismiss }: Props) {
   const baru = pesanan.filter((p) => p.status_pesanan === "dibayar")
   const diproses = pesanan.filter((p) => p.status_pesanan === "diproses")
   const siap = pesanan.filter((p) => p.status_pesanan === "selesai")
@@ -58,7 +59,13 @@ export default function KdsBoard({ pesanan, onUpdateStatus, updatingId }: Props)
                 />
               ))}
             {type === "siap" &&
-              items.map((p) => <CardSiap key={p.id} pesanan={p} />)}
+              items.map((p) => (
+                <CardSiap
+                  key={p.id}
+                  pesanan={p}
+                  onDismiss={onDismiss}
+                />
+              ))}
           </div>
         </div>
       ))}

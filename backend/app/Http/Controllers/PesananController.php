@@ -65,7 +65,7 @@ class PesananController extends Controller
         if ($request->boolean('today')) {
             $query->where(function ($q) {
                 $q->whereDate('created_at', today())
-                  ->orWhereIn('status_pesanan', ['dibayar', 'diproses']);
+                  ->orWhereIn('status_pesanan', ['dibayar', 'diproses', 'selesai']);
             });
         }
 
