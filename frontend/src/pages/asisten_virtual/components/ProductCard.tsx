@@ -17,6 +17,16 @@ function formatPrice(price?: number): string {
   }).format(price)
 }
 
+/** Safely convert any value to a string for rendering, preventing "Objects not valid as React child" errors */
+function safeString(value: unknown, fallback: string = ""): string {
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  // Handle objects and arrays
+  if (typeof value === 'object' && value !== null) return JSON.stringify(value)
+  // Return fallback for objects, arrays, null, undefined to avoid React error #31
+  return fallback
+}
+
 export default function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate()
 
@@ -33,23 +43,23 @@ export default function ProductCard({ product }: ProductCardProps) {
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
-            alt={product.name}
+            alt={safeString(product.name, "Produk")}
             className="h-full w-full object-cover"
           />
         ) : (
-          <span>{product.emoji ?? "🎂"}</span>
+          <span>{safeString(product.emoji, "🎂")}</span>
         )}
         {product.badge && (
           <span className="absolute top-2 right-2 rounded-full bg-[#8B5E3C] px-2 py-0.5 text-[9px] font-semibold text-white">
-            {product.badge}
+            {safeString(product.badge)}
           </span>
         )}
       </div>
 
       <CardContent className="space-y-2 p-3">
-        <p className="text-sm font-bold text-foreground">{product.name}</p>
+        <p className="text-sm font-bold text-foreground">{safeString(product.name, "Produk")}</p>
         <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-          {product.description}
+          {safeString(product.description, "Produk lezat dari Dona Cake")}
         </p>
         {product.price && (
           <p className="text-xs font-semibold text-[#8B5E3C]">

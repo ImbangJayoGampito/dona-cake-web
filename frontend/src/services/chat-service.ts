@@ -542,11 +542,18 @@ export class ChatService {
           }
 
           // Update the message with the product details
-          const kategoriName = firstProduct.kategori 
-            ? (typeof firstProduct.kategori === 'string' 
-                ? firstProduct.kategori 
-                : (firstProduct.kategori as any).nama_kategori ?? "Rekomendasi")
+      // Safely extract kategori name as a string - must never be an object
+      let kategoriName = "Rekomendasi"
+      if (firstProduct.kategori) {
+        if (typeof firstProduct.kategori === 'string') {
+          kategoriName = firstProduct.kategori
+        } else if (typeof firstProduct.kategori === 'object' && firstProduct.kategori !== null) {
+          const kategori = firstProduct.kategori as any
+          kategoriName = typeof kategori.nama_kategori === 'string' 
+            ? kategori.nama_kategori 
             : "Rekomendasi"
+        }
+      }
 
           const updatedMessage = new ChatMessageModel({
             ...message,
