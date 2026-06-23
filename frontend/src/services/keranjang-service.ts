@@ -13,7 +13,7 @@ export class KeranjangService {
     keranjangItem: Keranjang
   ): Promise<ApiResponse<KeranjangResponse>> {
     try {
-      console.log("update", keranjangItem)
+
       const url = RouteService.replaceParams(ProtectedRoutes.CartItem, {
         id: String(id),
       })
@@ -22,7 +22,7 @@ export class KeranjangService {
       const result = ApiResponse.fromApiSingle<KeranjangResponse>(
         response.data,
         (data) => {
-          console.log("🔄 Mapping data:", data)
+
           return {
             items: (data.items || []).map((item: any) => new Keranjang(item)),
             total_harga: data.total_harga || 0,
@@ -41,14 +41,13 @@ export class KeranjangService {
     try {
       const response = await api.get(ProtectedRoutes.Cart)
 
-      console.log("📥 Raw response:", response)
-      console.log("📥 Response data:", response.data)
 
-      // ✅ Pass the FULL response, not response.data
+
+   
       const result = ApiResponse.fromApiSingle<KeranjangResponse>(
         response.data, // ← Pass full response
         (data) => {
-          console.log("🔄 Mapping data:", data)
+
           return {
             items: (data.items || []).map((item: any) => new Keranjang(item)),
             total_harga: data.total_harga || 0,
@@ -57,7 +56,7 @@ export class KeranjangService {
         }
       )
 
-      console.log("📦 Result:", result)
+
       return result
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error)
@@ -83,11 +82,11 @@ export class KeranjangService {
           return new Keranjang(item)
         }
       )
-      console.log(resp)
+
       return resp
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error)
-      console.log(error)
+
       return new ApiResponse<Keranjang>(
         undefined,
         "error",

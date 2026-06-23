@@ -193,7 +193,7 @@ export default function Step1PurchaseCart({ onNext }: CartPageProps) {
 
   const handleNext = () => {
     const selectedItems = getCheckedItems()
-    console.log(selectedItems)
+
     if (selectedItems.length === 0) {
       // Optionally show toast or alert
       return

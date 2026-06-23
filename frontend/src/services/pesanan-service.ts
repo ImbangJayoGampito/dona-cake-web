@@ -53,7 +53,7 @@ export class PesananService {
             catatan: "Pesanan sudah dibuat",
           })) ?? [],
       }
-      console.log(payload)
+
 
       const response = await api.post(ProtectedRoutes.Orders, payload)
       return ApiResponse.fromApiSingle(

@@ -31,8 +31,7 @@ export function Login() {
     setIsLoading(true)
 
     try {
-      console.log("Logging in with:", { username, password, rememberMe })
-      const loginResponse = await UserService.login(username, password, rememberMe)
+      const loginResponse = await UserService.login(username, password)
 
       if (loginResponse.isSuccess()) {
         navigate(PublicRoutes.Home)

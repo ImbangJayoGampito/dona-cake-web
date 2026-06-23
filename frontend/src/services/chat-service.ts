@@ -508,7 +508,7 @@ export class ChatService {
       const products = await Promise.all(
         productIds.map(async (id) => {
           try {
-            console.log(`Fetching product with ID: ${id}`)
+
             return await ProdukService.getProductById(parseInt(id))
           } catch (error) {
             console.error(`Failed to fetch product ID ${id}:`, error)

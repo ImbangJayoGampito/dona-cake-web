@@ -38,7 +38,7 @@ export default function BookingLayout() {
   const bookNow = async () => {
     try {
       const response = await BookingService.createBooking(order)
-      console.log(response)
+
       if (response.isSuccess() && response.data) {
         toast.success("Pesanan berhasil dibuat")
         setCreatedBooking(response.data)

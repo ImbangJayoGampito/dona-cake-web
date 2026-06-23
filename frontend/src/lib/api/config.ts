@@ -3,8 +3,7 @@ import type { InternalAxiosRequestConfig, AxiosInstance } from "axios"
 import { TokenStorage } from "@/lib/local-storage/token"
 import { PublicRoutes } from "@/lib/routes"
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-console.log("VITE_API_URL from env:", import.meta.env.VITE_API_URL);
-console.log("API_URL =", API_URL); // Should print the backend URL
+
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {

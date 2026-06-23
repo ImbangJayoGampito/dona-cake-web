@@ -24,7 +24,7 @@ export default function ProtectedRoute({
   requireRole,
 }: ProtectedRouteProps) {
   const user = useAuthStore((state) => state.user)
-  console.log("user", user)
+
 
   // Belum login sama sekali → ke halaman login.
   if (!user) {

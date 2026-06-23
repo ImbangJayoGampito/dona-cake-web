@@ -61,10 +61,10 @@ export function App() {
   useEffect(() => {
     const initAuth = async () => {
       const tokenBefore = TokenStorage.getToken()
-      console.log("Token BEFORE API call:", tokenBefore)
+  
       if (tokenBefore) {
         const response = await UserService.fromToken()
-        console.log("API response success?", response.isSuccess())
+
         if (!response.isSuccess()) {
           //console.warn("Removing token due to failed validation")
           TokenStorage.removeToken()

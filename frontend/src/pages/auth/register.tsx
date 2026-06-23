@@ -40,7 +40,7 @@ export function Register() {
     setIsLoading(true)
 
     try {
-      console.log("Registering with:", { name, email, password, confirmPassword })
+  
       const registerResponse = await UserService.register(
         username,
         name,
