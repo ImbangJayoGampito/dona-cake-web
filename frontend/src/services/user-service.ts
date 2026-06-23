@@ -13,7 +13,6 @@ export class UserService {
   public static async login(
     username: string,
     password: string,
-
   ): Promise<ApiResponse<LoginData>> {
     try {
       const response = await api.post(PublicRoutes.Login, {

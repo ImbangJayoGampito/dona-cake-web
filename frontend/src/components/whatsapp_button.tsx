@@ -23,7 +23,7 @@ export default function WhatsAppButton({
   type_of_message,
   beginningMessage,
 }: WhatsAppButtonProps) {
-  const whatsappPhone = "6281819200000" // Format: country code + number without +
+  const whatsappPhone = "6282281432661" // Format: country code + number without +
 
   // Generate WhatsApp URL with optional message
   const generateWhatsAppUrl = () => {
