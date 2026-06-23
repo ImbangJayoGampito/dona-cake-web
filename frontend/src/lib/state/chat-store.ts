@@ -143,8 +143,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
        // Check if the AI message contains product IDs that need to be fetched
        let finalAiMessage = aiMessage
        if (aiMessage.productCard && aiMessage.productCard.id) {
-         // Fetch product details and update the message
-         finalAiMessage = await ChatService.fetchAndUpdateProductDetails(aiMessage)
+         try {
+           // Fetch product details and update the message
+           finalAiMessage = await ChatService.fetchAndUpdateProductDetails(aiMessage)
+         } catch (err) {
+           console.error("Failed to fetch product details, showing message without product card:", err)
+           // If product fetch fails, still show the message but without the product card
+           const fallbackMessage = { ...aiMessage }
+           fallbackMessage.productCard = undefined
+           finalAiMessage = fallbackMessage
+         }
        }
 
        set((state) => ({
@@ -172,31 +180,31 @@ export const useChatStore = create<ChatStore>((set, get) => ({
      }
    },
 
-  sendQuickReply: async (intent: string) => {
-    const sessionId = get().activeSessionId
-    if (!sessionId) return
+   sendQuickReply: async (intent: string) => {
+     const sessionId = get().activeSessionId
+     if (!sessionId) return
 
-    set({ isSendingMessage: true, error: null })
-    const result = await ChatService.sendMessage(sessionId, {
-      text: intent,
-      intent,
-    })
+     set({ isSendingMessage: true, error: null })
+     const result = await ChatService.sendMessage(sessionId, {
+       text: intent,
+       intent,
+     })
 
-    if (result.isSuccess()) {
-      const { userMessage, aiMessage } = result.data!
-      set((state) => ({
-        messages: [...state.messages, userMessage, aiMessage],
-        isSendingMessage: false,
-        isEscalated:
-          aiMessage.type === "escalation_offer" ? true : state.isEscalated,
-      }))
-    } else {
-      set({
-        isSendingMessage: false,
-        error: result.message ?? "Gagal mengirim",
-      })
-    }
-  },
+     if (result.isSuccess()) {
+       const { userMessage, aiMessage } = result.data!
+       set((state) => ({
+         messages: [...state.messages, userMessage, aiMessage],
+         isSendingMessage: false,
+         isEscalated:
+           aiMessage.type === "escalation_offer" ? true : state.isEscalated,
+       }))
+     } else {
+       set({
+         isSendingMessage: false,
+         error: result.message ?? "Gagal mengirim",
+       })
+     }
+   },
 
   resetConversation: async () => {
     const sessionId = get().activeSessionId

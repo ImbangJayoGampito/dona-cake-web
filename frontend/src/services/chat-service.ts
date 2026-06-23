@@ -542,6 +542,12 @@ export class ChatService {
           }
 
           // Update the message with the product details
+          const kategoriName = firstProduct.kategori 
+            ? (typeof firstProduct.kategori === 'string' 
+                ? firstProduct.kategori 
+                : (firstProduct.kategori as any).nama_kategori ?? "Rekomendasi")
+            : "Rekomendasi"
+
           const updatedMessage = new ChatMessageModel({
             ...message,
             productCard: {
@@ -549,7 +555,7 @@ export class ChatService {
               name: firstProduct.nama_produk,
               description: firstProduct.deskripsi || "Produk lezat dari Dona Cake",
               price: firstProduct.harga,
-              badge: firstProduct.kategori || "Rekomendasi",
+              badge: kategoriName,
               slug: "", // Produk model doesn't have slug property
               imageUrl: firstProduct.gambars && firstProduct.gambars.length > 0 ? firstProduct.gambars[0].gambar_url : undefined,
               emoji: "🎂",
