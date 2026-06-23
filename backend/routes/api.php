@@ -38,7 +38,7 @@ Route::get("/test", function () {
 
 // Auth routes
 Route::prefix("auth")->group(function () {
-    Route::post("/login", [ApiAuthController::class, "login"]);
+    Route::post("/login", [ApiAuthController::class, "login"])->name("login");
     Route::post("/register", [ApiAuthController::class, "register"]);
 });
 
@@ -66,6 +66,33 @@ Route::get("/popular", function (RecommendationService $service) {
         "data" => $products,
     ]);
 });
+
+
+    // ---- Rekomendasi ----
+    Route::prefix("rekomendasi")->group(function () {
+        Route::get("/", function (
+            RecommendationService $service,
+            Request $request,
+        ) {
+            $userId = $request->user()?->id;
+            if (!$userId)
+            {
+                return $service->getPopularProducts(); // Fallback function
+            }
+            $products = $service->getRecommendations($request->user()->id);
+            return response()->json([
+                "status" => "success",
+                "data" => $products,
+            ]);
+        });
+        Route::get("/popular", function (RecommendationService $service) {
+            $products = $service->getPopularProducts(10);
+            return response()->json([
+                "status" => "success",
+                "data" => $products,
+            ]);
+        });
+    });
 
 // =========================================================================
 // PROTECTED ROUTES (Authentication required via Sanctum)
@@ -221,26 +248,7 @@ Route::middleware("auth:sanctum")->group(function () {
         ])->middleware("role:admin");
     });
 
-    // ---- Rekomendasi ----
-    Route::prefix("rekomendasi")->group(function () {
-        Route::get("/", function (
-            RecommendationService $service,
-            Request $request,
-        ) {
-            $products = $service->getRecommendations($request->user()->id);
-            return response()->json([
-                "status" => "success",
-                "data" => $products,
-            ]);
-        });
-        Route::get("/popular", function (RecommendationService $service) {
-            $products = $service->getPopularProducts(10);
-            return response()->json([
-                "status" => "success",
-                "data" => $products,
-            ]);
-        });
-    });
+
 
     // ---- Histori Aktivitas (Track user activity) ----
     Route::prefix("aktivitas")->group(function () {

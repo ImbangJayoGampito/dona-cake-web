@@ -6,10 +6,16 @@ import { toast } from "sonner"
 import type { StoreKeranjangRequest } from "@/types/keranjang.types"
 import HistoriAktivitasService from "@/services/histori-aktivitas-service"
 import { AktivitasJenis } from "@/types/enums"
+import { useAuthStore } from "@/lib/state/logged-user"
 interface ShoppingCartButtonProps {
   produk: Produk
 }
 export default function ShoppingCartButton({ produk }: ShoppingCartButtonProps) {
+  const user = useAuthStore((state) => state.user)
+  if (!user)
+  {
+    return <></>
+  }
   const createCart = async () => {
     const request: StoreKeranjangRequest = {
       produk_id: produk.id,
@@ -36,7 +42,7 @@ export default function ShoppingCartButton({ produk }: ShoppingCartButtonProps) 
   return (
     <Button  className="justify-items-center" onClick={createCart}>
       <ShoppingCart />
-      Tambah ke Keranjang
+      Tambah
     </Button>
   )
 }

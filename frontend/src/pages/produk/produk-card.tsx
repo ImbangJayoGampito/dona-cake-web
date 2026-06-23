@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Accordion,
@@ -8,6 +9,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { useNavigate } from "react-router-dom"
+import ShoppingCartButton from "@/components/produk/shopping-cart-button"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -22,13 +25,17 @@ import { ProdukService } from "@/services/produk-service"
 import { StarRating } from "@/components/produk/star_rating"
 import { toast } from "sonner"
 import { Produk } from "@/models/produk.model"
+import {ProtectedRoutes} from "@/lib/routes"
 import { UlasanService } from "@/services/ulasan-service"
 import { Ulasan } from "@/models/ulasan.model"
 import type { CreateUlasanPayload } from "@/types/ulasan.types"
 import { ProductCard } from "@/components/produk/produk-card"
 import { Gambar } from "@/models/gambar.model"
-
+import ProtectedRoute from "@/components/layout/ProtectedRoute"
+import { useAuthStore } from "@/lib/state/logged-user"
 export default function ProductDetailPage() {
+  const user = useAuthStore((state) => state.user)
+  const navigate = useNavigate()
   const [selectedImage, setSelectedImage] = useState(0)
   const [ulasans, setUlasans] = useState<Ulasan[]>([])
   const [quantity, setQuantity] = useState(1)
@@ -101,8 +108,44 @@ export default function ProductDetailPage() {
       )
     }
   }
-  // Return null for a while first until a sufficient error page is made
-  if (!product) return null
+  // Skeleton loading state
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-6 md:px-6 md:py-8">
+          <div className="grid gap-8 md:grid-cols-2">
+            {/* Left: Gallery Skeleton */}
+            <div className="space-y-4">
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+              <div className="flex gap-2">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-20 w-20 rounded-md" />
+                ))}
+              </div>
+            </div>
+            {/* Right: Info Skeleton */}
+            <div className="space-y-5">
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-9 w-3/4" />
+              <Skeleton className="h-5 w-48" />
+              <Skeleton className="h-8 w-36" />
+              <Skeleton className="h-10 w-40" />
+              <Skeleton className="h-24 w-full" />
+            </div>
+          </div>
+        </div>
+        <Separator className="my-6" />
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex gap-4 border-b pb-3">
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-8 w-28" />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Breadcrumb */}
@@ -220,15 +263,18 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
-              <Button className="flex-1 gap-2">
-                <ShoppingCart className="h-4 w-4" />
-                Tambah ke Keranjang
-              </Button>
-              <Button variant="outline" className="flex-1">
-                Pesan Sekarang
-              </Button>
-            </div>
+{user && (
+  <div className="flex gap-3">
+    <ShoppingCartButton produk={product} />
+    <Button
+      onClick={() => navigate(ProtectedRoutes.Cart)}
+      variant="outline"
+      className="flex-1"
+    >
+      Keranjang Anda
+    </Button>
+  </div>
+)}
 
             {/* Accordions */}
             <Accordion type="single" collapsible className="w-full">
@@ -363,7 +409,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Right: Write Review Card */}
-              <Card className="sticky top-20">
+              {user && <Card className="sticky top-20">
                 <CardContent className="p-6">
                   <h3 className="mb-4 text-lg font-semibold">Tulis Ulasanmu</h3>
                   <div className="mb-4">
@@ -418,7 +464,7 @@ export default function ProductDetailPage() {
                     Kirim Ulasan
                   </Button>
                 </CardContent>
-              </Card>
+              </Card>}
             </div>
           </TabsContent>
 

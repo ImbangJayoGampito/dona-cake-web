@@ -46,6 +46,10 @@ class RecommendationService
      */
     public function getRecommendations(int $userId, int $limit = 10): array
     {
+        if (!$userId)
+        {
+            return $this->getPopularProducts();
+        }
         $pelanggan = Pelanggan::where('user_id', $userId)->first();
         if (!$pelanggan) {
             return $this->getPopularProducts($limit);
@@ -150,7 +154,7 @@ class RecommendationService
         $topIds = array_slice(array_keys($hybridScores), 0, $limit);
 
         if (empty($topIds)) {
-            return $this->getPopularProducts($limit);
+            return $this->getRandomProducts($limit);
         }
 
         // Kembalikan dalam urutan skor tertinggi

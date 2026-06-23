@@ -4,7 +4,7 @@ import { ProdukService } from "@/services/produk-service"
 
 import { useEffect, useState } from "react"
 import { Produk } from "@/models/produk.model"
-
+import { CurrencyService} from "@/services/currency-service"
 import { toast } from "sonner"
 import { ShoppingCart } from "lucide-react"
 export default function Recommendations() {
@@ -64,7 +64,7 @@ export default function Recommendations() {
                     </p>
                     <div className="mt-auto flex items-center justify-between">
                       <span className="text-lg font-bold text-primary md:text-xl">
-                        {rec.harga}
+                        {CurrencyService.formatPrice(rec.harga)}
                       </span>
                       <Button onClick={() => handleAddToCart(rec)}>
                         <ShoppingCart />

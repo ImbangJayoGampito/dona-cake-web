@@ -25,7 +25,9 @@ export class Produk {
     this.nama_produk = data.nama_produk ?? ""
     this.harga = data.harga ?? 0
     this.stok = data.stok ?? 0
-    this.kategori = data.kategori ?? null
+    this.kategori = typeof data.kategori === "object" && data.kategori !== null
+      ? (data.kategori as any).nama_kategori ?? null
+      : (data.kategori ?? null)
     this.deskripsi = data.deskripsi ?? ""
     this.rating_rata_rata = data.rating_rata_rata ?? 0
     this.created_at = data.created_at ? new Date(data.created_at) : new Date()

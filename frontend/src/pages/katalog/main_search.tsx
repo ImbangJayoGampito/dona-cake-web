@@ -42,6 +42,7 @@ import HistoriAktivitasService from "@/services/histori-aktivitas-service"
 import { AktivitasJenis } from "@/types/enums"
 import type { Produk } from "@/models/produk.model"
 import type { ProdukFilters } from "@/types/produk.types"
+import { useNavigate } from "react-router-dom"
 
 // ─── HeroSearch ──────────────────────────────────────────────────────────────
 interface HeroSearchProps {
@@ -182,6 +183,7 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product, view }: ProductCardProps) {
+  const navigate = useNavigate()
   const [imgSrc, setImgSrc] = useState<string | null>(null)
   const [imgLoaded, setImgLoaded] = useState(false)
 
@@ -246,7 +248,10 @@ function ProductCard({ product, view }: ProductCardProps) {
               </span>
             </div>
           </div>
-          <div className="shrink-0">
+          <div className="flex shrink-0 items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => navigate(`/produk/${product.id}`)}>
+              Lihat Produk
+            </Button>
             {product.isInStock() ? (
               <div className="flex items-center justify-center">
                 <ShoppingCartButton produk={product} />
@@ -264,7 +269,10 @@ function ProductCard({ product, view }: ProductCardProps) {
 
   return (
     <Card className="overflow-hidden shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
-      <div className="relative flex h-44 items-center justify-center overflow-hidden bg-muted">
+      <div
+        className="relative flex h-44 cursor-pointer items-center justify-center overflow-hidden bg-muted"
+        onClick={() => navigate(`/produk/${product.id}`)}
+      >
         {showImage ? (
           <img
             src={imgSrc!}
@@ -284,7 +292,10 @@ function ProductCard({ product, view }: ProductCardProps) {
       </div>
 
       <CardContent className="space-y-2 p-3">
-        <p className="line-clamp-2 text-sm leading-tight font-semibold text-foreground">
+        <p
+          className="line-clamp-2 cursor-pointer text-sm leading-tight font-semibold text-foreground hover:text-primary"
+          onClick={() => navigate(`/produk/${product.id}`)}
+        >
           {product.nama_produk}
         </p>
         <div className="flex items-center gap-1">
@@ -302,13 +313,23 @@ function ProductCard({ product, view }: ProductCardProps) {
           </p>
         </div>
 
-        {product.isInStock() ? (
-          <ShoppingCartButton produk={product} />
-        ) : (
-          <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs">
-            <Phone size={13} /> Hubungi Admin
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1 text-xs"
+            onClick={() => navigate(`/produk/${product.id}`)}
+          >
+            Lihat Produk
           </Button>
-        )}
+          {product.isInStock() ? (
+            <ShoppingCartButton produk={product} />
+          ) : (
+            <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs">
+              <Phone size={13} /> Hubungi Admin
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   )
@@ -544,6 +565,22 @@ export default function DonaCakeKatalog() {
       />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+        {/* Recommendations Section — full width above the main layout */}
+        {!isLoadingRecommendations && recommendations.length > 0 && (
+          <section className="mb-8">
+            <div className="mb-1 flex items-center gap-4 border-b">
+              <h1 className="text-2xl font-bold">Rekomendasi Untuk Anda:</h1>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+              {recommendations.slice(0, 4).map((product) => (
+                <ProductCard key={`rec-${product.id}`} product={product} view="grid" />
+              ))}
+            </div>
+                 
+          </section>
+          
+        )}
+
         <div className="flex flex-col items-start gap-6 md:grid md:grid-cols-[220px_1fr]">
           {/* Sidebar */}
           <div className="order-1 md:sticky md:top-20 md:order-none">
@@ -560,8 +597,9 @@ export default function DonaCakeKatalog() {
                 onReset={handleResetFilters}
               />
             )}
+       
           </div>
-
+            
           {/* Product area */}
           <div className="order-2 space-y-4 md:order-none">
             {/* Toolbar */}
@@ -662,18 +700,6 @@ export default function DonaCakeKatalog() {
                 </div>
               </div>
             </div>
-
-            {/* Recommendations Section */}
-            {!isLoadingRecommendations && recommendations.length > 0 && (
-              <div className="space-y-3">
-                <h2 className="text-lg font-semibold text-foreground">Rekomendasi untuk Anda</h2>
-                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                  {recommendations.slice(0, 4).map((product) => (
-                    <ProductCard key={`rec-${product.id}`} product={product} view="grid" />
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Product grid / list with skeletons */}
             {isLoading ? (
