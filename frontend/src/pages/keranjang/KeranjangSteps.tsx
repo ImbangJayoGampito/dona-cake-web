@@ -12,6 +12,7 @@ import { toast } from "sonner"
 import HistoriAktivitasService from "@/services/histori-aktivitas-service"
 import { AktivitasJenis } from "@/types/enums"
 export default function KeranjangSteps() {
+  const [isLoading, setIsLoading] = useState(false)
   const [steps, setSteps] = useState(1)
   const [pesananState, setPesananState] = useState<Pesanan | undefined>(
     undefined
@@ -43,7 +44,15 @@ export default function KeranjangSteps() {
         <Step2PaymentPage
           pesanan={pesananState}
           onNext={() => {
+            if (isLoading)
+            {
+
+              return;
+            }
+            setIsLoading(true)
             PesananService.createPesanan(pesananState).then(async (response) => {
+              setIsLoading(false)
+      
               if (response.isSuccess() && response.data) {
                 // update pesananStatus
                 setPesananState(response.data)

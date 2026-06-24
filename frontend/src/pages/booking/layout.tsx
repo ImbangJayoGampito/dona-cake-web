@@ -15,6 +15,7 @@ import { useAuthStore } from "@/lib/state/logged-user"
 export default function BookingLayout() {
   const user = useAuthStore((state) => state.user)
   const [step, setStep] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
 
   const [order, setOrder] = useState<BookingForm>({
     id: user?.id || -1,
@@ -36,9 +37,15 @@ export default function BookingLayout() {
   const [createdBooking, setCreatedBooking] = useState<Booking | null>(null)
 
   const bookNow = async () => {
+    if (isLoading)
+    {
+      return
+    }
+    setIsLoading(true)
     try {
+      
       const response = await BookingService.createBooking(order)
-
+      setIsLoading(false)
       if (response.isSuccess() && response.data) {
         toast.success("Pesanan berhasil dibuat")
         setCreatedBooking(response.data)
@@ -48,10 +55,12 @@ export default function BookingLayout() {
           ? Object.values(response.errors).flat().join(', ')
           : 'Unknown error occurred'
         toast.error(`Gagal membuat pesanan: ${errorMessages}`)
+
       }
     } catch (error) {
       toast.error("Terjadi kesalahan saat membuat pesanan")
       console.error("Booking error:", error)
+      setIsLoading(false)
     }
   }
 
