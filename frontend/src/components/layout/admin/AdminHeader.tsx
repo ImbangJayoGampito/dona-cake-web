@@ -1,4 +1,4 @@
-import { Search, Bell, HelpCircle, Sun, Moon } from "lucide-react"
+import { Bell, HelpCircle, Sun, Moon, Menu } from "lucide-react"
 import { useAuthStore } from "@/lib/state/logged-user"
 import { RoleEnum } from "@/types/enums"
 import { useTheme } from "@/components/theme-provider"
@@ -16,7 +16,11 @@ function getInitials(name: string): string {
   return initials.join("") || "?"
 }
 
-export default function AdminHeader() {
+interface AdminHeaderProps {
+  onToggleSidebar?: () => void
+}
+
+export default function AdminHeader({ onToggleSidebar }: AdminHeaderProps) {
   const user = useAuthStore((state) => state.user)
   const { theme, setTheme } = useTheme()
 
@@ -28,17 +32,21 @@ export default function AdminHeader() {
   const roleLabel = user ? ROLE_LABEL[user.role] ?? user.role : ""
 
   return (
-    <header className="dark flex h-16 items-center justify-between border-b border-border bg-popover/90 px-8">
-      <div className="flex w-full max-w-md items-center gap-2 rounded-lg bg-white/10 px-3 py-2">
-        <Search className="h-4 w-4 text-white/50" strokeWidth={1.75} />
-        <input
-          type="text"
-          placeholder="Cari nama, email, atau ID..."
-          className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
-        />
+    <header className="dark flex h-16 items-center justify-between border-b border-border bg-popover/90 px-4 md:px-8">
+      <div className="flex items-center gap-3">
+        {onToggleSidebar && (
+          <button
+            onClick={onToggleSidebar}
+            className="rounded-md p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white md:hidden"
+            title="Buka menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+        <span className="text-sm font-semibold text-white">Dona Cake Admin</span>
       </div>
 
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-3 md:gap-5">
         <button
           type="button"
           onClick={() => setTheme(isDark ? "light" : "dark")}
@@ -68,11 +76,11 @@ export default function AdminHeader() {
 
         <UserAvatarDropdown
           trigger={
-            <button className="flex items-center gap-3 border-l border-white/10 pl-5 text-left focus:outline-none hover:opacity-90 transition-opacity">
+            <button className="flex items-center gap-2 md:gap-3 border-l border-white/10 pl-3 md:pl-5 text-left focus:outline-none hover:opacity-90 transition-opacity">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
                 {getInitials(displayName)}
               </div>
-              <div className="leading-tight">
+              <div className="leading-tight hidden sm:block">
                 <p className="text-sm font-medium text-white">{displayName}</p>
                 <p className="text-xs text-white/50">{roleLabel}</p>
               </div>

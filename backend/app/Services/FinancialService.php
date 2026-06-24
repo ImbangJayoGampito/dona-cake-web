@@ -42,15 +42,16 @@ class FinancialService
     public function getRevenueByCategory(?Carbon $startDate = null, ?Carbon $endDate = null): array
     {
         $query = ItemPesanan::select(
-                'produks.kategori',
+                'kategoris.nama_kategori as kategori',
                 DB::raw('SUM(item_pesanans.subtotal) as total_revenue'),
                 DB::raw('SUM(item_pesanans.kuantitas) as total_sold')
             )
             ->join('produks', 'item_pesanans.produk_id', '=', 'produks.id')
+            ->join('kategoris', 'produks.kategori_id', '=', 'kategoris.id')
             ->join('pesanans', 'item_pesanans.pesanan_id', '=', 'pesanans.id')
             ->join('transaksis', 'pesanans.transaksi_id', '=', 'transaksis.id')
             ->where('transaksis.status_transaksi', 'dibayar')
-            ->groupBy('produks.kategori');
+            ->groupBy('kategoris.nama_kategori');
 
         if ($startDate) {
             $query->whereDate('transaksis.tgl_transaksi', '>=', $startDate);
@@ -67,7 +68,14 @@ class FinancialService
      */
     public function getRevenueByPeriod(string $period = 'daily', ?Carbon $startDate = null, ?Carbon $endDate = null): array
     {
-        $dateFormat = match($period) {
+        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
+
+        $dateFormat = $isSqlite ? match($period) {
+            'daily' => 'DATE(tgl_transaksi)',
+            'weekly' => "strftime('%Y-%W', tgl_transaksi)",
+            'monthly' => "strftime('%Y-%m', tgl_transaksi)",
+            default => 'DATE(tgl_transaksi)',
+        } : match($period) {
             'daily' => 'DATE(tgl_transaksi)',
             'weekly' => 'YEARWEEK(tgl_transaksi)',
             'monthly' => 'DATE_FORMAT(tgl_transaksi, \'%Y-%m\')',
@@ -138,8 +146,11 @@ class FinancialService
             ->limit(10)
             ->get();
 
+        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
+        $hourFunc = $isSqlite ? "strftime('%H', tgl_pesanan)" : "HOUR(tgl_pesanan)";
+
         $peakHours = Pesanan::select(
-                DB::raw('HOUR(tgl_pesanan) as jam'),
+                DB::raw("{$hourFunc} as jam"),
                 DB::raw('COUNT(*) as jumlah_pesanan')
             )
             ->groupBy('jam')

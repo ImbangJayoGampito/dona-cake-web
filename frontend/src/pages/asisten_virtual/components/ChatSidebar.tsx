@@ -45,7 +45,7 @@ export default function ChatSidebar({
   )
 
   return (
-    <div className="flex w-64 shrink-0 flex-col border-r border-border bg-background">
+    <div className="flex h-full w-full flex-col bg-background">
       {/* Top actions */}
       <div className="space-y-3 p-4">
         <Button

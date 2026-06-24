@@ -1,5 +1,4 @@
-// src/pages/asisten/components/ChatHeader.tsx
-import { MoreVertical, RotateCcw, PhoneCall } from "lucide-react"
+import { MoreVertical, RotateCcw, PhoneCall, ArrowLeft, Menu } from "lucide-react"
 import { useState } from "react"
 import {
   DropdownMenu,
@@ -12,17 +11,33 @@ interface ChatHeaderProps {
   isEscalated: boolean
   onReset: () => void
   onEscalate: () => void
+  showSidebar: boolean
+  onToggleSidebar: () => void
 }
 
 export default function ChatHeader({
   isEscalated,
   onReset,
   onEscalate,
+  showSidebar,
+  onToggleSidebar,
 }: ChatHeaderProps) {
   return (
     <div className="flex items-center justify-between border-b border-border bg-background px-5 py-3">
       {/* AI identity */}
       <div className="flex items-center gap-3">
+        <button
+          onClick={onToggleSidebar}
+          className="mr-1 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground flex items-center justify-center"
+          title={showSidebar ? "Sembunyikan daftar percakapan" : "Tampilkan daftar percakapan"}
+        >
+          <span className="block md:hidden">
+            <ArrowLeft size={20} />
+          </span>
+          <span className="hidden md:block">
+            <Menu size={20} />
+          </span>
+        </button>
         <div className="relative">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8B5E3C]/10 text-base">
             🤖

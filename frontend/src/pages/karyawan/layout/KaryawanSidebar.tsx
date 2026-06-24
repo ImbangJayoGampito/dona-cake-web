@@ -15,13 +15,17 @@ const NAV_ITEMS = [
   { to: "/karyawan/booking-tempat", label: "Booking Tempat", icon: BookMarked },
 ] as const
 
-export default function KaryawanSidebar() {
+interface KaryawanSidebarProps {
+  onNavItemClick?: () => void
+}
+
+export default function KaryawanSidebar({ onNavItemClick }: KaryawanSidebarProps) {
   const [statusKehadiran, setStatusKehadiran] = useState<"aktif" | "istirahat">(
     "aktif"
   )
 
   return (
-    <aside className="dark flex h-full w-64 flex-col bg-popover/90 px-4 py-6">
+    <aside className="dark flex h-full w-full flex-col bg-popover/90 px-4 py-6">
       {/* Logo */}
       <div className="mb-8 px-2">
         <p className="text-base font-semibold text-white">Dona Cake</p>
@@ -33,6 +37,7 @@ export default function KaryawanSidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={onNavItemClick}
             className={({ isActive }) =>
               cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",

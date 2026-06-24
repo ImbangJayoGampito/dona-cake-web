@@ -37,11 +37,16 @@ export default function MessageList({
   isSending,
   onQuickReply,
 }: MessageListProps) {
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   // Auto-scroll ke bawah setiap ada pesan baru atau saat mengetik
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: "smooth",
+      })
+    }
   }, [messages, isSending])
 
   if (isLoading) {
@@ -72,7 +77,10 @@ export default function MessageList({
   }
 
   return (
-    <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
+    <div
+      ref={containerRef}
+      className="flex-1 space-y-4 overflow-y-auto px-5 py-4"
+    >
       {messages.map((msg, idx) => (
         <MessageBubble
           key={msg.id}
@@ -85,9 +93,6 @@ export default function MessageList({
 
       {/* Typing indicator saat AI sedang balas */}
       {isSending && <TypingIndicator />}
-
-      {/* Anchor untuk auto-scroll */}
-      <div ref={bottomRef} />
     </div>
   )
 }

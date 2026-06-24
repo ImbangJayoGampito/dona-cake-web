@@ -4,7 +4,6 @@ import {
   Landmark,
   Users,
   BookOpen,
-  Settings,
   MessageSquare,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -15,12 +14,15 @@ const NAV_ITEMS = [
   { to: "/admin/pengguna", label: "Pengguna", icon: Users },
   { to: "/admin/produk", label: "Daftar Produk", icon: BookOpen },
   { to: "/admin/asisten", label: "Monitor Asisten", icon: MessageSquare },
-  { to: "/admin/sistem", label: "Sistem", icon: Settings },
 ] as const
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  onNavItemClick?: () => void
+}
+
+export default function AdminSidebar({ onNavItemClick }: AdminSidebarProps) {
   return (
-    <aside className="dark flex h-full w-64 flex-col bg-popover/90 px-4 py-6">
+    <aside className="dark flex h-full w-full flex-col bg-popover/90 px-4 py-6">
       <div className="mb-8 flex flex-col items-center gap-2 px-2">
         <div className="h-14 w-14 rounded-full bg-primary" />
         <div className="text-center">
@@ -34,6 +36,7 @@ export default function AdminSidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={onNavItemClick}
             className={({ isActive }) =>
               cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",

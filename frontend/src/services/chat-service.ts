@@ -598,8 +598,14 @@ export class ChatService {
     }
     try {
       const params = new URLSearchParams()
-      if (filter?.keyword) params.append("keyword", filter.keyword)
-      if (filter?.status) params.append("status", filter.status)
+      if (filter?.keyword) params.append("search", filter.keyword)
+      if (filter?.status) {
+        let statusVal = filter.status
+        if (filter.status === "active") statusVal = "aktif" as any
+        else if (filter.status === "ended") statusVal = "selesai" as any
+        else if (filter.status === "escalated") statusVal = "dilaporkan" as any
+        params.append("status", statusVal)
+      }
       if (filter?.userId) params.append("user_id", filter.userId)
       if (filter?.startDate) params.append("start_date", filter.startDate)
       if (filter?.endDate) params.append("end_date", filter.endDate)
@@ -608,8 +614,42 @@ export class ChatService {
       const response = await api.get(AdminRoutes.AdminChatConversations, {
         params,
       })
+
+      // Map ChatbotLogListItem from backend to ChatSessionPreview
+      const mappedData: ChatSessionPreview[] = (response.data.data ?? []).map((item: any) => {
+        const messages = item.histori_percakapan ?? []
+        let lastMsg = ""
+        if (messages.length > 0) {
+          const last = messages[messages.length - 1]
+          if (typeof last.content === "string") {
+            try {
+              const parsed = JSON.parse(last.content)
+              lastMsg = parsed.jawaban || last.content
+            } catch (e) {
+              lastMsg = last.content
+            }
+          } else if (last.content && typeof last.content === "object") {
+            lastMsg = last.content.jawaban || JSON.stringify(last.content)
+          } else {
+            lastMsg = String(last.content ?? "")
+          }
+        }
+
+        let status: "active" | "ended" | "escalated" = "active"
+        if (item.status_flag === "selesai") status = "ended"
+        else if (item.status_flag === "dilaporkan") status = "escalated"
+
+        return {
+          id: String(item.id),
+          title: item.user ? item.user.name : `User #${item.user_id}`,
+          lastMessage: lastMsg,
+          updatedAt: item.updated_at || item.created_at || new Date().toISOString(),
+          status: status
+        }
+      })
+
       return new ApiResponse<ChatSessionPreview[]>(
-        response.data.data ?? [],
+        mappedData,
         "success"
       )
     } catch (error) {
@@ -715,7 +755,60 @@ export class ChatService {
         { chatbotLog: sessionId }
       )
       const response = await api.get(url)
-      return new ApiResponse(response.data.data, "success")
+      const rawData = response.data.data
+      if (!rawData) {
+        return new ApiResponse<{ session: ChatSession; messages: ChatMessage[] }>(
+          undefined,
+          "error",
+          undefined,
+          "Data tidak ditemukan"
+        )
+      }
+
+      // Map messages
+      const messages: ChatMessage[] = (rawData.history ?? []).map((msg: any, idx: number) => {
+        let textVal = ""
+        if (typeof msg.content === "string") {
+          try {
+            const parsed = JSON.parse(msg.content)
+            textVal = parsed.jawaban || msg.content
+          } catch (e) {
+            textVal = msg.content
+          }
+        } else if (msg.content && typeof msg.content === "object") {
+          textVal = msg.content.jawaban || JSON.stringify(msg.content)
+        } else {
+          textVal = String(msg.content ?? "")
+        }
+
+        return {
+          id: `msg_${rawData.id}_${idx}`,
+          sessionId: String(rawData.id),
+          from: msg.role === "assistant" ? "ai" : "user",
+          type: "text",
+          text: textVal,
+          timestamp: msg.timestamp || new Date().toISOString()
+        }
+      })
+
+      // Status mapping
+      let status: "active" | "ended" | "escalated" = "active"
+      if (rawData.status === "selesai") status = "ended"
+      else if (rawData.status === "dilaporkan") status = "escalated"
+
+      const session = new ChatSession({
+        id: String(rawData.id),
+        userId: String(rawData.user?.id ?? ""),
+        title: rawData.user ? rawData.user.name : `User #${rawData.user_id}`,
+        status: status,
+        createdAt: rawData.created_at,
+        updatedAt: rawData.updated_at
+      })
+
+      return new ApiResponse(
+        { session, messages },
+        "success"
+      )
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error)
       return new ApiResponse<{ session: ChatSession; messages: ChatMessage[] }>(undefined, "error", undefined, msg)

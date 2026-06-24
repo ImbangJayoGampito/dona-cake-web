@@ -20,7 +20,7 @@ interface TrendChartProps {
 const chartConfig: ChartConfig = {
   total_pendapatan: {
     label: "Pendapatan",
-    color: "hsl(var(--primary))",
+    color: "var(--primary)",
   },
 }
 
@@ -100,8 +100,8 @@ export default function TrendChart({
             <AreaChart data={chartData} margin={{ left: 0, right: 0, top: 4 }}>
               <defs>
                 <linearGradient id="fillPendapatan" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--color-total_pendapatan)" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="var(--color-total_pendapatan)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid vertical={false} stroke="var(--border)" />
@@ -110,13 +110,13 @@ export default function TrendChart({
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
               />
               <YAxis
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                 tickFormatter={(v) =>
                   v >= 1_000_000
                     ? `${(v / 1_000_000).toFixed(0)}jt`
@@ -142,10 +142,10 @@ export default function TrendChart({
                 dataKey="total_pendapatan"
                 type="monotone"
                 fill="url(#fillPendapatan)"
-                stroke="hsl(var(--primary))"
+                stroke="var(--color-total_pendapatan)"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: "hsl(var(--primary))" }}
+                activeDot={{ r: 4, fill: "var(--color-total_pendapatan)" }}
               />
             </AreaChart>
           </ChartContainer>

@@ -47,7 +47,7 @@ export default function MessageBubble({
       {/* Konten bubble */}
       <div
         className={cn(
-          "max-w-xs space-y-2 lg:max-w-md",
+          "max-w-[75%] space-y-2 sm:max-w-md lg:max-w-lg",
           isUser && "flex flex-col items-end"
         )}
       >

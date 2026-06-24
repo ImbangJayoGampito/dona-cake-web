@@ -63,6 +63,9 @@ export function UserAvatarDropdown({ trigger }: UserAvatarDropdownProps = {}) {
         {(user.isAdmin() || user.isKaryawan()) && (
           <>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate(PublicRoutes.Home)}>
+              Halaman Utama (Pelanggan)
+            </DropdownMenuItem>
             {user.isAdmin() && (
               <DropdownMenuItem onClick={() => navigate("/admin/dashboard")}>
                 Dashboard Admin

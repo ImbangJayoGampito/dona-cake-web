@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Bell, Sun, Moon } from "lucide-react"
+import { Bell, Sun, Moon, Menu } from "lucide-react"
 import { useAuthStore } from "@/lib/state/logged-user"
 import { useTheme } from "@/components/theme-provider"
 import { UserAvatarDropdown } from "@/components/user-avatar-dropdown"
@@ -30,7 +30,11 @@ function formatDate(date: Date): string {
   })
 }
 
-export default function KaryawanHeader() {
+interface KaryawanHeaderProps {
+  onToggleSidebar?: () => void
+}
+
+export default function KaryawanHeader({ onToggleSidebar }: KaryawanHeaderProps) {
   const user = useAuthStore((state) => state.user)
   const { theme, setTheme } = useTheme()
   const [now, setNow] = useState(new Date())
@@ -44,17 +48,31 @@ export default function KaryawanHeader() {
   const displayName = user?.getDisplayName() ?? "Karyawan"
 
   return (
-    <header className="dark flex h-16 items-center justify-between border-b border-border bg-popover/90 px-8">
-      {/* Jam & tanggal — tengah-kiri sesuai desain */}
-      <div className="flex flex-col leading-tight">
-        <span className="text-sm font-semibold text-white">
-          {formatClock(now)}
-        </span>
-        <span className="text-xs text-white/50">{formatDate(now)}</span>
+    <header className="dark flex h-16 items-center justify-between border-b border-border bg-popover/90 px-4 md:px-8">
+      {/* Jam & tanggal — tengah-kiri sesuai desain (hidden on mobile) */}
+      <div className="flex items-center gap-2">
+        {onToggleSidebar && (
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            className="rounded-md p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white md:hidden"
+            title="Buka menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+        <span className="text-sm font-semibold text-white md:hidden">Dona Cake Staff</span>
+
+        <div className="flex flex-col leading-tight hidden sm:flex">
+          <span className="text-sm font-semibold text-white">
+            {formatClock(now)}
+          </span>
+          <span className="text-xs text-white/50">{formatDate(now)}</span>
+        </div>
       </div>
 
       {/* Kanan: notifikasi + profil */}
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-3 md:gap-5">
         <button
           type="button"
           onClick={() => setTheme(isDark ? "light" : "dark")}
@@ -78,8 +96,8 @@ export default function KaryawanHeader() {
 
         <UserAvatarDropdown
           trigger={
-            <button className="flex items-center gap-3 border-l border-white/10 pl-5 text-right focus:outline-none hover:opacity-90 transition-opacity">
-              <div className="text-right leading-tight">
+            <button className="flex items-center gap-2 md:gap-3 border-l border-white/10 pl-3 md:pl-5 text-right focus:outline-none hover:opacity-90 transition-opacity">
+              <div className="text-right leading-tight hidden sm:block">
                 <p className="text-sm font-medium text-white">{displayName}</p>
                 <p className="text-xs text-white/50">Karyawan</p>
               </div>
