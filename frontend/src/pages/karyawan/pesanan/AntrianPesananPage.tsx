@@ -6,7 +6,9 @@ import KpiStatsBar from "./components/KpiStatsBar"
 import KdsBoard from "./components/KdsBoard"
 import LiveUpdateBadge from "./components/LiveUpdateBadge"
 import { KaryawanPesananService } from "@/services/karyawan-pesanan-service"
-import type { Pesanan, StaffDashboardStats, StatusKDS } from "@/types/karyawan.types"
+import type { StaffDashboardStats, StatusKDS } from "@/types/karyawan.types"
+import { Pesanan } from "@/models/pesanan.model"
+
 
 const POLLING_INTERVAL_MS = 15_000
 
@@ -73,7 +75,7 @@ export default function AntrianPesananPage() {
     // Optimistic update — kartu bergerak antar kolom sebelum API confirm
     setPesanan((prev) =>
       prev.map((p) =>
-        p.id === id ? { ...p, status_pesanan: newStatus } : p
+        p.id === id ? new Pesanan({ ...p, status_pesanan: newStatus }) : p
       )
     )
 

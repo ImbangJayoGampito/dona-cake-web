@@ -41,12 +41,23 @@ export default function MessageList({
 
   // Auto-scroll ke bawah setiap ada pesan baru atau saat mengetik
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTo({
-        top: containerRef.current.scrollHeight,
+    const container = containerRef.current
+    if (!container) return
+
+    const scrollToBottom = () => {
+      container.scrollTo({
+        top: container.scrollHeight,
         behavior: "smooth",
       })
     }
+
+    // Jalankan segera
+    scrollToBottom()
+
+    // Jalankan setelah sedikit penundaan untuk memastikan rendering selesai (misal chip quick replies)
+    const timeoutId = setTimeout(scrollToBottom, 100)
+
+    return () => clearTimeout(timeoutId)
   }, [messages, isSending])
 
   if (isLoading) {

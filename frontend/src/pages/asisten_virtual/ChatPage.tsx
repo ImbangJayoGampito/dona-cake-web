@@ -93,7 +93,7 @@ export default function ChatPage() {
     <div className="flex h-[calc(100dvh-64px)] w-full flex-col bg-background overflow-hidden">
       <div
         className={cn(
-          "flex flex-1 transition-transform duration-300 ease-in-out md:w-full md:translate-x-0",
+          "flex flex-1 min-h-0 transition-transform duration-300 ease-in-out md:w-full md:translate-x-0",
           showSidebar ? "w-[200vw] translate-x-0" : "w-[200vw] -translate-x-1/2"
         )}
       >
@@ -116,7 +116,7 @@ export default function ChatPage() {
         </div>
 
         {/* Area chat utama */}
-        <div className="flex min-w-0 w-[100vw] md:w-auto flex-1 flex-col">
+        <div className="flex min-w-0 min-h-0 w-[100vw] md:w-auto flex-1 flex-col">
           {/* Header */}
           <ChatHeader
             isEscalated={isEscalated}
