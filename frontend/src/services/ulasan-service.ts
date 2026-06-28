@@ -11,7 +11,7 @@ export class UlasanService {
     try {
       const url = `${PublicRoutes.Ulasan}?produk_id=${id}`
       const response = await api.get(url)
-      return ApiResponse.fromApiArray<Ulasan>(response.data)
+      return ApiResponse.fromApiArray<Ulasan>(response.data, (item) => new Ulasan(item))
     } catch (error: any) {
       const message = error.response?.data?.message || (error instanceof Error ? error.message : String(error))
       return new ApiResponse<Ulasan[]>([], "error", undefined, message)
@@ -21,7 +21,7 @@ export class UlasanService {
     const url = ProtectedRoutes.CreateUlasan
     try {
       const response = await api.post(url, payload)
-      return ApiResponse.fromApiSingle<Ulasan>(response.data)
+      return ApiResponse.fromApiSingle<Ulasan>(response.data, (item) => new Ulasan(item))
     } catch (error: any) {
       const message = error.response?.data?.message || (error instanceof Error ? error.message : String(error))
       return new ApiResponse<Ulasan>(new Ulasan(), "error", undefined, message)
@@ -33,7 +33,7 @@ export class UlasanService {
     })
     try {
       const response = await api.put(url, payload)
-      return ApiResponse.fromApiSingle<Ulasan>(response.data)
+      return ApiResponse.fromApiSingle<Ulasan>(response.data, (item) => new Ulasan(item))
     } catch (error: any) {
       const message = error.response?.data?.message || (error instanceof Error ? error.message : String(error))
       return new ApiResponse<Ulasan>(new Ulasan(), "error", undefined, message)
