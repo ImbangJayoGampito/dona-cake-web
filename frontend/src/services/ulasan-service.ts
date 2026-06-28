@@ -12,8 +12,8 @@ export class UlasanService {
       const url = `${PublicRoutes.Ulasan}?produk_id=${id}`
       const response = await api.get(url)
       return ApiResponse.fromApiArray<Ulasan>(response.data)
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error)
+    } catch (error: any) {
+      const message = error.response?.data?.message || (error instanceof Error ? error.message : String(error))
       return new ApiResponse<Ulasan[]>([], "error", undefined, message)
     }
   }
@@ -22,8 +22,8 @@ export class UlasanService {
     try {
       const response = await api.post(url, payload)
       return ApiResponse.fromApiSingle<Ulasan>(response.data)
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error)
+    } catch (error: any) {
+      const message = error.response?.data?.message || (error instanceof Error ? error.message : String(error))
       return new ApiResponse<Ulasan>(new Ulasan(), "error", undefined, message)
     }
   }
@@ -34,8 +34,8 @@ export class UlasanService {
     try {
       const response = await api.put(url, payload)
       return ApiResponse.fromApiSingle<Ulasan>(response.data)
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error)
+    } catch (error: any) {
+      const message = error.response?.data?.message || (error instanceof Error ? error.message : String(error))
       return new ApiResponse<Ulasan>(new Ulasan(), "error", undefined, message)
     }
   }
@@ -46,8 +46,8 @@ export class UlasanService {
     try {
       const response = await api.delete(url)
       return ApiResponse.fromApiSingle<null>(response.data)
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error)
+    } catch (error: any) {
+      const message = error.response?.data?.message || (error instanceof Error ? error.message : String(error))
       return new ApiResponse(null, "error", undefined, message)
     }
   }

@@ -32,6 +32,13 @@ api.interceptors.response.use(
         window.location.href = PublicRoutes.Login
       }
     }
+
+    // Extract friendly error message from backend if available
+    const responseData = error.response?.data as any
+    if (responseData && typeof responseData === "object" && responseData.message) {
+      error.message = responseData.message
+    }
+
     return Promise.reject(error)
   }
 )
