@@ -58,8 +58,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <div className="flex items-center gap-2">
             <StarRating rating={product.rating_rata_rata} />
             <span className="text-sm text-muted-foreground">
-              {product.rating_rata_rata} ({product.ulasans?.length ?? 0}
-              +)
+              {product.rating_rata_rata} ({product.ulasans?.length ?? 0})
             </span>
           </div>
 

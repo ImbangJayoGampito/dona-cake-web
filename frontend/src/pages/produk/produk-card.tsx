@@ -218,7 +218,7 @@ export default function ProductDetailPage() {
               <StarRating rating={product.rating_rata_rata} />
               <span className="font-semibold">{product.rating_rata_rata}</span>
               <span className="text-muted-foreground">
-                ({product.getUlasanCounts()} ulasan)
+                ({ulasans.length} ulasan)
               </span>
             </div>
 
@@ -312,7 +312,7 @@ export default function ProductDetailPage() {
               value="reviews"
               className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-foreground"
             >
-              Ulasan ({product.getUlasanCounts()})
+              Ulasan ({ulasans.length})
             </TabsTrigger>
             <TabsTrigger
               value="similar"
@@ -346,15 +346,13 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
 
-                {/* Rating Bars (simplified) */}
+                {/* Rating Bars */}
                 <div className="mb-8 space-y-1">
                   {[5, 4, 3, 2, 1].map((star) => {
-                    let percentage = 0
-                    if (star === 5) percentage = 85
-                    else if (star === 4) percentage = 10
-                    else if (star === 3) percentage = 3
-                    else if (star === 2) percentage = 1
-                    else percentage = 1
+                    const count = ulasans.filter((r) => r.rating === star).length
+                    const percentage = ulasans.length > 0
+                      ? Math.round((count / ulasans.length) * 100)
+                      : 0
                     return (
                       <div
                         key={star}
@@ -397,7 +395,7 @@ export default function ProductDetailPage() {
                           </div>
                         </div>
                         <span className="text-xs text-muted-foreground">
-                          {review.created_at.toDateString()}
+                          {new Date(review.created_at).toDateString()}
                         </span>
                       </div>
                       <p className="mt-2 text-sm text-muted-foreground italic">
